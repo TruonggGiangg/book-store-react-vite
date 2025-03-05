@@ -56,6 +56,31 @@ export const deleteUserApi = (id: string) => {
     return axios.delete<IBackendRes<any>>(url);
 };
 
+//BOOK
+export const getAllBookApi = (query: string) => {
+    //
+    const url = `${baseURL}/api/v1/books?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IGetBook>>>(url);
+};
+
+
+export const createBookApi = (bookData: ICreateBook) => {
+    const url = `${baseURL}/api/v1/books`;
+    return axios.post<IBackendRes<any>>(url, bookData);
+};
+
+
+export const updateBookApi = (bookData: ICreateBook, id: string) => {
+    const url = `${baseURL}/api/v1/books/${id}`;
+    return axios.put<IBackendRes<any>>(url, bookData);
+};
+
+export const deleteBookApi = (id: string) => {
+    const url = `${baseURL}/api/v1/books/${id}`;
+    return axios.delete<IBackendRes<any>>(url);
+};
+
+
 
 //ROLE
 export const getRoleApi = (id: string) => {
@@ -70,4 +95,35 @@ export const getAllRoleApi = () => {
 
 
 
+
+
+//CATEGORY
+export const getAllCategoryApi = () => {
+    const url = `${baseURL}/api/v1/categories`;
+    return axios.get<IBackendRes<IModelPaginate<IGetCategories>>>(url);
+};
+
+
+export const getCategoryApi = (id: string) => {
+    const url = `${baseURL}/api/v1/categories/${id}`;
+    return axios.get<IBackendRes<IGetCategories>>(url);
+};
+
+//UPLOAD FILE
+export const uploadFile = (fileImg: any, folder: string) => {
+    const boduFormData = new FormData();
+    boduFormData.append('file', fileImg);
+    return axios<IBackendRes<{
+        fileName: string
+    }>>({
+        method: 'post',
+        url: '/api/v1/files/upload',
+        data: boduFormData,
+        headers: {
+            "Content-Type": "multipart/form-data",
+            "folder_type": folder
+        }
+
+    })
+};
 

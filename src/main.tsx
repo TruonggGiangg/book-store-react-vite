@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, StrictMode } from 'react';
 import { AppProvider } from './components/context/app.context'
 import { RouterProvider } from 'react-router-dom'
 import './global.css'
@@ -26,6 +26,9 @@ i18next.init({
 });
 
 const Main = () => {
+
+
+
   const [locale, setLocale] = useState(i18next.language === 'en' ? enUS : viVN);
 
   useEffect(() => {
@@ -40,15 +43,22 @@ const Main = () => {
   }, []);
 
   return (
+
     <App>
       <AppProvider>
         <I18nextProvider i18n={i18next}>
-          <ConfigProvider locale={locale}>
-            <RouterProvider router={router} />
+          <ConfigProvider
+            locale={locale}
+          >
+            <StrictMode>
+              <RouterProvider router={router} />
+            </StrictMode>
           </ConfigProvider>
         </I18nextProvider>
       </AppProvider>
     </App>
+
+
   );
 };
 

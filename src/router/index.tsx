@@ -1,5 +1,7 @@
+import BookAdminMain from "@/components/admin/product/main";
 import ProtectedRoute from "@/components/auth/protected-route";
-import AppLayout from "@/components/layout/app.layout";
+import AppLayout from "@/components/layout/admin/app.layout";
+import AppLayoutClient from "@/components/layout/client/app.layout";
 import HomePageAdmin from "@/pages/admin/home";
 import UserPage from "@/pages/admin/user/user.admin";
 import LoginPage from "@/pages/client/auth/login";
@@ -12,7 +14,7 @@ import { createBrowserRouter } from "react-router-dom";
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <AppLayout />,
+        element: <AppLayoutClient />,
         children: [
             {
                 index: true,
@@ -49,11 +51,17 @@ export const router = createBrowserRouter([
             {
                 path: "user",
                 element: (
-                    <ProtectedRoute>
-                        <UserPage />
-                    </ProtectedRoute>
+
+                    <UserPage />
                 ),
             },
+            {
+                path: "book",
+                element: (
+                    <BookAdminMain />
+                ),
+            },
+
         ],
     },
     {

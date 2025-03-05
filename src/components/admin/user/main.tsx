@@ -109,7 +109,10 @@ const UserAdminMain = () => {
                             style={{ cursor: 'pointer', color: '#ff5733' }}
                             onClick={() => { handleDelete(record._id) }}
                         />
-                        <MoreOutlined style={{ cursor: 'pointer', color: '#ff5733' }} />
+                        <MoreOutlined
+                            style={{ cursor: 'pointer', color: '#ff5733' }}
+                            onClick={() => handleOpenDetailModal(record)}
+                        />
                     </div>
 
                 </>)
@@ -181,6 +184,7 @@ const UserAdminMain = () => {
     return (
         <>
             {contextHolder}
+            <h1 style={{ padding: "20px" }}>Quản lý người dùng</h1>
             <UserDetail
                 isOpenDetailModal={isOpenDetailModal}
                 setIsOpenDetailModal={setIsOpenDetailModal}
@@ -250,6 +254,7 @@ const UserAdminMain = () => {
                     const res = await getAllUserApi(query)
                     if (res.data) {
                         //set state meta
+
                         setMeta(res.data.meta)
                         //set data for logic
                         setDataUserTable(res.data.result)
@@ -272,7 +277,7 @@ const UserAdminMain = () => {
                     showSizeChanger: true,
                     total: meta.total,
                     current: meta.current,
-                    showTotal: (total, range) => { return (<div>{range[0]}-{range[1]} trên tổng {total} người dùng</div>) }
+                    showTotal: (total, range) => { return (<div>{range[0]}-{range[1]} trên tổng {total} sản phẩm</div>) }
                 }}
 
                 headerTitle="User Table"

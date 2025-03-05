@@ -1,5 +1,5 @@
 import { Header } from "antd/es/layout/layout"
-import { useAppProvider } from "../context/app.context"
+import { useAppProvider } from "../../context/app.context"
 import { Avatar, Button, Divider, Dropdown, Input, MenuProps, message, Switch } from "antd";
 import {
     MoonOutlined,
@@ -59,8 +59,9 @@ const LayoutHeader = () => {
     return (
         <>
             <Header
+
                 style={{
-                    padding: "0 16px",
+                    padding: "32px 16px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",

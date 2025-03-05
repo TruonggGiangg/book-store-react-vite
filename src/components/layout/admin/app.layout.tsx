@@ -1,18 +1,25 @@
 import React, { useState } from 'react';
 import {
+    BookOutlined,
+    DatabaseOutlined,
     DesktopOutlined,
     FileOutlined,
+    KeyOutlined,
+    LockOutlined,
     PieChartOutlined,
+    ProductOutlined,
     TeamOutlined,
     UserOutlined,
+    WalletOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { ConfigProvider, Layout, Menu, theme } from 'antd';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { useAppProvider } from '../context/app.context';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+
 import logo_light from '@/assets/logo/light-logo.png';
 import logo_dark from '@/assets/logo/dark-logo.png';
 import LayoutHeader from './layout.header';
+import { useAppProvider } from '@/components/context/app.context';
 const { Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -37,15 +44,34 @@ function getItem(
 
 
 const AppLayout: React.FC = () => {
+
+    const location = useLocation();
     const { isDarkTheme } = useAppProvider();
     const [collapsed, setCollapsed] = useState(false);
     const nav = useNavigate();
 
     const items: MenuItem[] = [
         getItem('Dashboard', '1', <PieChartOutlined />, () => { nav('/admin') }),
-        getItem('Book', '2', <DesktopOutlined />),
-        getItem('Users', 'sub1', <UserOutlined />, () => { nav('/admin/user') }),
+        getItem('Book', '2', <WalletOutlined />, () => { nav('/admin/book') }),
+        getItem('User', '3', <UserOutlined />, () => { nav('/admin/user') }),
+        getItem('Category', '4', <DatabaseOutlined />, () => { nav('/admin/user') }),
+        getItem('Role', '5', <LockOutlined />, () => { nav('/admin/user') }),
+        getItem('Permission', '6', <KeyOutlined />, () => { nav('/admin/user') }),
     ];
+
+    const menuKeyMap: Record<string, string> = {
+        "/admin": "1",
+        "/admin/book": "2",
+        "/admin/user": "3",
+        "/admin/category": "4",
+        "/admin/role": "5",
+        "/admin/permission": "6",
+    };
+
+    const selectedKey = menuKeyMap[location.pathname] || "1";
+
+
+
     return (
         <ConfigProvider
             theme={{
@@ -54,6 +80,8 @@ const AppLayout: React.FC = () => {
                     colorPrimary: "#ff5733", // Màu chính
                     colorBgLayout: isDarkTheme ? "#141414" : "#f5f5f5", // Màu nền layout
                     colorText: isDarkTheme ? "#f5f5f5" : "#333", // Màu chữ
+                    fontSize: 14,
+
                 },
                 components: {
                     Layout: {
@@ -64,23 +92,46 @@ const AppLayout: React.FC = () => {
                         siderBg: isDarkTheme ? "#141414" : "#f5f5f5",
                         triggerBg: isDarkTheme ? "#ff5733" : "#ff5733",
                         triggerColor: isDarkTheme ? "#f5f5f5" : "#f5f5f5",
-
-                        boxShadow: "none"
+                        boxShadow: "none",
 
                     },
                     Menu: {
-                        itemBg: isDarkTheme ? "#141414" : "#f5f5f5"
+                        itemBg: isDarkTheme ? "#141414" : "#f5f5f5",
+                        colorBorder: "transparent",
                     },
+
                     Input: {
                         colorBorder: isDarkTheme ? "#333" : "#dedede"
+                    },
+                    Card: {
+                        colorBorder: isDarkTheme ? "#333" : "#dedede",
+                    },
+
+
+                    Table: {
+                        colorBgBase: isDarkTheme ? "#141414" : "#f5f5f5",
+
+                        boxShadow: "0x 0 10px rgba(0, 0, 0, 0.2)"
+
+                    },
+                    Upload: {
+
                     }
 
+
                 },
+
             }}
         >
             <Layout style={{ minHeight: '100vh' }}>
                 <Sider
-                    style={{ boxShadow: "8px 2px 8px rgba(0, 0, 0, 0.1)" }}
+                    style={
+                        {
+                            boxShadow: "8px 2px 8px rgba(0, 0, 0, 0.1)",
+                            borderRight: isDarkTheme ? "1px solid #141414" : "1px solid #dedede"
+                        }
+
+                    }
 
                     collapsible
                     collapsed={collapsed}
@@ -100,15 +151,18 @@ const AppLayout: React.FC = () => {
                     </div>
 
                     <Menu
-
-                        defaultSelectedKeys={['1']}
+                        style={{
+                            borderInlineEnd: "none"
+                        }}
+                        selectedKeys={[selectedKey]}
                         mode="inline"
                         items={items}
+
                     />
                 </Sider>
                 <Layout>
                     <LayoutHeader />
-                    <Content style={{ padding: '16px' }}>
+                    <Content style={{}}>
                         <Outlet />
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>

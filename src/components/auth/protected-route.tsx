@@ -32,7 +32,7 @@ const ProtectedRoute: React.FC<IProps> = ({ children }) => {
                 nav('/not-authorized')
             }
         }
-    }, [])
+    }, [isAuthenticated, role])
 
     return (
         <>
@@ -46,7 +46,7 @@ const ProtectedRoute: React.FC<IProps> = ({ children }) => {
                         transform: "translate(-50%, -50%)"
                     }}>
                         <ScaleLoader
-                            color={'#000000'}
+                            color={'#ff5733'}
                             loading={isLoading}
                             aria-label="Loading Spinner"
                             data-testid="loader"
