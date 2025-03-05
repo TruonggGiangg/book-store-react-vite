@@ -98,8 +98,8 @@ export const getAllRoleApi = () => {
 
 
 //CATEGORY
-export const getAllCategoryApi = () => {
-    const url = `${baseURL}/api/v1/categories`;
+export const getAllCategoryApi = (query: string) => {
+    const url = `${baseURL}/api/v1/categories?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IGetCategories>>>(url);
 };
 

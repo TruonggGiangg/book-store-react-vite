@@ -81,6 +81,9 @@ const LayoutHeader = () => {
     const gapSize = Math.max(10, 20 - maxScroll / 20);
     const paddingSize = Math.max(16, 120 - maxScroll / 3);
     const widthInput = Math.max(1000, 1200 - maxScroll / 20);
+    const opacity = Math.min(0.5 + (scrollY / 400) * 0.7, 1);
+    const backgroundColor = `rgba(${isDarkTheme ? "20, 20, 20" : "255, 255, 255"}, ${opacity})`;
+
     return (
         <>
             <Header
@@ -96,7 +99,7 @@ const LayoutHeader = () => {
                     left: 0,
                     zIndex: 1000,
                     transition: "all 0.3s ease-in-out",
-                    backgroundColor: `rgba(${isDarkTheme ? "20, 20, 20" : "255, 255, 255"}, ${Math.min(scrollY / 400, 1)})`,
+                    backgroundColor: `${backgroundColor}`,
                     backdropFilter: `blur(${scrollY > 50 ? 8 : 0}px)`,
                     borderBottom: `1px solid rgba(0, 0, 0, ${Math.min(scrollY / 200, 0.1)})`, // Viền dần xuất hiện khi cuộn
                 }}

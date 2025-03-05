@@ -35,11 +35,9 @@ const TableBook = () => {
 
     useEffect(() => {
         const get = async () => {
-            const res = await getAllCategoryApi();
-            if (res.data?.result) {
-                // Lọc ra các danh mục có `isBook === true`
-                const newRes: IGetCategories[] = res.data.result.filter(x => x.isBook === true);
-                setClassification(newRes);
+            const res = await getAllCategoryApi('isBook=true');
+            if (res.data) {
+                setClassification(res.data.result);
             } else {
                 setClassification([]);
             }

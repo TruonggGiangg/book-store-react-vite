@@ -87,7 +87,6 @@ const AppLayoutClient: React.FC = () => {
             }}
         >
             <Layout style={{ minHeight: '100vh' }}>
-
                 <LayoutHeader />
                 <Content style={{}}>
                     <Outlet />
