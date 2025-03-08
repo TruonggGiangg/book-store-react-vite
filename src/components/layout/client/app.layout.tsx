@@ -1,19 +1,5 @@
 import React, { useState } from 'react';
-import {
-    BookOutlined,
-    DatabaseOutlined,
-    DesktopOutlined,
-    FileOutlined,
-    KeyOutlined,
-    LockOutlined,
-    PieChartOutlined,
-    ProductOutlined,
-    TeamOutlined,
-    UserOutlined,
-    WalletOutlined,
-} from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import { ConfigProvider, Layout, Menu, theme } from 'antd';
+import { ConfigProvider, Layout, theme } from 'antd';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 
@@ -88,9 +74,11 @@ const AppLayoutClient: React.FC = () => {
         >
             <Layout style={{ minHeight: '100vh' }}>
                 <LayoutHeader />
-                <Content style={{}}>
+
+                <Content>
                     <Outlet />
                 </Content>
+
                 <Footer style={{ textAlign: 'center' }}>
                     Ant Design ©{new Date().getFullYear()} Created by Ant UED
                 </Footer>

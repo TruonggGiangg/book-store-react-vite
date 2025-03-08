@@ -47,7 +47,7 @@ const AddBook = (props: IProps) => {
     useEffect(() => {
         const fetchRole = async () => {
             setIsLoading(true)
-            const res = await getAllCategoryApi('isBook=true');
+            const res = await getAllCategoryApi('');
             if (res && res.data) {
                 setArrCategory(res.data.result)
             }

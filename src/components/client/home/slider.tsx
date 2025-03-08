@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Carousel } from 'antd';
+import { Button, Carousel } from 'antd';
 import { PageLoading } from '@ant-design/pro-components';
 
 type IProps = {
@@ -19,8 +19,7 @@ const HomeSlider = (props: IProps) => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Opacity giảm dần từ 1 -> 0 khi cuộn xuống 400px
-    const opacity = Math.max(0, 1 - scrollY / 400);
+
 
     if (loading) {
         return (
@@ -34,51 +33,106 @@ const HomeSlider = (props: IProps) => {
         <Carousel arrows effect="scrollx">
             {data.map((category, i) => (
                 <div key={i} style={{ textAlign: "center" }}>
-                    <div style={{ position: "relative", width: "100%", height: "500px" }}>
-                        {/* Ảnh lớn */}
-                        <img
-                            src={`${import.meta.env.VITE_BACKEND_URL}/images/category/${category.image}`}
-                            alt={category.name || "category"}
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                opacity: opacity,
-                                transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-                            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                        />
+                    <div
+                        style={{
+                            position: "relative",
+                            width: "100%",
+                            height: "500px",
+                            backgroundImage: `url(${import.meta.env.VITE_BACKEND_URL}/images/category/${category.image})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat",
+                            filter: "brightness(70%)", // Làm tối ảnh để chữ nổi bật hơn
+                            transition: "transform 0.5s ease-in-out, opacity 0.3s ease-in-out",
+
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.025)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    >
+
+                        {/* Tên thể loại */}
+                        <div style={{
+                            position: "absolute",
+                            left: "5%",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            color: "white",
+                            fontSize: "32px",
+                            fontWeight: "bold",
+                            textShadow: "3px 3px 12px rgba(0, 0, 0, 0.8)",
+                            background: "linear-gradient(90deg, rgba(0,0,0,0.8), rgba(0,0,0,0.5))",
+                            padding: "32px 50px",
+                            borderRadius: "10px",
+
+                            width: "45%",
+                            display: "flex",
+                            alignItems: "flex-start",
+                            justifyContent: "center",
+                            textAlign: "left",
+                            flexDirection: "column",
+                        }}>
+                            <h2 style={{ fontSize: "3.2rem", marginBottom: "10px" }}>{category.name}</h2>
+                            <p style={{ fontSize: "1rem", lineHeight: "1.6" }}>{category.description}</p>
+                            <div style={{ marginTop: "40px", display: "flex", gap: "1.5rem" }}>
+                                <Button
+                                    type="primary"
+                                    size="large"
+                                    style={{
+                                        backgroundColor: "#FF5733",
+                                        borderColor: "#FF5733",
+                                        fontWeight: "bold",
+                                        transition: "all 0.3s ease-in-out",
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e04c2f")}
+                                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#FF5733")}
+                                >
+                                    See More
+                                </Button>
+                                <Button size="large" style={{
+                                    backgroundColor: "transparent",
+                                    border: "2px solid white",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    transition: "all 0.3s ease-in-out",
+                                }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = "white";
+                                        e.currentTarget.style.color = "#FF5733";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = "transparent";
+                                        e.currentTarget.style.color = "white";
+                                    }}
+                                >
+                                    Subscribe
+                                </Button>
+                            </div>
+                        </div>
 
                         {/* Danh sách sách theo danh mục */}
                         <div style={{
-
                             textAlign: "left",
                             display: "flex",
-                            gap: "10px",
-
+                            gap: "15px",
                             position: "absolute",
-                            bottom: "12px",
-                            right: "12px",
-                            height: "172px"
+                            bottom: "32px",
+                            right: "48px",
+                            height: "150px",
                         }}>
                             {dataBook[category._id]?.length > 0 ? (
                                 dataBook[category._id].slice(0, 5).map((book) => ( // Giới hạn tối đa 5 sách
                                     <div key={book._id} style={{
-                                        width: '100px',
+                                        width: "100px",
                                         display: "flex",
-                                        flexDirection: 'column',
-                                        gap: "10px",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        gap: "8px",
                                         color: "white",
-                                        borderRadius: "5px",
-                                        overflow: 'hidden',
-                                        fontSize: "14px",
-                                        fontWeight: "bold",
-                                        textTransform: "uppercase",
-                                        textShadow: "2px 2px 8px rgba(0, 0, 0, 0.7)",
+                                        borderRadius: "8px",
+                                        overflow: "hidden",
                                         transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-                                        opacity: opacity,
                                         cursor: "pointer",
+
                                     }}
                                         onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
                                         onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -86,21 +140,28 @@ const HomeSlider = (props: IProps) => {
                                         <img
                                             src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`}
                                             alt={book.title}
-                                            style={{ width: "100px", height: "100%", objectFit: "cover" }}
+                                            style={{
+                                                width: "100px",
+                                                height: "150px",
+                                                objectFit: "cover",
+                                                borderRadius: "8px",
+                                                backgroundColor: "rgba(255, 255, 255, 0.7)",
+                                                padding: "4px",
+                                                overflow: "hidden",
+                                            }}
                                         />
+
                                     </div>
                                 ))
                             ) : (
-                                <>
-                                </>
+                                <></>
                             )}
-
                         </div>
-
                     </div>
                 </div>
             ))}
         </Carousel>
+
     );
 };
 

@@ -81,7 +81,7 @@ const UpdateProduct = (props: IProps) => {
 
 
             // Lấy danh sách danh mục
-            const res = await getAllCategoryApi();
+            const res = await getAllCategoryApi('');
             if (res?.data) {
                 setArrCategory(res.data.result);
             }
@@ -144,7 +144,7 @@ const UpdateProduct = (props: IProps) => {
 
 
             // Lấy danh sách danh mục
-            const res = await getAllCategoryApi();
+            const res = await getAllCategoryApi('');
             if (res?.data) {
                 setArrCategory(res.data.result);
             }
