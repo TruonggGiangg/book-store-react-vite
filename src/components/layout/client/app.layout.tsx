@@ -38,11 +38,12 @@ const AppLayoutClient: React.FC = () => {
                         headerBg: isDarkTheme ? "#141414" : "#f5f5f5", // Màu nền header
                         headerColor: isDarkTheme ? "#f5f5f5" : "#333333", // Màu chữ header
                         footerBg: isDarkTheme ? "#141414" : "#f5f5f5",
-                        colorBgLayout: isDarkTheme ? "#141414" : "#f5f5f5",
+                        colorBgLayout: isDarkTheme ? "#1f1f1f" : "#f5f5f5",
                         siderBg: isDarkTheme ? "#141414" : "#f5f5f5",
                         triggerBg: isDarkTheme ? "#ff5733" : "#ff5733",
                         triggerColor: isDarkTheme ? "#f5f5f5" : "#f5f5f5",
                         boxShadow: "none",
+
 
                     },
                     Menu: {
@@ -50,13 +51,15 @@ const AppLayoutClient: React.FC = () => {
                         colorBorder: "transparent",
                     },
 
+
                     Input: {
                         colorBorder: isDarkTheme ? "#333" : "#dedede"
                     },
                     Card: {
                         colorBorder: isDarkTheme ? "#333" : "#dedede",
                         bodyPadding: 12,
-                        borderRadius: 8
+                        borderRadius: 8,
+
                     },
 
 
@@ -83,7 +86,7 @@ const AppLayoutClient: React.FC = () => {
                     <Outlet />
                 </Content>
 
-                <Footer style={{ textAlign: "center", background: isDarkTheme ? "#1f1f1f" : "#f0f0f0", color: isDarkTheme ? "#fff" : "#000" }}>
+                <Footer style={{ textAlign: "center", background: isDarkTheme ? "#1f1f1f" : "#f5f5f5", color: isDarkTheme ? "#fff" : "#000" }}>
                     <Container>
                         <Row gutter={[32, 16]} justify="center">
                             {/* Cột 1: Giới thiệu */}

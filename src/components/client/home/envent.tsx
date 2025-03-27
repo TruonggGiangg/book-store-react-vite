@@ -18,7 +18,7 @@ const EventHome = (props: IProps) => {
         <>
             <Container>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                    <h2 style={{ fontSize: 24, fontWeight: 600, color: "#333" }}>Sự kiện</h2>
+                    <h2 style={{ fontSize: 24, fontWeight: 600 }}>Sự kiện</h2>
                     <Button type="link" style={{ fontSize: "14px", color: "#FF5733" }}>Xem tất cả</Button>
                 </div>
 
