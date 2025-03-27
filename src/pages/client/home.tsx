@@ -3,8 +3,10 @@ import { useAppProvider } from "@/components/context/app.context";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import homeImg from "@/assets/img/1623843888132.png";
 import HomeSlider from "@/components/client/home/slider";
-import { getAllBookApi, getAllCategoryApi } from "@/services/api";
+import { getAllBookApi, getAllCategoryApi, getAllEventApi } from "@/services/api";
 import Container from "@/components/layout/client/container.layout";
+import EventHome from "@/components/client/home/envent";
+import Product from "@/components/client/home/product";
 
 const HomePage = () => {
     // const { currUser, role } = useAppProvider();
@@ -13,9 +15,10 @@ const HomePage = () => {
     const [booksByCategory, setBooksByCategory] = useState<Record<string, IGetBook[]>>({});
     const [loading, setLoading] = useState<boolean>(false);
 
+    const [dataEvent, setDataEvent] = useState<IGetEvent[]>([]);
+
     useEffect(() => {
         const fetchData = async () => {
-
             setLoading(true);
             const res = await getAllCategoryApi('isBook=true');
             if (res.data) {
@@ -40,6 +43,13 @@ const HomePage = () => {
                     })
                 );
                 setBooksByCategory(booksData);
+
+
+                const resEvent = await getAllEventApi('current=1&pageSize=4&sort=-createdAt');
+                if (resEvent.data) {
+                    setDataEvent(resEvent.data.result);
+                }
+
             }
 
             setLoading(false);
@@ -50,29 +60,25 @@ const HomePage = () => {
 
     return (
         <div style={{ marginTop: '100px' }}>
-            <HomeSlider data={dataCategory} setData={setDataCategory} loading={loading} dataBook={booksByCategory} />
+            <HomeSlider
+                data={dataCategory}
+                setData={setDataCategory}
+                loading={loading}
+                dataBook={booksByCategory}
+            />
 
-            <Container>
-                <div style={{ padding: "20px" }}>
-                    {dataCategory.map((category) => (
-                        <div key={category._id} style={{ marginBottom: "20px" }}>
-                            <h2>{category.name}</h2>
-                            <div style={{ display: "flex", gap: "10px", overflowX: "auto" }}>
-                                {booksByCategory[category._id]?.length > 0 ? (
-                                    booksByCategory[category._id].map((book) => (
-                                        <div key={book._id} style={{ width: "150px", textAlign: "center" }}>
-                                            <img src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`} alt={book.title} style={{ width: "100%", height: "200px", objectFit: "cover" }} />
-                                            <p>{book.title}</p>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>Không có sách nào</p>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </Container>
+            <EventHome
+                dataEvent={dataEvent}
+                loading={loading}
+            />
+
+            <Product
+                loading={loading}
+                dataBook={booksByCategory}
+            >
+
+            </Product>
+
 
 
         </div >

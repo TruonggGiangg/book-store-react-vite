@@ -1,9 +1,11 @@
 import { createBookApi, getAllCategoryApi, getCategoryApi, uploadFile } from "@/services/api"
 import { Button, Card, DatePicker, Drawer, Form, GetProp, Image, Input, InputNumber, message, notification, Select, Space, Upload, UploadFile, UploadProps } from "antd"
 import { useEffect, useState } from "react"
-import { PlusOutlined } from '@ant-design/icons';
+
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import { useAppProvider } from "@/components/context/app.context";
+import TinyMCEEditor from "@/components/editor/input";
+import UploadButton from "@/components/helper/uploadButton";
 
 interface IProps {
     isOpenCreateModal: boolean
@@ -57,13 +59,13 @@ const AddBook = (props: IProps) => {
     }, [])
 
 
-    console.log(arrCategory);
+
 
 
 
 
     const onFinish = async (values: ICreateBook) => {
-
+        setIsLoading(true)
 
         if (isBook === true) {
 
@@ -111,6 +113,7 @@ const AddBook = (props: IProps) => {
                 placement: "topRight",
             });
         }
+        setIsLoading(false)
 
     };
 
@@ -124,20 +127,7 @@ const AddBook = (props: IProps) => {
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [previewImage, setPreviewImage] = useState('');
 
-    const uploadButton = (
-        <button style={{ border: 0, background: 'none' }} type="button">
-            <PlusOutlined
-                style={{
-                    marginTop: 8,
-                    color: isDarkTheme ? "#f5f5f5" : "#333", // Màu chữ
-                }}
-            />
-            <div style={{
-                marginTop: 8,
-                color: isDarkTheme ? "#f5f5f5" : "#333", // Màu chữ
-            }}>Upload</div>
-        </button>
-    );
+
 
     //file list cover  image
     const [fileListCover, setFileListCover] = useState<UploadFile[]>([]);
@@ -216,13 +206,11 @@ const AddBook = (props: IProps) => {
                 onSuccess && onSuccess(uploadedFile);
             }
         } catch (error) {
-            console.error("Upload file error:", error);
             api.error({ message: "Tải ảnh lên thất bại!" });
         }
     };
 
 
-    console.log('arr', fileListCover)
     return (
         <>
             {contextHolder}
@@ -232,7 +220,7 @@ const AddBook = (props: IProps) => {
                     setIsOpenCreateModal(false);
                     onReset();
                 }}
-                width={"60%"}
+                width={"80%"}
             >
 
                 <Form
@@ -286,10 +274,7 @@ const AddBook = (props: IProps) => {
                         name="description"
                         rules={[{ required: true, message: "Mô tả không được để trống" }]}
                     >
-                        <Input.TextArea
-                            placeholder="Nhập mô tả"
-
-                        />
+                        <TinyMCEEditor isDarkMode={isDarkTheme} />
                     </Form.Item>
 
 
@@ -313,7 +298,7 @@ const AddBook = (props: IProps) => {
                                 handleUploadFile(options, "logo")
                             }}
                         >
-                            {fileListLogo.length <= 1 && uploadButton}
+                            {fileListLogo.length <= 1 && <UploadButton isDarkTheme={isDarkTheme} />}
                         </Upload>
                     </Form.Item>
 
@@ -338,7 +323,7 @@ const AddBook = (props: IProps) => {
                                 handleUploadFile(options, "coverImage")
                             }}
                         >
-                            {fileListCover.length < 10 && uploadButton}
+                            {fileListCover.length < 10 && <UploadButton isDarkTheme={isDarkTheme} />}
                         </Upload>
                     </Form.Item>
 
@@ -459,7 +444,7 @@ const AddBook = (props: IProps) => {
 
                     <Form.Item {...tailLayout}>
                         <Space>
-                            <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit" loading={isLoading}>
                                 Submit
                             </Button>
                             <Button htmlType="button" onClick={onReset}>

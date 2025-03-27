@@ -74,7 +74,7 @@ const ThemeToggle = () => {
                     style={{
                         display: "inline-block",
                         transition: "transform 0.6s ease-in-out",
-                        transform: iconAnimating ? "scale(1.5) rotate(360deg)" : "scale(1) rotate(0deg)",
+                        transform: iconAnimating ? "scale(1.3) rotate(360deg)" : "scale(1) rotate(0deg)",
                     }}
                 >
                     {isDarkTheme ? <MoonOutlined /> : <SunOutlined />}

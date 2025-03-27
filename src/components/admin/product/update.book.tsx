@@ -6,6 +6,7 @@ import { useAppProvider } from "@/components/context/app.context";
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from "dayjs";
 import { v4 as uuidv4 } from "uuid";
+import TinyMCEEditor from "@/components/editor/input";
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 interface IProps {
@@ -48,6 +49,9 @@ const UpdateProduct = (props: IProps) => {
 
     const [thumbnail, setThumbnail] = useState<UploadFile[]>([]);
     const [slider, setSlider] = useState<UploadFile[]>([]);
+
+
+    console.log("thumbnail", thumbnail)
 
     useEffect(() => {
         if (dataDetail) {
@@ -374,7 +378,7 @@ const UpdateProduct = (props: IProps) => {
                     onReset();
                 }}
                 loading={isLoading}
-                width={"60%"}
+                width={"80%"}
 
             >
 
@@ -429,10 +433,7 @@ const UpdateProduct = (props: IProps) => {
                         name="description"
                         rules={[{ required: true, message: "Mô tả không được để trống" }]}
                     >
-                        <Input.TextArea
-                            placeholder="Nhập mô tả"
-
-                        />
+                        <TinyMCEEditor isDarkMode={isDarkTheme} />
                     </Form.Item>
 
 

@@ -63,6 +63,10 @@ export const getAllBookApi = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<IGetBook>>>(url);
 };
 
+export const getBookApi = (id: string) => {
+    const url = `${baseURL}/api/v1/books/${id}`;
+    return axios.get<IBackendRes<IGetBook>>(url);
+}
 
 export const createBookApi = (bookData: ICreateBook) => {
     const url = `${baseURL}/api/v1/books`;
@@ -98,6 +102,13 @@ export const getAllRoleApi = () => {
 
 
 //CATEGORY
+export const createCategoryApi = (categoryData: ICreateCategory) => {
+    const url = `${baseURL}/api/v1/categories`;
+    return axios.post<IBackendRes<any>>(url, categoryData);
+}
+
+
+
 export const getAllCategoryApi = (query: string) => {
     const url = `${baseURL}/api/v1/categories?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IGetCategories>>>(url);
@@ -108,6 +119,22 @@ export const getCategoryApi = (id: string) => {
     const url = `${baseURL}/api/v1/categories/${id}`;
     return axios.get<IBackendRes<IGetCategories>>(url);
 };
+
+
+export const updateCategoryApi = (categoryData: ICreateCategory, id: string) => {
+    const url = `${baseURL}/api/v1/categories/${id}`;
+    return axios.put<IBackendRes<any>>(url, categoryData);
+};
+
+
+
+//EVENT
+export const getAllEventApi = (query: string) => {
+    const url = `${baseURL}/api/v1/events?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IGetEvent>>>(url);
+};
+
+
 
 //UPLOAD FILE
 export const uploadFile = (fileImg: any, folder: string) => {

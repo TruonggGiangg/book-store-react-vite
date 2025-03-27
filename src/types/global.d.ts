@@ -195,5 +195,32 @@ declare global {
         deletedBy?: UserReference;
         password?: string;
     }
+
+
+    interface ICreateCategory {
+        name: string;
+        isBook: boolean;
+        description: string;
+        image?: string;
+    }
+
+
+
+
+    interface IGetEvent {
+        _id: Types.ObjectId | string;
+        name: string;
+        description: string;
+        image?: string;
+        createdAt?: Date;
+        updatedAt?: Date;
+        isDeleted?: Date;
+        deletedAt?: Date;
+        createdBy?: UserReference;
+        updatedBy?: UserReference;
+        deletedBy?: UserReference;
+        reviews?: Review[];
+        __v?: number;
+    }
 }
 

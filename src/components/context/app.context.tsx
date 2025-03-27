@@ -1,6 +1,7 @@
 import { getAccountApi, getRoleApi } from "@/services/api";
 import { createContext, useContext, useEffect, useState } from "react";
 import { ScaleLoader } from "react-spinners";
+import LoadingPage from "../loading/loading";
 
 interface IAppContext {
     isAuthenticated: boolean;
@@ -63,11 +64,8 @@ export const AppProvider = (props: TProps) => {
                 left: '50%',
                 transform: "translate(-50%, -50%)"
             }}>
-                <ScaleLoader
-                    color={'#ff5733'}
-                    loading={isLoading}
-                    aria-label="Loading Spinner"
-                    data-testid="loader"
+                <LoadingPage
+                    isLoading={isLoading}
                 />
             </div>
     );

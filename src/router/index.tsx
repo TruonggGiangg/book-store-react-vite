@@ -1,3 +1,4 @@
+import CategoryAdminMain from "@/components/admin/category/main";
 import BookAdminMain from "@/components/admin/product/main";
 import ProtectedRoute from "@/components/auth/protected-route";
 import AppLayout from "@/components/layout/admin/app.layout";
@@ -6,6 +7,7 @@ import HomePageAdmin from "@/pages/admin/home";
 import UserPage from "@/pages/admin/user/user.admin";
 import LoginPage from "@/pages/client/auth/login";
 import RegisterPage from "@/pages/client/auth/register";
+import BookDetailPage from "@/pages/client/book/book-page";
 import HomePage from "@/pages/client/home";
 import NotAuthorizedPage from "@/pages/results/403-page";
 import NotFoundPage from "@/pages/results/404-page";
@@ -21,6 +23,10 @@ export const router = createBrowserRouter([
                 element: (
                     <HomePage />
                 ),
+            },
+            {
+                path: "book/:id", // Route động cho trang chi tiết sách
+                element: <BookDetailPage />,
             },
             {
                 path: "account",
@@ -61,6 +67,12 @@ export const router = createBrowserRouter([
                     <BookAdminMain />
                 ),
             },
+            {
+                path: "categories",
+                element: (
+                    <CategoryAdminMain />
+                )
+            }
 
         ],
     },

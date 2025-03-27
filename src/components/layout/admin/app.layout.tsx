@@ -14,7 +14,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { ConfigProvider, Layout, Menu, theme } from 'antd';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import logo_light from '@/assets/logo/light-logo.png';
 import logo_dark from '@/assets/logo/dark-logo.png';
@@ -54,7 +54,7 @@ const AppLayout: React.FC = () => {
         getItem('Dashboard', '1', <PieChartOutlined />, () => { nav('/admin') }),
         getItem('Book', '2', <WalletOutlined />, () => { nav('/admin/book') }),
         getItem('User', '3', <UserOutlined />, () => { nav('/admin/user') }),
-        getItem('Category', '4', <DatabaseOutlined />, () => { nav('/admin/user') }),
+        getItem('Category', '4', <DatabaseOutlined />, () => { nav('/admin/categories') }),
         getItem('Role', '5', <LockOutlined />, () => { nav('/admin/user') }),
         getItem('Permission', '6', <KeyOutlined />, () => { nav('/admin/user') }),
     ];
@@ -63,7 +63,7 @@ const AppLayout: React.FC = () => {
         "/admin": "1",
         "/admin/book": "2",
         "/admin/user": "3",
-        "/admin/category": "4",
+        "/admin/categories": "4",
         "/admin/role": "5",
         "/admin/permission": "6",
     };
@@ -123,7 +123,7 @@ const AppLayout: React.FC = () => {
 
             }}
         >
-            <Layout style={{ minHeight: '100vh' }}>
+            <Layout style={{ minHeight: '100vh', position: "relative" }}>
                 <Sider
                     style={
                         {
@@ -137,7 +137,7 @@ const AppLayout: React.FC = () => {
                     collapsed={collapsed}
                     onCollapse={(value) => setCollapsed(value)}
                 >
-                    <div style={{
+                    <Link to={"/"} style={{
                         display: "flex",
                         width: "100%",
                         height: "64px",
@@ -148,7 +148,7 @@ const AppLayout: React.FC = () => {
                             height: "100%",
                             objectFit: "contain"
                         }} />
-                    </div>
+                    </Link>
 
                     <Menu
                         style={{
@@ -161,14 +161,20 @@ const AppLayout: React.FC = () => {
                     />
                 </Sider>
                 <Layout>
+
                     <LayoutHeader />
-                    <Content style={{}}>
+                    <Content style={{ padding: "16px" }}>
                         <Outlet />
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>
                         Ant Design ©{new Date().getFullYear()} Created by Ant UED
                     </Footer>
+
                 </Layout>
+
+                {/* <div style={{ position: "absolute", bottom: 12, right: 12, zIndex: 999 }}>
+                        Mess
+                    </div> */}
             </Layout>
         </ConfigProvider>
     );

@@ -9,6 +9,7 @@ import {
 import { logoutApi } from "@/services/api";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import ThemeToggle from "../client/toggle-theme.layout";
 
 const LayoutHeader = () => {
 
@@ -58,6 +59,7 @@ const LayoutHeader = () => {
 
     return (
         <>
+
             <Header
 
                 style={{
@@ -71,30 +73,12 @@ const LayoutHeader = () => {
                 }}
             >
                 {/* Ô tìm kiếm */}
-                <Input
-
-                    placeholder={t("header.search")}
-                    prefix={<SearchOutlined />}
-                    style={{
-                        flex: "1",
-                        borderRadius: 8,
-                        // background: isDarkTheme ? "#141414" : "#ffffff",
-                        color: isDarkTheme ? "#f5f5f5" : "#333333",
-                        margin: "0 100px",
-
-                    }}
-                />
+                <div></div>
 
                 {/* Toggle Dark Mode & Avatar */}
                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                     {/* Toggle Dark Mode */}
-                    <Switch
-
-                        onChange={() => setIsDarkTheme(!isDarkTheme)}
-                        checkedChildren={<MoonOutlined />}
-                        unCheckedChildren={<SunOutlined />}
-
-                    />
+                    <ThemeToggle />
 
                     <Switch
                         onChange={change}

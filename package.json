@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/pro-components": "^2.8.4",
+    "@tinymce/tinymce-react": "^6.0.0",
     "antd": "^5.23.3",
     "axios": "1.7.7",
     "cookie-parser": "^1.4.7",
@@ -18,12 +19,14 @@
     "exceljs": "^4.4.0",
     "i18next": "^24.2.2",
     "js-cookie": "^3.0.5",
+    "lottie-react": "^2.4.1",
     "react": "^18.3.1",
     "react-csv": "^2.2.2",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.4.0",
     "react-router-dom": "6.29.0",
     "react-spinners": "^0.15.0",
+    "tinymce": "^7.7.1",
     "uuid": "^11.1.0",
     "vite-tsconfig-paths": "^5.1.4"
   },

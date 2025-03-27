@@ -3,8 +3,9 @@ import { useAppProvider } from "components/context/app.context";
 import { useLocation, useNavigate } from "react-router-dom";
 
 
-import { ScaleLoader } from "react-spinners";
+
 import { message } from "antd";
+import LoadingPage from "../loading/loading";
 
 interface IProps {
     children: React.ReactNode;
@@ -39,20 +40,7 @@ const ProtectedRoute: React.FC<IProps> = ({ children }) => {
             {isLoading === true
                 ?
                 <>
-                    <div style={{
-                        position: 'fixed',
-                        top: '50%',
-                        left: '50%',
-                        transform: "translate(-50%, -50%)"
-                    }}>
-                        <ScaleLoader
-                            color={'#ff5733'}
-                            loading={isLoading}
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
-                        />
-
-                    </div>
+                    <LoadingPage isLoading={true} />
                 </>
                 :
                 children

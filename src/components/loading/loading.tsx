@@ -1,12 +1,11 @@
-import React from "react"
-import { ScaleLoader } from "react-spinners"
-
+import Lottie from "lottie-react";
+import loadingAnimation from "@/assets/animation/loadingAnimation.json"
 interface IProps {
     isLoading: boolean
 }
 
 
-const Loadinge = (props: IProps) => {
+const LoadingPage = (props: IProps) => {
 
     const { isLoading } = props;
 
@@ -18,13 +17,10 @@ const Loadinge = (props: IProps) => {
                 left: '50%',
                 transform: "translate(-50%, -50%)"
             }}>
-                <ScaleLoader
-                    color={'#000000'}
-                    loading={isLoading}
-                    aria-label="Loading Spinner"
-                    data-testid="loader"
-                />
+                <Lottie animationData={loadingAnimation} loop={true} style={{ width: "20%" }} />
             </div>
         </>
     )
 }
+
+export default LoadingPage

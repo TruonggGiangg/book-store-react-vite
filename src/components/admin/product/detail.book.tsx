@@ -24,12 +24,14 @@ const BookDetail = (props: IProps) => {
 
 
     useEffect(() => {
+
         const fetchRole = async () => {
+            setIsLoading(true);
             if (!Array.isArray(dataDetailModal?.attributes?.classification)) return;
 
             try {
                 if (!Array.isArray(dataDetailModal?.attributes?.classification)) {
-                    setIsLoading(false);
+
                     return;
                 }
 
@@ -49,6 +51,7 @@ const BookDetail = (props: IProps) => {
             } catch (error) {
                 console.error("Lỗi khi lấy danh mục:", error);
             }
+            setIsLoading(false);
         }
         fetchRole()
     }, [dataDetailModal])
@@ -57,6 +60,7 @@ const BookDetail = (props: IProps) => {
         <>
             <>
                 <Drawer title="User detail"
+                    loading={isLoading}
                     open={isOpenDetailModal}
                     onClose={() => { setIsOpenDetailModal(false) }}
                     width={"64%"}
@@ -75,7 +79,12 @@ const BookDetail = (props: IProps) => {
                         <Descriptions.Item label="Giá bán">{dataDetailModal?.price}</Descriptions.Item>
                         <Descriptions.Item label="Đã bán">{dataDetailModal?.sold}</Descriptions.Item>
                         <Descriptions.Item label="Số lượng tồn">{dataDetailModal?.stock}</Descriptions.Item>
+
+
                         <Descriptions.Item label="Đánh giá">{dataDetailModal?.rating}</Descriptions.Item>
+                        <Descriptions.Item label="Mô tả" span={2}>
+                            <div style={{ padding: "" }} dangerouslySetInnerHTML={{ __html: dataDetailModal?.description as string }} />
+                        </Descriptions.Item>
                         <Descriptions.Item label="Logo">
                             {
 
