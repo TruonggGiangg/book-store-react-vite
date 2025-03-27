@@ -105,6 +105,7 @@ const AppLayout: React.FC = () => {
                     },
                     Card: {
                         colorBorder: isDarkTheme ? "#333" : "#dedede",
+
                     },
 
 
@@ -115,6 +116,14 @@ const AppLayout: React.FC = () => {
 
                     },
                     Upload: {
+
+                    },
+                    Typography: {
+                        margin: 0,
+                        titleMarginBottom: 0,
+                        titleMarginTop: 0
+                    },
+                    Tag: {
 
                     }
 

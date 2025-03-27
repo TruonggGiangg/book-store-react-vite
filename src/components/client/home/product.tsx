@@ -1,15 +1,17 @@
-import Container from "@/components/layout/client/container.layout";
-import { Card, Col, Rate, Row, Button, Skeleton, Space, Typography, Tooltip } from "antd";
+import { Card, Col, Rate, Row, Button, Space, Typography, Tooltip, Tag, InputNumber, Skeleton, Badge } from "antd";
 import { FC } from "react";
-import { FireOutlined, ImportOutlined, UserOutlined, TagOutlined, ShoppingCartOutlined, CalendarOutlined, HeartOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, TagOutlined, HeartOutlined, UserOutlined, CalendarOutlined, FireOutlined, ImportOutlined } from "@ant-design/icons";
+import Container from "@/components/layout/client/container.layout";
 
 type IProps = {
-    dataBook: Record<string, IGetBook[]>
-    loading: boolean
+    dataBook: Record<string, IGetBook[]>;
+    loading: boolean;
+    dataCategory: IGetCategories[]; // Dữ liệu danh mục
 };
 
-const Product: FC<IProps> = ({ dataBook, loading }) => {
+const Product: FC<IProps> = ({ dataBook, loading, dataCategory }) => {
     const books: IGetBook[] = Object.values(dataBook).flat();
+
 
     const topSoldBooks = [...books]
         .sort((a, b) => (b.sold || 0) - (a.sold || 0))
@@ -18,73 +20,101 @@ const Product: FC<IProps> = ({ dataBook, loading }) => {
     const newBooks = [...books]
         .sort((a, b) => new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime())
         .slice(0, 20);
+    const renderTag = (id: string) => {
+        const category = dataCategory.find((x) => x._id === id);
+        return category ? <Tag color="volcano" key={category._id}>{category.name}</Tag> : null;
+    };
 
     const renderBookCard = (book: IGetBook) => (
-        <Col key={book._id} xs={12} sm={12} md={8} lg={6} xl={4}>
-            <Card
-                hoverable
+        <Col key={book._id} xs={24} sm={12} md={8} lg={6} xl={4}>
+            <Badge.Ribbon text="HOT" color="red"
                 style={{
-                    transition: "transform 0.3s ease-in-out",
-                    padding: "0px",
+                    // display: book.sold && book.sold >= 0 ? "block" : "none" 
 
-                }}
-
-                cover={
-                    <div style={{ width: "100%", aspectRatio: "1/1", overflow: "hidden" }}>
-                        <img
-                            alt={book.title}
-                            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`}
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                                transition: "transform 0.3s ease-in-out",
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-                            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                        />
-                    </div>
-                }
-            >
-                <Card.Meta
-                    title={
-                        <Tooltip title={book.title}>
-                            <Typography.Text strong ellipsis>{book.title}</Typography.Text>
-                        </Tooltip>
-                    }
-                    description={
-                        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                            <Tooltip title={book.author.join(", ")}>
-                                <Space><UserOutlined style={{ color: "#FF5733" }} /><Typography.Text ellipsis>{book.author.join(", ")}</Typography.Text></Space>
-                            </Tooltip>
-
-                            <Space>
-                                <ShoppingCartOutlined style={{ color: "#FF5733" }} />
-                                <Typography.Text>
-                                    Đã bán: {book.sold && typeof book.sold === "number" ? book.sold : "0"}
-                                </Typography.Text>
-                            </Space>
-
-                            <Space>
-                                <CalendarOutlined style={{ color: "#FF5733" }} />
-                                <Typography.Text>{new Date(book.createdAt || "").toLocaleDateString()}</Typography.Text>
-                            </Space>
-
-                            <Space>
-                                <TagOutlined style={{ color: "#FF5733" }} />
-                                <Typography.Text strong style={{ color: "#FF5733", fontSize: "16px" }}>
-                                    {book.price.toLocaleString()}₫
-                                </Typography.Text>
-                            </Space>
-
-                            <Space>
-                                <HeartOutlined style={{ color: "#FF5733" }} />
-                                <Rate disabled value={book.rating || 0} allowHalf />
-                            </Space>
+                }}>
+                <Card
+                    hoverable
+                    style={{
+                        borderRadius: "12px",
+                        padding: "10px",
+                        overflow: "hidden",
+                        transition: "transform 0.3s ease-in-out",
+                    }}
+                    cover={
+                        <div style={{ width: "100%", aspectRatio: "1/1", overflow: "hidden", borderRadius: "12px" }}>
+                            <img
+                                alt={book.title}
+                                src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    transition: "transform 0.3s ease-in-out",
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                            />
                         </div>
                     }
-                />
-            </Card>
+                >
+                    <Card.Meta
+                        title={
+                            <Tooltip title={book.title}>
+                                <Typography.Title level={5} style={{ margin: 0 }}>
+                                    {book.title}
+                                </Typography.Title>
+                            </Tooltip>
+                        }
+                        description={
+                            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                <div>
+                                    {book.attributes?.classification?.map((category) => renderTag(category))}
+                                </div>
+
+                                <Tooltip title={book.author.join(", ")}>
+                                    <Space>
+                                        <UserOutlined style={{ color: "#FF5733" }} />
+                                        <Typography.Paragraph style={{ margin: 0 }} ellipsis={{ rows: 1 }}>
+                                            {book.author.join(", ")}
+                                        </Typography.Paragraph>
+                                    </Space>
+                                </Tooltip>
+
+                                <Space>
+                                    <ShoppingCartOutlined style={{ color: "#FF5733" }} />
+                                    <Typography.Paragraph style={{ margin: 0 }} ellipsis={{ rows: 1 }}>
+                                        Đã bán: {book.sold && typeof book.sold === "number" ? book.sold : "0"}
+                                    </Typography.Paragraph>
+                                    <CalendarOutlined style={{ color: "#FF5733" }} />
+                                    <Typography.Paragraph style={{ margin: 0 }} ellipsis={{ rows: 1 }}>
+                                        {new Date(book.createdAt || "").toLocaleDateString()}
+                                    </Typography.Paragraph>
+                                </Space>
+
+                                <Space>
+                                    <TagOutlined style={{ color: "#FF5733" }} />
+                                    <Typography.Paragraph strong style={{ color: "#FF5733", fontSize: "16px", margin: 0 }} ellipsis={{ rows: 1 }}>
+                                        {book.price.toLocaleString()} VNĐ
+                                    </Typography.Paragraph>
+                                </Space>
+
+                                <Space>
+                                    <HeartOutlined style={{ color: "#FF5733" }} />
+                                    <Rate disabled value={book.rating || 0} allowHalf />
+                                </Space>
+
+                                {/* Nút thêm vào giỏ hàng */}
+                                <Space align="center">
+                                    <InputNumber min={1} defaultValue={1} size="small" style={{ padding: "6px" }} />
+                                    <Button type="primary" icon={<ShoppingCartOutlined />} style={{ background: "#FF5733", borderColor: "#FF5733" }}>
+                                        Add to cart
+                                    </Button>
+                                </Space>
+                            </div>
+                        }
+                    />
+                </Card>
+            </Badge.Ribbon>
         </Col>
     );
 
@@ -114,6 +144,7 @@ const Product: FC<IProps> = ({ dataBook, loading }) => {
                 </Card>
             </Space>
         </Container>
+
     );
 };
 

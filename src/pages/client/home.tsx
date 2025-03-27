@@ -75,6 +75,7 @@ const HomePage = () => {
             <Product
                 loading={loading}
                 dataBook={booksByCategory}
+                dataCategory={dataCategory}
             >
 
             </Product>
