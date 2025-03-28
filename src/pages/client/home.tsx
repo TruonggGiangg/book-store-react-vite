@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAppProvider } from "@/components/context/app.context";
-import ScaleLoader from "react-spinners/ScaleLoader";
-import homeImg from "@/assets/img/1623843888132.png";
 import HomeSlider from "@/components/client/home/slider";
 import { getAllBookApi, getAllCategoryApi, getAllEventApi } from "@/services/api";
-import Container from "@/components/layout/client/container.layout";
 import EventHome from "@/components/client/home/envent";
 import Product from "@/components/client/home/product";
 
