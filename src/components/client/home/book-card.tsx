@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { Card, Col, Badge, Tooltip, Typography, Space, Rate, InputNumber, Button, Tag } from "antd";
 import { ShoppingCartOutlined, TagOutlined, HeartOutlined, UserOutlined, CalendarOutlined } from "@ant-design/icons";
 import { useAppProvider } from "@/components/context/app.context";
@@ -18,10 +18,10 @@ const BookCard: FC<BookCardProps> = ({ book, gridSizes, listCategories, isBook =
     const { isDarkTheme } = useAppProvider();
 
     // Tạo Tag từ ID
-    const renderTag = (id: string) => {
+    const renderTag = useCallback((id: string) => {
         const category = listCategories.find((x) => x._id === id);
         return category ? <Tag color="volcano" key={category._id}>{category.name}</Tag> : null;
-    };
+    }, [])
 
     const CardContent = (
         <Card

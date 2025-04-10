@@ -49,7 +49,7 @@ const AddBook = (props: IProps) => {
     useEffect(() => {
         const fetchRole = async () => {
             setIsLoading(true)
-            const res = await getAllCategoryApi('');
+            const res = await getAllCategoryApi('current=1&pageSize=100');
             if (res && res.data) {
                 setArrCategory(res.data.result)
             }
@@ -58,6 +58,8 @@ const AddBook = (props: IProps) => {
         fetchRole();
     }, [])
 
+
+    console.log(arrCategory);
 
 
 
@@ -435,6 +437,10 @@ const AddBook = (props: IProps) => {
                                             }
 
                                         })}
+
+
+
+
                                     </Select>
                                 </Form.Item>
                             </>
