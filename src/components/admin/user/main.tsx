@@ -226,6 +226,14 @@ const UserAdminMain = () => {
                 dateFormatter="string"
                 actionRef={actionRef}
                 cardBordered
+
+                options={{
+                    setting: true,
+                    fullScreen: true,
+                    reload: true,
+                    density: true,
+                }}
+
                 request={async (params, sort, filter) => {
                     console.log(params, sort, filter);
 
