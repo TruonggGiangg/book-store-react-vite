@@ -7,7 +7,8 @@ import HomePageAdmin from "@/pages/admin/home";
 import UserPage from "@/pages/admin/user/user.admin";
 import LoginPage from "@/pages/client/auth/login";
 import RegisterPage from "@/pages/client/auth/register";
-import BookDetailPage from "@/pages/client/book/book-page";
+import BookDetailPage from "@/pages/client/book/book-detail";
+import BookPage from "@/pages/client/book/books-page";
 import HomePage from "@/pages/client/home";
 import NotAuthorizedPage from "@/pages/results/403-page";
 import NotFoundPage from "@/pages/results/404-page";
@@ -23,6 +24,12 @@ export const router = createBrowserRouter([
                 element: (
                     <HomePage />
                 ),
+
+            },
+
+            {
+                path: "books", // Route động cho trang chi tiết sách
+                element: <BookPage />,
             },
             {
                 path: "book/:id", // Route động cho trang chi tiết sách

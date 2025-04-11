@@ -3,3 +3,11 @@
     margin: 0;
     box-sizing: border-box;
 }
+
+.ant-skeleton.ant-skeleton-element.ant-skeleton-active {
+    width: 100% !important;
+}
+
+.ant-card-body {
+    width: 100% !important;
+}

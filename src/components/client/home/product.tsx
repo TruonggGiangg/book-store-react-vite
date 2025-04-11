@@ -1,120 +1,188 @@
+import { Card, Col, Row, Button, Space, Typography, Tag, Tabs } from "antd";
+import { FC, lazy, memo, useEffect, useState } from "react";
+import { FireOutlined, ImportOutlined, ToolOutlined } from "@ant-design/icons";
 import Container from "@/components/layout/client/container.layout";
-import { Card, Col, Rate, Row, Button, Skeleton, Space, Typography, Tooltip } from "antd";
-import { FC } from "react";
-import { FireOutlined, ImportOutlined, UserOutlined, TagOutlined, ShoppingCartOutlined, CalendarOutlined, HeartOutlined } from "@ant-design/icons";
+import { useAppProvider } from "@/components/context/app.context";
+
+import { ProSkeleton } from "@ant-design/pro-components";
+
+const BookCard = lazy(() => import("./book-card"));
+const ListCardSkeleton = lazy(() => import("./skeleton"));
+
 
 type IProps = {
-    dataBook: Record<string, IGetBook[]>
-    loading: boolean
+    loading: boolean;
+    dataBook: Record<string, IGetBook[]>;
+    dataCategory: IGetCategories[];
+    dataBookHot: IGetBook[];
+    dataBookNew: IGetBook[];
+    dataToolsHot: IGetBook[];
+    loadingHotBook: boolean;
+    loadingNewBook: boolean;
+    loadingHotTool: boolean;
 };
 
-const Product: FC<IProps> = ({ dataBook, loading }) => {
-    const books: IGetBook[] = Object.values(dataBook).flat();
+const Product: FC<IProps> = memo(({ dataBook, loading, dataCategory, dataBookHot, dataBookNew, dataToolsHot, loadingHotBook, loadingHotTool, loadingNewBook }) => {
 
-    const topSoldBooks = [...books]
-        .sort((a, b) => (b.sold || 0) - (a.sold || 0))
-        .slice(0, 10);
-
-    const newBooks = [...books]
-        .sort((a, b) => new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime())
-        .slice(0, 20);
-
-    const renderBookCard = (book: IGetBook) => (
-        <Col key={book._id} xs={12} sm={12} md={8} lg={6} xl={4}>
-            <Card
-                hoverable
-                style={{
-                    transition: "transform 0.3s ease-in-out",
-                    padding: "0px",
-
-                }}
-
-                cover={
-                    <div style={{ width: "100%", aspectRatio: "1/1", overflow: "hidden" }}>
-                        <img
-                            alt={book.title}
-                            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`}
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                                transition: "transform 0.3s ease-in-out",
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-                            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                        />
-                    </div>
-                }
-            >
-                <Card.Meta
-                    title={
-                        <Tooltip title={book.title}>
-                            <Typography.Text strong ellipsis>{book.title}</Typography.Text>
-                        </Tooltip>
-                    }
-                    description={
-                        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                            <Tooltip title={book.author.join(", ")}>
-                                <Space><UserOutlined style={{ color: "#FF5733" }} /><Typography.Text ellipsis>{book.author.join(", ")}</Typography.Text></Space>
-                            </Tooltip>
-
-                            <Space>
-                                <ShoppingCartOutlined style={{ color: "#FF5733" }} />
-                                <Typography.Text>
-                                    Đã bán: {book.sold && typeof book.sold === "number" ? book.sold : "0"}
-                                </Typography.Text>
-                            </Space>
-
-                            <Space>
-                                <CalendarOutlined style={{ color: "#FF5733" }} />
-                                <Typography.Text>{new Date(book.createdAt || "").toLocaleDateString()}</Typography.Text>
-                            </Space>
-
-                            <Space>
-                                <TagOutlined style={{ color: "#FF5733" }} />
-                                <Typography.Text strong style={{ color: "#FF5733", fontSize: "16px" }}>
-                                    {book.price.toLocaleString()}₫
-                                </Typography.Text>
-                            </Space>
-
-                            <Space>
-                                <HeartOutlined style={{ color: "#FF5733" }} />
-                                <Rate disabled value={book.rating || 0} allowHalf />
-                            </Space>
-                        </div>
-                    }
-                />
-            </Card>
-        </Col>
-    );
+    const { isDarkTheme } = useAppProvider();
 
     return (
-        <Container>
-            <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
-                {/* Sách Bán Chạy */}
-                <Card size="default">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                        <h2 style={{ margin: 0, color: "#FF5733" }}>
-                            <FireOutlined /> Sách Bán Chạy Nhất
-                        </h2>
-                        <Button type="link" style={{ color: "#FF5733" }}>Xem tất cả</Button>
-                    </div>
-                    {loading ? <Skeleton active /> : <Row gutter={[16, 16]}>{topSoldBooks.map(renderBookCard)}</Row>}
-                </Card>
+        <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+            <Card size="default" style={{
 
-                {/* Sách Mới Nhất */}
-                <Card size="default">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                        <h2 style={{ margin: 0, color: "#FF5733" }}>
-                            <ImportOutlined /> Sách Mới Nhất
-                        </h2>
-                        <Button type="link" style={{ color: "#FF5733" }}>Xem tất cả</Button>
-                    </div>
-                    {loading ? <Skeleton active /> : <Row gutter={[16, 16]}>{newBooks.map(renderBookCard)}</Row>}
-                </Card>
-            </Space>
-        </Container>
+                width: "100%",
+                boxShadow: isDarkTheme
+                    ? "0px 0px 12px rgba(255, 255, 255, 0.07)" // Hiệu ứng sáng hơn trong dark mode
+                    : "0px 0px 12px rgba(0, 0, 0, 0.1)", // Hiệu ứng mềm hơn trong light mode
+            }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                    <h2 style={{ margin: 0, color: "#FF5733" }}>
+                        <FireOutlined /> Sách Bán Chạy Nhất
+                    </h2>
+                    <Button type="link" style={{ color: "#FF5733" }}>Xem tất cả</Button>
+                </div>
+                {loadingHotBook
+                    ?
+                    <ListCardSkeleton count={12} />
+                    :
+                    <Row gutter={[16, 16]}>{dataBookHot.map((x) => {
+                        return <BookCard
+                            key={x._id}
+                            book={x}
+                            gridSizes={{ xxl: 4, xl: 6, lg: 6, md: 8, sm: 12, xs: 24 }}
+                            listCategories={dataCategory}
+                            isBook
+                            showRibbon
+                        />
+                    })}</Row>
+                }
+            </Card>
+
+            <Card size="default" style={{
+
+                width: "100%",
+                boxShadow: isDarkTheme
+                    ? "0px 0px 12px rgba(255, 255, 255, 0.07)" // Hiệu ứng sáng hơn trong dark mode
+                    : "0px 0px 12px rgba(0, 0, 0, 0.1)", // Hiệu ứng mềm hơn trong light mode
+            }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                    <h2 style={{ margin: 0, color: "#FF5733" }}>
+                        <ImportOutlined /> Sách Mới Nhất
+                    </h2>
+                    <Button type="link" style={{ color: "#FF5733" }}>Xem tất cả</Button>
+                </div>
+                {loadingNewBook ? <ListCardSkeleton count={12} /> : <Row gutter={[16, 16]}>{dataBookNew.map((x) => {
+                    return <BookCard
+                        key={x._id}
+                        book={x}
+                        gridSizes={{ xxl: 4, xl: 6, lg: 6, md: 8, sm: 12, xs: 24 }}
+                        listCategories={dataCategory}
+                        isBook
+                        showRibbon
+                    />
+                })}</Row>}
+            </Card>
+
+            <Card size="default" style={{
+
+                width: "100%",
+                boxShadow: isDarkTheme
+                    ? "0px 0px 12px rgba(255, 255, 255, 0.07)" // Hiệu ứng sáng hơn trong dark mode
+                    : "0px 0px 12px rgba(0, 0, 0, 0.1)", // Hiệu ứng mềm hơn trong light mode
+            }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                    <h2 style={{ margin: 0, color: "#FF5733" }}>
+                        <ToolOutlined /> Dụng cụ bán chạy nhất
+                    </h2>
+                    <Button type="link" style={{ color: "#FF5733" }}>Xem tất cả</Button>
+                </div>
+                {loadingHotTool ? <ListCardSkeleton count={6} /> : <Row gutter={[16, 16]}>{dataToolsHot.map((x) => {
+                    return <BookCard
+                        key={x._id}
+                        book={x}
+                        gridSizes={{ xxl: 4, xl: 6, lg: 6, md: 8, sm: 12, xs: 24 }}
+                        listCategories={dataCategory}
+                        isBook
+                        showRibbon
+                    />
+                })}</Row>}
+            </Card>
+            <Card
+                size="default"
+                style={{
+                    minHeight: "320px", // Đảm bảo không bị nhảy layout
+                    width: "100%",
+                    boxShadow: isDarkTheme
+                        ? "0px 0px 12px rgba(255, 255, 255, 0.07)"
+                        : "0px 0px 12px rgba(0, 0, 0, 0.1)",
+                }}
+            >
+                <Typography.Title level={3} style={{ color: "#FF5733" }}>
+                    Bảng xếp hạng bán chạy mọi thời đại
+                </Typography.Title>
+
+                <Tabs
+                    defaultActiveKey="0"
+                    tabPosition="top"
+                    size="middle"
+                    style={{ marginTop: "16px" }}
+                    items={dataCategory.map((category, index) => ({
+                        key: String(index),
+                        label: category.name,
+                        children: loading ? (
+                            <ProSkeleton type="list" list={3} active />
+                        ) : (
+                            <Row gutter={[24, 24]} style={{ padding: "16px" }}>
+                                {/* Bên trái - Mô tả thể loại (35%) */}
+                                <Col md={24} lg={12} xl={8} >
+                                    <div
+                                        style={{
+                                            padding: "16px",
+                                            background: isDarkTheme ? "#1E1E1E" : "#FAFAFA",
+                                            color: isDarkTheme ? "#FFF" : "#333",
+                                            borderRadius: "8px",
+                                            overflow: "hidden",
+                                            minHeight: "150px",
+                                        }}
+                                    >
+                                        <Typography.Title level={4} style={{ color: "#FF5733", marginBottom: "8px" }}>
+                                            {category.name}
+                                        </Typography.Title>
+                                        <div
+                                            style={{
+                                                textAlign: "justify",
+                                                fontSize: "14px",
+                                                lineHeight: "1.6",
+                                                wordBreak: "break-word",
+                                            }}
+                                            dangerouslySetInnerHTML={{ __html: category.description || "Chưa có mô tả cho thể loại này." }}
+                                        />
+                                    </div>
+                                </Col>
+
+
+                                <Col xs={24} lg={12} xl={16}>
+                                    <Row gutter={[16, 16]}>
+                                        {(dataBook[category._id] || []).slice(0, 10).map((x) => {
+                                            return <BookCard
+                                                key={x._id}
+                                                book={x}
+                                                gridSizes={{ xxl: 6, xl: 8, lg: 12, md: 12, sm: 12, xs: 24 }}
+                                                listCategories={dataCategory}
+                                                isBook
+                                                showRibbon
+                                            />
+                                        })}
+                                    </Row>
+                                </Col>
+                            </Row>
+                        ),
+                    }))}
+                />
+            </Card>
+        </Space>
+
     );
-};
+});
 
 export default Product;
