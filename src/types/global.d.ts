@@ -222,5 +222,11 @@ declare global {
         reviews?: Review[];
         __v?: number;
     }
+    interface ICreateEvent {
+        name: string;
+        description: string;
+        image?: string;
+
+    }
 }
 
