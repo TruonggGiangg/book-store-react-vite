@@ -11,6 +11,7 @@ import {
     TeamOutlined,
     UserOutlined,
     WalletOutlined,
+    TableOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { ConfigProvider, Layout, Menu, theme } from 'antd';
@@ -57,6 +58,7 @@ const AppLayout: React.FC = () => {
         getItem('Category', '4', <DatabaseOutlined />, () => { nav('/admin/categories') }),
         getItem('Role', '5', <LockOutlined />, () => { nav('/admin/user') }),
         getItem('Permission', '6', <KeyOutlined />, () => { nav('/admin/user') }),
+        getItem('Event', '7', <TableOutlined />, () => { nav('/admin/event') }),
     ];
 
     const menuKeyMap: Record<string, string> = {
@@ -66,6 +68,7 @@ const AppLayout: React.FC = () => {
         "/admin/categories": "4",
         "/admin/role": "5",
         "/admin/permission": "6",
+        "/admin/event": "7",
     };
 
     const selectedKey = menuKeyMap[location.pathname] || "1";

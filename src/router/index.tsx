@@ -1,5 +1,6 @@
 import CategoryAdminMain from "@/components/admin/category/main";
 import BookAdminMain from "@/components/admin/product/main";
+import EventAdminMain from "@/components/admin/event/main";
 import ProtectedRoute from "@/components/auth/protected-route";
 import AppLayout from "@/components/layout/admin/app.layout";
 import AppLayoutClient from "@/components/layout/client/app.layout";
@@ -78,6 +79,12 @@ export const router = createBrowserRouter([
                 path: "categories",
                 element: (
                     <CategoryAdminMain />
+                )
+            },
+            {
+                path: "event",
+                element: (
+                    <EventAdminMain />
                 )
             }
 

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/pro-components": "^2.8.4",
+    "@nestjs/serve-static": "^5.0.3",
     "@tinymce/tinymce-react": "^6.0.0",
     "antd": "^5.23.3",
     "axios": "1.7.7",
@@ -20,6 +21,7 @@
     "i18next": "^24.2.2",
     "js-cookie": "^3.0.5",
     "lottie-react": "^2.4.1",
+    "quanlihieusach-reactvite": "file:",
     "react": "^18.3.1",
     "react-csv": "^2.2.2",
     "react-dom": "^18.3.1",
