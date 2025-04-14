@@ -33,6 +33,10 @@ export const router = createBrowserRouter([
                 element: <BookPage />,
             },
             {
+                path: "books/:id", // Route động cho trang chi tiết sách
+                element: <BookPage />,
+            },
+            {
                 path: "book/:id", // Route động cho trang chi tiết sách
                 element: <BookDetailPage />,
             },

@@ -9,6 +9,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import loadingAnimation from "@/assets/animation/loadingAnimation.json";
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useAppProvider } from '@/components/context/app.context';
+import { useParams } from 'react-router-dom';
 
 interface Filters {
     categories: string[];
@@ -34,6 +35,7 @@ const BookPage: React.FC = () => {
 
 
     const { isDarkTheme } = useAppProvider();
+    const { id } = useParams();
 
     const [dataBook, setDataBook] = useState<IGetBook[]>([]);
     const [listCategories, setDataCategory] = useState<IGetCategories[]>([]);
@@ -123,22 +125,41 @@ const BookPage: React.FC = () => {
             try {
                 setLoadingBook(true);
 
+                // Fetch categories
                 const categoryRes = await getAllCategoryApi('isBook=true');
                 if (categoryRes.data) {
                     const categories = categoryRes.data.result;
                     setDataCategory(categories);
-                    // Mặc định chọn tất cả thể loại
+
+                    // Extract category ID from URL
+                    const url = window.location.pathname; // e.g., /books/67c019e6d2f912a645bb770c
+                    const categoryId = url.split('/books/')[1]; // Get the ID after /books/
+
+                    let initialCategories: string[] = [];
+                    if (categoryId && categories.some(cat => cat._id === categoryId)) {
+                        // If a valid category ID is present, select only that category
+                        initialCategories = [categoryId];
+                        setAllSelected(false); // Uncheck "All" since a specific category is selected
+                    } else {
+                        // If no ID or invalid ID, select all categories
+                        initialCategories = categories.map((cat) => cat._id);
+                        setAllSelected(true); // Check "All"
+                    }
+
+                    // Set filters and appliedFilters
                     setFilters((prev) => ({
                         ...prev,
-                        categories: categories.map((cat) => cat._id),
+                        categories: initialCategories,
                     }));
                     setAppliedFilters((prev) => ({
                         ...prev,
-                        categories: categories.map((cat) => cat._id),
+                        categories: initialCategories,
                     }));
+
+                    // Fetch books with the initial filters
                     await fetchBooks(1, {
                         ...appliedFilters,
-                        categories: categories.map((cat) => cat._id),
+                        categories: initialCategories,
                     }, true);
                 }
             } catch (error) {
