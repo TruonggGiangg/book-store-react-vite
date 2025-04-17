@@ -1,5 +1,5 @@
 import { FC, useCallback } from "react";
-import { useNavigate } from "react-router-dom"; // THÊM dòng này
+import { useNavigate } from "react-router-dom";
 import {
     Card, Col, Badge, Tooltip, Typography, Space,
     Rate, InputNumber, Button, Tag
@@ -31,7 +31,15 @@ const BookCard: FC<BookCardProps> = ({
 
     const renderTag = useCallback((id: string) => {
         const category = listCategories.find((x) => x._id === id);
-        return category ? <Tag color="volcano" key={category._id}>{category.name}</Tag> : null;
+        return category ? (
+            <Tag
+                color="volcano"
+                key={category._id}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {category.name}
+            </Tag>
+        ) : null;
     }, [listCategories]);
 
     const handleCardClick = () => {
@@ -68,12 +76,25 @@ const BookCard: FC<BookCardProps> = ({
                 <Card.Meta
                     title={
                         <Tooltip title={book.title}>
-                            <Typography.Title level={5} style={{ margin: 0 }}>{book.title}</Typography.Title>
+                            <Typography.Title
+                                level={5}
+                                style={{ margin: 0 }}
+
+                            >
+                                {book.title}
+                            </Typography.Title>
                         </Tooltip>
                     }
                     description={
                         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                            {isBook && <TagScroller tags={book.attributes?.classification || []} renderTag={renderTag} />}
+                            {isBook && (
+                                <div onClick={(e) => e.stopPropagation()}>
+                                    <TagScroller
+                                        tags={book.attributes?.classification || []}
+                                        renderTag={renderTag}
+                                    />
+                                </div>
+                            )}
 
                             <Tooltip title={book.author.join(", ")}>
                                 <Space>
@@ -107,21 +128,20 @@ const BookCard: FC<BookCardProps> = ({
                                 <Rate disabled value={book.rating || 0} allowHalf />
                             </Space>
 
-                            <Space align="center" style={{ display: "flex" }}>
+                            <Space align="center" style={{ display: "flex" }} onClick={(e) => e.stopPropagation()}>
                                 <InputNumber
                                     min={1}
                                     defaultValue={1}
                                     size="small"
                                     style={{ padding: "6px", width: "100%" }}
-                                    onClick={(e) => e.stopPropagation()} // NGĂN CLICK
                                 />
                                 <Button
                                     type="primary"
                                     icon={<ShoppingCartOutlined />}
                                     style={{ background: "#FF5733", borderColor: "#FF5733", flex: 2 }}
                                     onClick={(e) => {
-                                        e.stopPropagation(); // NGĂN CLICK
-                                        // Thêm vào giỏ hàng tại đây nếu cần
+                                        e.stopPropagation();
+                                        // Xử lý thêm vào giỏ hàng
                                     }}
                                 >
                                     Add to cart

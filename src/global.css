@@ -11,3 +11,13 @@
 .ant-card-body {
     width: 100% !important;
 }
+
+.custom-image img {
+
+    object-fit: cover !important;
+}
+
+.ant-image {
+    height: 100% !important;
+
+}

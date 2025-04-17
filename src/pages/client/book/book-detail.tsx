@@ -20,7 +20,7 @@ import {
 } from "antd";
 import Container from "@/components/layout/client/container.layout";
 // import { BookCard } from "@/components/client/home/book-card";
-import { CaretRightOutlined, CaretLeftOutlined } from "@ant-design/icons";
+import { CaretRightOutlined, CaretLeftOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import BookCard from "@/components/client/home/book-card";
 
@@ -97,6 +97,60 @@ const BookDetailPage = () => {
     // Grid sizes for BookCard
     const gridSizes = { xxl: 4, xl: 6, lg: 6, md: 8, sm: 12, xs: 24 };
 
+
+    const arrowStyle = {
+
+    };
+
+    const prevArrow = (
+        <div
+            style={{
+                position: "absolute",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "48px",
+                height: "48px",
+                borderRadius: "50%",
+                background: "rgba(0,0,0,0.4)",
+                color: "#fff",
+                fontSize: "20px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+                zIndex: 1, left: "12px"
+            }}
+            onClick={() => carouselRef.current?.prev()}
+        >
+            <LeftOutlined />
+        </div>
+    );
+
+    const nextArrow = (
+        <div
+            style={{
+
+                position: "absolute",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "48px",
+                height: "48px",
+                borderRadius: "50%",
+                background: "rgba(0,0,0,0.4)",
+                color: "#fff",
+                fontSize: "20px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+                zIndex: 1, right: "12px"
+            }}
+            onClick={() => carouselRef.current?.next()}
+        >
+            <RightOutlined />
+        </div>
+    );
+
     return (
         <div style={{ marginTop: "100px", position: 'relative' }}>
             <Container>
@@ -125,37 +179,56 @@ const BookDetailPage = () => {
                                     {/* Left Column: Images */}
                                     <Col xs={24} sm={24} md={8}>
                                         <div style={{ position: "sticky", top: "100px" }}>
+                                            {prevArrow}
+                                            {nextArrow}
                                             <Carousel
-                                                arrows
-                                                prevArrow={<CaretLeftOutlined />}
-                                                nextArrow={<CaretRightOutlined />}
-                                                style={{ borderRadius: "8px", overflow: "hidden", marginBottom: "16px" }}
+                                                dots={false}
+
+                                                centerMode={true}
+                                                arrows={false}
+                                                effect="scrollx"
+                                                style={{ borderRadius: 8, overflow: "hidden", height: "500px", border: "1px solid #ddd", marginBottom: "16px" }}
                                                 ref={carouselRef}
                                                 afterChange={(current) => setCurrentSlide(current)}
                                             >
                                                 {allImages.map((img, index) => (
-                                                    <div
-                                                        key={index}
-                                                        style={{
-                                                            display: "flex",
-                                                            justifyContent: "center",
-                                                            alignItems: "center",
-                                                            height: "300px",
-                                                        }}
-                                                    >
-                                                        <Image
-                                                            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${img}`}
-                                                            alt={`${book?.title} image ${index + 1}`}
+                                                    <div key={index} style={{ textAlign: "center" }}>
+                                                        <div
                                                             style={{
+
+                                                                width: "100%",
                                                                 height: "100%",
-                                                                objectFit: "cover",
-                                                                borderRadius: "8px",
+                                                                overflow: "hidden", // Đảm bảo ảnh không bị tràn ra ngoài
+                                                                display: "flex",
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+
                                                             }}
-                                                            preview
-                                                        />
+                                                        >
+                                                            <div style={{ height: "500px", overflow: "hidden", position: "relative", backgroundColor: "#f0f0f0", borderRadius: "8px", margin: "0 12px" }}>
+                                                                <Image
+                                                                    src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${img}`}
+                                                                    alt={`Image ${index + 1}`}
+                                                                    preview
+                                                                    style={{
+                                                                        height: "100%",
+                                                                        width: "100%",
+                                                                        transition: "transform 0.5s ease-in-out",
+                                                                        objectFit: "cover",
+
+                                                                    }}
+                                                                    className="custom-image"
+                                                                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.025)")}
+                                                                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                                                                />
+                                                            </div>
+
+                                                        </div>
                                                     </div>
                                                 ))}
+
                                             </Carousel>
+
                                             {/* Thumbnail Images */}
                                             <Row gutter={[8, 8]} justify="center">
                                                 {allImages.map((img, index) => (
@@ -281,13 +354,45 @@ const BookDetailPage = () => {
                                                 <Text>- Thông tin liên hệ: Liên hệ nhà xuất bản qua email hoặc hotline.</Text>
                                             </Space>
                                         </Card>
+                                        <Card
+                                            title={<Title level={4}>Đánh giá từ người đọc</Title>}
+                                            style={{ borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                                        >
+                                            {book.reviews && book.reviews.length > 0 ? (
+                                                <List
+                                                    itemLayout="vertical"
+                                                    dataSource={book.reviews}
+                                                    renderItem={(review) => (
+                                                        <List.Item>
+                                                            <List.Item.Meta
+                                                                avatar={<Avatar>{review.userId.slice(0, 1).toUpperCase()}</Avatar>}
+                                                                title={
+                                                                    <Space>
+                                                                        <Text strong>{review.userName}</Text>
+                                                                        <Rate allowHalf disabled value={review.rating} />
+                                                                    </Space>
+                                                                }
+                                                                description={
+                                                                    <>
+                                                                        <Paragraph>{review.comment}</Paragraph>
+                                                                        <Text type="secondary">{dayjs(review.createdAt).format("DD/MM/YYYY HH:mm")}</Text>
+                                                                    </>
+                                                                }
+                                                            />
+                                                        </List.Item>
+                                                    )}
+                                                />
+                                            ) : (
+                                                <Text>Chưa có đánh giá nào.</Text>
+                                            )}
+                                        </Card>
                                     </Col>
                                 </Row>
                             </Col>
 
                             {/* Right Column: Price, Quantity, Actions */}
                             <Col xs={24} sm={24} md={6}>
-                                <div style={{ position: "sticky", top: "100px" }}>
+                                <div style={{ position: "sticky", top: "100px", marginBottom: "24px" }}>
                                     <Card style={{ borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                                         <Text strong style={{ fontSize: "20px", color: "#FF5733" }}>
                                             {book.price.toLocaleString()} VND
@@ -356,69 +461,26 @@ const BookDetailPage = () => {
                                     {isLoadingSuggestions ? (
                                         <Skeleton active paragraph={{ rows: 4 }} />
                                     ) : suggestedBooks.length > 0 ? (
-                                        <Carousel
-                                            arrows
-                                            prevArrow={<CaretLeftOutlined />}
-                                            nextArrow={<CaretRightOutlined />}
-                                            slidesToShow={3}
-                                            slidesToScroll={3}
-                                            responsive={[
-                                                { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-                                                { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
-                                            ]}
-                                        >
-                                            {suggestedBooks.map((suggestedBook) => (
-                                                <div key={suggestedBook._id} style={{ padding: "0 8px" }}>
-                                                    <BookCard
-                                                        book={suggestedBook}
-                                                        gridSizes={gridSizes}
+                                        < >
+                                            <Row gutter={[16, 16]}>{suggestedBooks
+                                                .map((x) => {
+                                                    return <BookCard
+                                                        key={x._id}
+                                                        book={x}
+                                                        gridSizes={{ xxl: 4, xl: 6, lg: 6, md: 8, sm: 12, xs: 24 }}
                                                         listCategories={dataCategory}
-                                                        isBook={true}
-                                                        showRibbon={false}
-                                                        ribbonText="HOT"
-                                                        ribbonColor="red"
+                                                        isBook
+                                                        showRibbon
                                                     />
-                                                </div>
-                                            ))}
-                                        </Carousel>
+                                                })}</Row>
+                                        </>
                                     ) : (
                                         <Text>Không có sách gợi ý.</Text>
                                     )}
                                 </Card>
 
                                 {/* Reviews */}
-                                <Card
-                                    title={<Title level={4}>Đánh giá từ người đọc</Title>}
-                                    style={{ borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                                >
-                                    {book.reviews && book.reviews.length > 0 ? (
-                                        <List
-                                            itemLayout="vertical"
-                                            dataSource={book.reviews}
-                                            renderItem={(review) => (
-                                                <List.Item>
-                                                    <List.Item.Meta
-                                                        avatar={<Avatar>{review.userId.slice(0, 1).toUpperCase()}</Avatar>}
-                                                        title={
-                                                            <Space>
-                                                                <Text strong>Người dùng</Text>
-                                                                <Rate allowHalf disabled value={review.rating} />
-                                                            </Space>
-                                                        }
-                                                        description={
-                                                            <>
-                                                                <Paragraph>{review.comment}</Paragraph>
-                                                                <Text type="secondary">{dayjs(review.createdAt).format("DD/MM/YYYY HH:mm")}</Text>
-                                                            </>
-                                                        }
-                                                    />
-                                                </List.Item>
-                                            )}
-                                        />
-                                    ) : (
-                                        <Text>Chưa có đánh giá nào.</Text>
-                                    )}
-                                </Card>
+
                             </Col>
                         </Row>
                     </>
@@ -426,10 +488,11 @@ const BookDetailPage = () => {
                     <Card>
                         <Text type="danger">Không tìm thấy sách!</Text>
                     </Card>
-                )}
+                )
+                }
 
-            </Container>
-        </div>
+            </Container >
+        </div >
     );
 };
 
