@@ -1,3 +1,4 @@
+import { useAppProvider } from "@/components/context/app.context";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Button, Tag } from "antd";
 import { useRef, useState, useEffect } from "react";
@@ -12,6 +13,8 @@ const TagScroller = ({
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
+
+    const { isDarkTheme } = useAppProvider();
 
     const checkScrollPosition = () => {
         if (scrollRef.current) {
@@ -52,8 +55,7 @@ const TagScroller = ({
                     position: "absolute",
                     left: 0,
                     zIndex: 1,
-                    background: "white",
-                    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+
                     opacity: canScrollLeft ? 1 : 0.5,
                     cursor: canScrollLeft ? "pointer" : "not-allowed",
                 }}
@@ -92,8 +94,8 @@ const TagScroller = ({
                     position: "absolute",
                     right: 0,
                     zIndex: 1,
-                    background: "white",
-                    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+
+
                     opacity: canScrollRight ? 1 : 0.5,
                     cursor: canScrollRight ? "pointer" : "not-allowed",
                 }}
