@@ -298,7 +298,7 @@ const CheckoutPage: React.FC = () => {
                             rowKey="_id"
                             bordered
                         />
-                        <div style={{ textAlign: 'right', marginTop: 16 }}>
+                        <div style={{ marginTop: 24, textAlign: 'right' }}>
                             <Title level={4} style={{ color: '#ff4d4f' }}>
                                 Tổng tiền: {calculateTotal().toLocaleString()} VNĐ
                             </Title>

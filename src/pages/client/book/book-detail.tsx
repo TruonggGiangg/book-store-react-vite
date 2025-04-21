@@ -27,6 +27,7 @@ import dayjs from "dayjs";
 
 
 import { useAppProvider } from "@/components/context/app.context";
+import ReviewsModal from "@/components/client/book/review";
 
 const BookCard = lazy(() => import("@/components/client/home/book-card"));
 const ListCardSkeleton = lazy(() => import("@/components/client/home/skeleton"));
@@ -199,6 +200,20 @@ const BookDetailPage = () => {
         </div>
     );
 
+
+    //modal show all review
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const handleShowAll = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+    };
+
+
+
     // Detailed Skeleton for Loading State
     const DetailedSkeleton = () => (
         <div>
@@ -269,42 +284,7 @@ const BookDetailPage = () => {
                     </div>
                 </Col>
 
-                {/* Suggested Books, Hot Tools, Books by Category */}
-                {/* <Col span={24}>
-                    <Card style={{ marginBottom: "24px", width: "100%", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
-                        <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 0 }} />
-                        <Row gutter={[16, 16]}>
-                            {Array.from({ length: 6 }).map((_, index) => (
-                                <Col key={index} xxl={4} xl={6} lg={6} md={8} sm={12} xs={24}>
-                                    <Skeleton.Image style={{ width: "100%", height: "200px", borderRadius: "8px" }} active />
-                                    <Skeleton active title={{ width: "60%" }} paragraph={{ rows: 2 }} />
-                                </Col>
-                            ))}
-                        </Row>
-                    </Card>
-                    <Card style={{ marginBottom: "24px", width: "100%", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
-                        <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 0 }} />
-                        <Row gutter={[16, 16]}>
-                            {Array.from({ length: 6 }).map((_, index) => (
-                                <Col key={index} xxl={4} xl={6} lg={6} md={8} sm={12} xs={24}>
-                                    <Skeleton.Image style={{ width: "100%", height: "200px", borderRadius: "8px" }} active />
-                                    <Skeleton active title={{ width: "60%" }} paragraph={{ rows: 2 }} />
-                                </Col>
-                            ))}
-                        </Row>
-                    </Card>
-                    <Card style={{ width: "100%", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
-                        <Skeleton active title={{ width: "30%" }} paragraph={{ rows: 0 }} />
-                        <Row gutter={[16, 16]}>
-                            {Array.from({ length: 6 }).map((_, index) => (
-                                <Col key={index} xxl={4} xl={6} lg={6} md={8} sm={12} xs={24}>
-                                    <Skeleton.Image style={{ width: "100%", height: "200px", borderRadius: "8px" }} active />
-                                    <Skeleton active title={{ width: "60%" }} paragraph={{ rows: 2 }} />
-                                </Col>
-                            ))}
-                        </Row>
-                    </Card>
-                </Col> */}
+
             </Row>
         </div>
     );
@@ -330,11 +310,11 @@ const BookDetailPage = () => {
                         {/* Main Layout: Split into Left and Right Sections */}
                         <Row gutter={[16, 16]}>
                             {/* Left Section: Images, Book Details, Description */}
-                            <Col xs={24} sm={24} md={18}>
+                            <Col sm={24} md={24} lg={18}>
                                 {/* Row for Images and Book Details */}
                                 <Row gutter={[16, 16]}>
                                     {/* Left Column: Images */}
-                                    <Col xs={24} sm={24} md={10}>
+                                    <Col sm={24} md={24} lg={10}>
                                         <div style={{ position: "sticky", top: "100px" }}>
                                             {prevArrow}
                                             {nextArrow}
@@ -408,7 +388,7 @@ const BookDetailPage = () => {
                                     </Col>
 
                                     {/* Middle Column: Book Details */}
-                                    <Col xs={24} sm={24} md={14}>
+                                    <Col sm={24} md={24} lg={14}>
                                         <div style={{ minHeight: "" }}>
                                             <Card
                                                 size="default"
@@ -445,7 +425,7 @@ const BookDetailPage = () => {
 
                                                 <Space wrap style={{ marginBottom: "16px" }}>
                                                     {book.author.map((author, index) => (
-                                                        <Tag key={index} color="blue" style={{ fontSize: "14px", padding: "4px 8px" }}>
+                                                        <Tag key={index} color="volcano-inverse" style={{ fontSize: "14px", padding: "4px 8px" }}>
                                                             {author}
                                                         </Tag>
                                                     ))}
@@ -481,13 +461,13 @@ const BookDetailPage = () => {
                                                         <strong>Số trang:</strong> {book.attributes?.pages || "N/A"}
                                                     </Text>
                                                     <Text>
-                                                        <strong>Thể loại:</strong>{" "}
+                                                        <strong style={{ marginRight: "6px" }}>Thể loại:</strong>{" "}
                                                         {book.attributes?.classification?.length ? (
                                                             <Space wrap>
                                                                 {book.attributes.classification.map((catId) => {
                                                                     const category = dataCategory.find((cat) => cat._id === catId);
                                                                     return category ? (
-                                                                        <Tag key={catId} color="green" style={{ fontSize: "14px", padding: "4px 8px" }}>
+                                                                        <Tag key={catId} color="volcano" style={{ fontSize: "14px", padding: "4px 8px" }}>
                                                                             {category.name}
                                                                         </Tag>
                                                                     ) : null;
@@ -515,7 +495,7 @@ const BookDetailPage = () => {
                                     </Col>
 
                                     {/* Description: Below Images */}
-                                    <Col xs={24} sm={24} md={10}>
+                                    <Col sm={24} md={24} lg={10}>
                                         <Card
                                             title={
                                                 <Title
@@ -548,7 +528,7 @@ const BookDetailPage = () => {
                                     </Col>
 
                                     {/* New Column: Below Middle Column */}
-                                    <Col xs={24} sm={24} md={14}>
+                                    <Col sm={24} md={24} lg={14}>
                                         <Card
                                             title={
                                                 <Title
@@ -697,12 +677,19 @@ const BookDetailPage = () => {
                                         </Card>
                                         <Card
                                             title={<Title level={4}>Đánh giá từ người đọc</Title>}
-                                            style={{ borderRadius: "8px", marginBottom: "24px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                                            style={{ borderRadius: '8px', marginBottom: '24px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                            extra={
+                                                book.reviews && book.reviews.length > 10 && (
+                                                    <Button type="link" onClick={handleShowAll}>
+                                                        Xem tất cả
+                                                    </Button>
+                                                )
+                                            }
                                         >
                                             {book.reviews && book.reviews.length > 0 ? (
                                                 <List
                                                     itemLayout="vertical"
-                                                    dataSource={book.reviews}
+                                                    dataSource={book.reviews.slice(0, 5)} // Chỉ hiển thị 10 đánh giá đầu tiên
                                                     renderItem={(review) => (
                                                         <List.Item>
                                                             <List.Item.Meta
@@ -716,7 +703,7 @@ const BookDetailPage = () => {
                                                                 description={
                                                                     <>
                                                                         <Paragraph>{review.comment}</Paragraph>
-                                                                        <Text type="secondary">{dayjs(review.createdAt).format("DD/MM/YYYY HH:mm")}</Text>
+                                                                        <Text type="secondary">{dayjs(review.createdAt).format('DD/MM/YYYY HH:mm')}</Text>
                                                                     </>
                                                                 }
                                                             />
@@ -727,12 +714,18 @@ const BookDetailPage = () => {
                                                 <Text>Chưa có đánh giá nào.</Text>
                                             )}
                                         </Card>
+                                        <ReviewsModal
+                                            visible={isModalVisible}
+                                            onClose={handleCloseModal}
+                                            reviews={book.reviews || []}
+                                        />
+
                                     </Col>
                                 </Row>
                             </Col>
 
                             {/* Right Column: Price, Quantity, Actions */}
-                            <Col xs={24} sm={24} md={6}>
+                            <Col md={24} lg={6}>
                                 <div style={{ position: "sticky", top: "100px", marginBottom: "24px" }}>
                                     <Card style={{ borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                                         <Text strong style={{ fontSize: "20px", color: "#FF5733" }}>
@@ -795,7 +788,8 @@ const BookDetailPage = () => {
                     <Card>
                         <Text type="danger">Không tìm thấy sách!</Text>
                     </Card>
-                )}
+                )
+                }
                 <Row>
                     <Col span={24}>
                         {/* Suggested Books */}
@@ -907,8 +901,8 @@ const BookDetailPage = () => {
                         </Card>
                     </Col>
                 </Row>
-            </Container>
-        </div>
+            </Container >
+        </div >
     );
 };
 
