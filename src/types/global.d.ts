@@ -118,6 +118,7 @@ declare global {
 
     interface Review {
         userId: Types.ObjectId | string;
+        userName: string;
         comment: string;
         rating: number;
         createdAt: Date;

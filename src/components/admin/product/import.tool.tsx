@@ -111,8 +111,11 @@ const ImportTool = (props: IProps) => {
                             }
                             obj.logo = ""
                             obj.attributes = {
-                                classification: obj.classification.split(',').map((item: string) => item.trim()),
+                                classification: typeof obj.classification === 'string'
+                                    ? obj.classification.split(',').map((item: string) => item.trim())
+                                    : [],
                             }
+
                             jsonData.push(obj);
                             console.log('obj', obj)
                         });

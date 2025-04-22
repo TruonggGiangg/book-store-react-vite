@@ -14,6 +14,8 @@ import HomePage from "@/pages/client/home";
 import NotAuthorizedPage from "@/pages/results/403-page";
 import NotFoundPage from "@/pages/results/404-page";
 import { createBrowserRouter } from "react-router-dom";
+import OrderPage from "@/pages/client/order/OrderPage";
+import CheckoutPage from "@/pages/client/order/Payment";
 
 export const router = createBrowserRouter([
     {
@@ -33,8 +35,20 @@ export const router = createBrowserRouter([
                 element: <BookPage />,
             },
             {
+                path: "books/:id", // Route động cho trang chi tiết sách
+                element: <BookPage />,
+            },
+            {
                 path: "book/:id", // Route động cho trang chi tiết sách
                 element: <BookDetailPage />,
+            },
+            {
+                path: "order", // Route động cho trang chi tiết sách
+                element: <OrderPage />,
+            },
+            {
+                path: "payment", // Route động cho trang chi tiết sách
+                element: <CheckoutPage />,
             },
             {
                 path: "account",

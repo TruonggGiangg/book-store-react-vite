@@ -1,12 +1,26 @@
 import { Header } from "antd/es/layout/layout";
 import { useAppProvider } from "../../context/app.context";
-import { Avatar, Button, Dropdown, Input, Switch, Grid } from "antd";
-import { MoonOutlined, SearchOutlined, SunOutlined } from '@ant-design/icons';
+import {
+    Avatar,
+    Badge,
+    Button,
+    Dropdown,
+    Grid,
+    Input,
+    Switch,
+    Tooltip,
+} from "antd";
+import {
+    MoonOutlined,
+    SearchOutlined,
+    ShoppingCartOutlined,
+    SunOutlined,
+} from "@ant-design/icons";
 import { logoutApi } from "@/services/api";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import logo_light from '@/assets/logo/light-logo.png';
-import logo_dark from '@/assets/logo/dark-logo.png';
+import logo_light from "@/assets/logo/light-logo.png";
+import logo_dark from "@/assets/logo/dark-logo.png";
 import { useEffect, useState } from "react";
 import Container from "./container.layout";
 import ThemeToggle from "./toggle-theme.layout";
@@ -15,7 +29,15 @@ const { useBreakpoint } = Grid;
 
 const LayoutHeader = () => {
     const nav = useNavigate();
-    const { isDarkTheme, setIsDarkTheme, setIsLoading, setIsAuthenticated, setCurrUser, currUser, setRole } = useAppProvider();
+    const {
+        isDarkTheme,
+        setIsDarkTheme,
+        setIsLoading,
+        setIsAuthenticated,
+        setCurrUser,
+        currUser,
+        setRole,
+    } = useAppProvider();
     const [t, i18n] = useTranslation("global");
     const screens = useBreakpoint();
 
@@ -23,7 +45,7 @@ const LayoutHeader = () => {
         setIsLoading(true);
         const res = await logoutApi();
         if (res.data) {
-            localStorage.removeItem('access_token');
+            localStorage.removeItem("access_token");
             setCurrUser(null);
             setIsAuthenticated(false);
             setRole(null);
@@ -66,33 +88,43 @@ const LayoutHeader = () => {
                 alignItems: "center",
                 padding: "0px",
                 borderBottom: isDarkTheme
-                    ? "1px solid rgba(255, 255, 255, 0.1)" // Light border cho dark mode
-                    : "1px solid rgba(0, 0, 0, 0.1)", // Dark border cho light mode
+                    ? "1px solid rgba(255, 255, 255, 0.1)"
+                    : "1px solid rgba(0, 0, 0, 0.1)",
             }}
         >
             <Container>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    {/* Logo */}
-                    <div style={{
-                        height: `${60}px`,
-                        width: `${60}px`, // Đặt width = height
-                        marginLeft: 16,
+                <div
+                    style={{
                         display: "flex",
+                        justifyContent: "space-between",
                         alignItems: "center",
-                        justifyContent: "center"
-                    }}>
+                    }}
+                >
+                    {/* Logo */}
+                    <div
+                        onClick={() => nav("/")}
+                        style={{
+                            height: `${logoSize}px`,
+                            width: `${logoSize}px`,
+                            marginLeft: 16,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                        }}
+                    >
                         <img
                             src={isDarkTheme ? logo_dark : logo_light}
+                            alt="logo"
                             style={{
                                 height: "100%",
-                                width: "100%", // Width bằng height
-                                objectFit: "contain"
+                                width: "100%",
+                                objectFit: "contain",
                             }}
                         />
                     </div>
 
-
-                    {/* Ô tìm kiếm (ẩn trên mobile) */}
+                    {/* Search input */}
                     {(screens.lg || screens.xl || screens.xxl) && (
                         <Input
                             placeholder={t("header.search")}
@@ -107,15 +139,62 @@ const LayoutHeader = () => {
                         />
                     )}
 
-                    {/* Toggle Dark Mode & Avatar */}
-                    <div style={{ display: "flex", alignItems: "center", gap: screens.xxl ? 16 : 12, marginRight: 16 }}>
+                    {/* Tools: Language, Dark mode, Cart, Avatar/Login */}
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: screens.xxl ? 16 : 12,
+                            marginRight: 16,
+                        }}
+                    >
 
-                        <Switch onChange={changeLang} checkedChildren="VI" unCheckedChildren="EN" />
+
+                        <Switch
+                            onChange={changeLang}
+                            checkedChildren="VI"
+                            unCheckedChildren="EN"
+                        />
+
+
+
+                        {/* Cart */}
+                        <div style={{ cursor: "pointer", marginRight: "8px", display: "flex", alignItems: "center", marginTop: " 2px" }}>
+                            <Tooltip title="Giỏ hàng" >
+                                <Badge count={0} showZero>
+                                    <ShoppingCartOutlined
+                                        style={{
+                                            fontSize: 30, // Tăng font size icon
+                                            border: "none",
+                                        }}
+                                        onClick={() => nav("/payment")}
+                                    />
+                                </Badge>
+
+                            </Tooltip>
+                        </div>
+
+
                         <ThemeToggle />
-                        {/* Avatar Dropdown (Ẩn Avatar nếu chưa đăng nhập) */}
+
+
+
+
+
+
+                        {/* Avatar or login */}
                         {currUser ? (
                             <Dropdown
-                                menu={{ items: [{ key: "profile", label: "Hồ sơ" }, { key: "logout", label: "Đăng xuất", onClick: logout }] }}
+                                menu={{
+                                    items: [
+                                        { key: "profile", label: "Hồ sơ" },
+                                        {
+                                            key: "logout",
+                                            label: "Đăng xuất",
+                                            onClick: logout,
+                                        },
+                                    ],
+                                }}
                                 placement="bottomLeft"
                                 trigger={["click"]}
                             >
@@ -124,7 +203,7 @@ const LayoutHeader = () => {
                                 </Avatar>
                             </Dropdown>
                         ) : (
-                            <Button onClick={() => nav('/login')} type="primary">
+                            <Button onClick={() => nav("/login")} type="primary">
                                 Đăng nhập
                             </Button>
                         )}

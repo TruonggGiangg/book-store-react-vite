@@ -5,6 +5,7 @@ import Container from "@/components/layout/client/container.layout";
 import { useAppProvider } from "@/components/context/app.context";
 
 import { ProSkeleton } from "@ant-design/pro-components";
+import { useNavigate } from "react-router-dom";
 
 const BookCard = lazy(() => import("./book-card"));
 const ListCardSkeleton = lazy(() => import("./skeleton"));
@@ -25,7 +26,7 @@ type IProps = {
 const Product: FC<IProps> = memo(({ dataBook, loading, dataCategory, dataBookHot, dataBookNew, dataToolsHot, loadingHotBook, loadingHotTool, loadingNewBook }) => {
 
     const { isDarkTheme } = useAppProvider();
-
+    const navigate = useNavigate();
     return (
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
             <Card size="default" style={{
@@ -143,6 +144,8 @@ const Product: FC<IProps> = memo(({ dataBook, loading, dataCategory, dataBookHot
                                             borderRadius: "8px",
                                             overflow: "hidden",
                                             minHeight: "150px",
+                                            display: 'flex',
+                                            flexDirection: "column"
                                         }}
                                     >
                                         <Typography.Title level={4} style={{ color: "#FF5733", marginBottom: "8px" }}>
@@ -157,6 +160,7 @@ const Product: FC<IProps> = memo(({ dataBook, loading, dataCategory, dataBookHot
                                             }}
                                             dangerouslySetInnerHTML={{ __html: category.description || "Chưa có mô tả cho thể loại này." }}
                                         />
+                                        <Button onClick={() => { navigate(`books/${category._id}`) }} type={'dashed'} style={{ marginTop: "20px" }}>Xem thêm</Button>
                                     </div>
                                 </Col>
 
@@ -171,6 +175,7 @@ const Product: FC<IProps> = memo(({ dataBook, loading, dataCategory, dataBookHot
                                                 listCategories={dataCategory}
                                                 isBook
                                                 showRibbon
+
                                             />
                                         })}
                                     </Row>
