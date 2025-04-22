@@ -3,8 +3,7 @@ import { Button, Carousel } from 'antd';
 
 import Lottie from 'lottie-react';
 import loadingAnimation from "@/assets/animation/loadingAnimation.json"
-import Container from '@/components/layout/client/container.layout';
-import { AlignLeftOutlined, CustomerServiceOutlined, FileProtectOutlined, InfoCircleOutlined, LeftOutlined, RightOutlined, StarOutlined, SwapOutlined, ToolOutlined } from "@ant-design/icons";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 type IProps = {
     data: IGetCategories[],
     setData: (v: IGetCategories[] | []) => void,
