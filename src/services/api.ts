@@ -1,3 +1,4 @@
+
 import axios from "@/services/axios.custumize"
 
 const baseURL = import.meta.env.VITE_BACKEND_URL
@@ -150,7 +151,27 @@ export const deleteEventApi = (id: string) => {
     return axios.delete<IBackendRes<any>>(url);
 }
 
+export const getAllPermissionApi = (query: string) => {
+    const url = `${baseURL}/api/v1/permissions?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IPermission>>>(url);
+}
+export const updatePermissionApi = (permissionData: IPermission, id: string) => {
+    const url = `${baseURL}/api/v1/permissions/${id}`;
+    return axios.put<IBackendRes<any>>(url, permissionData);
+}
 
+export const getPermissionApiByPath=(path: string) => {
+    const url = `${baseURL}/api/v1/permissions?path=${path}`;
+    return axios.get<IBackendRes<IPermission>>(url);
+}
+export const getPermissionApiById=(id: string) => {
+    const url = `${baseURL}/api/v1/permissions/${id}`;
+    return axios.get<IBackendRes<IPermission>>(url);
+}
+export const deletePermissionApi=(id: string) => {
+    const url = `${baseURL}/api/v1/permissions/${id}`;
+    return axios.delete<IBackendRes<any>>(url);
+}
 
 //UPLOAD FILE
 export const uploadFile = (fileImg: any, folder: string) => {

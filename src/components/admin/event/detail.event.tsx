@@ -48,7 +48,11 @@ const EventDetail = (props: IProps) => {
             {dataDetailModal?.name}
           </Descriptions.Item>
           <Descriptions.Item label="Mô tả" span={2}>
-            {dataDetailModal?.description}
+            <div
+              dangerouslySetInnerHTML={{
+                __html: dataDetailModal?.description || "",
+              }}
+            />
           </Descriptions.Item>
           <Descriptions.Item label="Logo" span={2}>
             {dataDetailModal?.image ? (

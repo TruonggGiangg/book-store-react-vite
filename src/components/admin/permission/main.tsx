@@ -3,7 +3,11 @@ import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { Button, notification } from "antd";
 import dayjs from "dayjs";
 import { useRef, useState } from "react";
-import { deleteEventApi, deleteUserApi, getAllEventApi } from "@/services/api";
+import {
+  getAllPermissionApi,
+  deletePermissionApi,
+  updatePermissionApi,
+} from "@/services/api";
 import { dateRangeValidate } from "@/services/helper";
 import { useAppProvider } from "@/components/context/app.context";
 import {
@@ -14,86 +18,68 @@ import {
   MoreOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import EventDetail from "./detail.event";
-import EventCreate from "./create-model.event";
-import EventUpdate from "./update.event";
-import { CSVLink } from "react-csv";
-const EventAdminMain = () => {
+import PermissionDetail from "./detail.permission";
+import PermissionUpdate from "./update.permission";
+const PermissionAdmin = () => {
   type TSearch = {
-    createdAtRange: string[];
     current: number;
-    name: string;
-    description: string;
+    apiPath: string;
+    method: string;
     pageSize: number;
+    module: string;
   };
   const [api, contextHolder] = notification.useNotification();
   const actionRef = useRef<ActionType>();
   const reload = () => {
     actionRef.current?.reload();
   };
-
-  const columns: ProColumns<IGetEvent>[] = [
+  const columns: ProColumns<IGetPermission>[] = [
     {
       dataIndex: "index",
       valueType: "indexBorder",
       width: 48,
     },
+    // {
+    //   title: "ID",
+    //   dataIndex: "_id",
+    //   hideInSearch: true,
+    //   copyable: true,
+    //   ellipsis: true,
+    //   tooltip: "ID quyền",
+    //   render: (_, record) => {
+    //     return (
+    //       <a
+    //         onClick={() => {
+    //           //   handleOpenDetailModal(record);
+    //         }}
+    //       >{`${record._id}`}</a>
+    //     );
+    //   },
+    // },
     {
-      title: "ID",
-      dataIndex: "_id",
-      hideInSearch: true,
-      copyable: true,
+      title: "Path API",
+      dataIndex: "apiPath",
       ellipsis: true,
-      tooltip: "ID sự kiện",
+      copyable: true,
+      tooltip: "Đường dẫn API",
+    },
+    {
+      title: "Method",
+      dataIndex: "method",
+      ellipsis: true,
+      copyable: true,
+      tooltip: "Phương thức API",
+    },
+    {
+      title: "Module",
+      dataIndex: "module",
+      ellipsis: true,
+      copyable: true,
+      tooltip: "Module",
       render: (_, record) => {
-        return (
-          <a
-            onClick={() => {
-              handleOpenDetailModal(record);
-            }}
-          >{`${record._id}`}</a>
-        );
-      },
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      copyable: true,
-      ellipsis: true,
-      tooltip: "Tên sự kiện",
-    },
-    {
-      title: "Mô tả",
-      dataIndex: "description",
-      copyable: true,
-      ellipsis: true,
-      tooltip: "Mô tả",
-      render: (_, record) => (
-        <div
-          style={{
-            maxWidth: 200,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-          dangerouslySetInnerHTML={{ __html: record.description }}
-        />
-      ),
-    },
-    {
-      title: "Created at",
-      dataIndex: "createdAt",
-      valueType: "date",
-      hideInSearch: true,
-      render: (_, record) => {
-        return <>{dayjs(record.createdAt).format("YYYY-MM-DD")}</>;
+        return <span>{record.module}</span>;
       },
       sorter: true,
-    },
-    {
-      title: "Created at",
-      dataIndex: "createdAtRange",
-      valueType: "dateRange",
-      hideInTable: true,
     },
     {
       title: "Action",
@@ -131,42 +117,25 @@ const EventAdminMain = () => {
       },
     },
   ];
+
+  const [meta, setMeta] = useState({
+    current: 1,
+    pageSize: 10,
+    pages: 0,
+    total: 0,
+  });
+  const { isDarkTheme } = useAppProvider();
+  const [dataPermission, setPermissionData] = useState<IGetPermission[]>([]);
   const [isOpenDetailModal, setIsOpenDetailModal] = useState<boolean>(false);
-  const [dataDetailModal, setDataDetailModal] = useState<IGetEvent | null>(
+  const [dataDetailModal, setDataDetailModal] = useState<IGetPermission | null>(
     null
   );
-
-  const handleOpenDetailModal = (record: IGetEvent) => {
+  const handleOpenDetailModal = (record: IGetPermission) => {
     setIsOpenDetailModal(true);
     setDataDetailModal(record);
   };
-
-  //create component
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
-
-  const handleOpenCreateModal = () => {
-    setIsOpenCreateModal(true);
-  };
-
-  //import component
-  const [isOpenImportModal, setIsOpenImportModal] = useState<boolean>(false);
-
-  const handleOpenImportModal = () => {
-    setIsOpenImportModal(true);
-  };
-
-  //update component
-  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
-
-  const handleOpenUpdateModal = () => {
-    setIsOpenUpdateModal(true);
-  };
-
-  //logic export
-  const handleExport = () => {};
-
   const handleDelete = async (id: string) => {
-    const res = await deleteEventApi(id);
+    const res = await deletePermissionApi(id);
     if (res.data) {
       api.success({
         message: "Xóa thành công",
@@ -179,37 +148,28 @@ const EventAdminMain = () => {
     }
   };
 
-  const [meta, setMeta] = useState({
-    current: 1,
-    pageSize: 10,
-    pages: 0,
-    total: 0,
-  });
-  const { isDarkTheme } = useAppProvider();
-  const [dataEventTable, setDataEventTable] = useState<IGetEvent[]>([]);
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
+  const handleOpenUpdateModal = () => {
+    setIsOpenUpdateModal(true);
+  };
   return (
     <>
       {contextHolder}
-      <h1 style={{ padding: "20px" }}>Quản lý sự kiện</h1>
-      <EventUpdate
-        isOpenUpdateModal={isOpenUpdateModal}
-        setIsOpenUpdateModal={setIsOpenUpdateModal}
-        reload={reload}
-        dataDetailModal={dataDetailModal}
-        setDataDetailModal={setDataDetailModal}
-      />
-      <EventDetail
+      <h1>Quản lý phân quyền </h1>
+      <PermissionDetail
         isOpenDetailModal={isOpenDetailModal}
         setIsOpenDetailModal={setIsOpenDetailModal}
         dataDetailModal={dataDetailModal}
         setDataDetailModal={setDataDetailModal}
       />
-      <EventCreate
-        isOpenCreateModal={isOpenCreateModal}
-        setIsOpenCreateModal={setIsOpenCreateModal}
+      <PermissionUpdate
+        isOpenUpdateModal={isOpenUpdateModal}
+        setIsOpenUpdateModal={setIsOpenUpdateModal}
+        dataDetailModal={dataDetailModal}
+        setDatadetailModal={setDataDetailModal}
         reload={reload}
       />
-      <ProTable<IGetEvent, TSearch>
+      <ProTable<IGetPermission, TSearch>
         direction="ltr"
         rowClassName={(record, index) => {
           if (index === 0) return isDarkTheme ? "first-row-dark" : "first-row"; // Hàng đầu tiên
@@ -232,19 +192,15 @@ const EventAdminMain = () => {
 
           let query = `current=${params.current}&pageSize=${params.pageSize}`;
 
-          if (params.description) {
-            query += `&description=/${params.description}/i`;
+          if (params.apiPath) {
+            query += `&name=/${params.apiPath}/i`;
           }
-
-          if (params.name) {
-            query += `&name=/${params.name}/i`;
+          if (params.method) {
+            query += `&method=/${params.method}/i`;
           }
-
-          const createDateRange = dateRangeValidate(params.createdAtRange);
-          if (createDateRange && createDateRange.length === 2) {
-            query += `&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`;
+          if (params.module) {
+            query += `&module=${params.module}`;
           }
-
           if (sort && sort.createdAt) {
             query += `&sort=${
               sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
@@ -253,13 +209,13 @@ const EventAdminMain = () => {
             query += `&sort=-createdAt`;
           }
 
-          const res = await getAllEventApi(query);
+          const res = await getAllPermissionApi(query);
           if (res.data) {
             //set state meta
 
             setMeta(res.data.meta);
             //set data for logic
-            setDataEventTable(res.data.result);
+            setPermissionData(res.data.result);
           }
 
           return {
@@ -285,20 +241,20 @@ const EventAdminMain = () => {
             );
           },
         }}
-        headerTitle="Event Table"
+        headerTitle="Permission Table"
         toolBarRender={() => [
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() => {
-              handleOpenCreateModal();
-            }}
-            type="primary"
-          >
-            Thêm event
-          </Button>,
+          //   <Button
+          //     icon={<PlusOutlined />}
+          //     onClick={() => {
+          //       // handleOpenCreateModal();
+          //     }}
+          //     type="primary"
+          //   >
+          //     Thêm permission
+          //   </Button>,
         ]}
       />
     </>
   );
 };
-export default EventAdminMain;
+export default PermissionAdmin;
