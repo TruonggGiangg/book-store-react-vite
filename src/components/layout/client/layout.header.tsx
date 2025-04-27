@@ -193,6 +193,11 @@ const LayoutHeader = () => {
                                             label: "Đăng xuất",
                                             onClick: logout,
                                         },
+                                        {
+                                            key: "history",
+                                            label: "Lịch sử",
+                                            onClick: () => nav("/history"),
+                                        }
                                     ],
                                 }}
                                 placement="bottomLeft"

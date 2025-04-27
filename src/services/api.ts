@@ -151,6 +151,17 @@ export const deleteEventApi = (id: string) => {
 }
 
 
+//ORDER
+export const getAllOrderApi = (query: string) => {
+    const url = `${baseURL}/api/v1/orders?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IGetOrder>>>(url);
+};
+
+export const updateOrderApi = (orderData: ICreateOrder, id: string) => {
+    const url = `${baseURL}/api/v1/orders/${id}`;
+    return axios.put<IBackendRes<any>>(url, orderData);
+};
+
 
 //UPLOAD FILE
 export const uploadFile = (fileImg: any, folder: string) => {

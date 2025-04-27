@@ -1,4 +1,4 @@
-import { getBookApi, getAllBookApi, getAllCategoryApi } from "@/services/api";
+import { getBookApi, getAllBookApi, getAllCategoryApi, updateBookApi } from "@/services/api";
 import { lazy, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -20,14 +20,17 @@ import {
     Collapse,
     Divider,
     Badge,
+    message,
+    Input,
 } from "antd";
 import Container from "@/components/layout/client/container.layout";
 import { AlignLeftOutlined, CustomerServiceOutlined, FileProtectOutlined, InfoCircleOutlined, LeftOutlined, RightOutlined, StarOutlined, SwapOutlined, ToolOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-
+const { TextArea } = Input;
 
 import { useAppProvider } from "@/components/context/app.context";
 import ReviewsModal from "@/components/client/book/review";
+
 
 const BookCard = lazy(() => import("@/components/client/home/book-card"));
 const ListCardSkeleton = lazy(() => import("@/components/client/home/skeleton"));
@@ -210,6 +213,57 @@ const BookDetailPage = () => {
 
     const handleCloseModal = () => {
         setIsModalVisible(false);
+    };
+
+    const [comment, setComment] = useState('');
+    const [rating, setRating] = useState(0);
+    const [loading, setLoading] = useState(false);
+
+
+    const handleSubmit = async (comment: string, rating: number) => {
+        const newReview: Review = {
+            userId: 'u123', // từ context hoặc token
+            userName: 'Nguyễn Văn A',
+            comment,
+            rating,
+            createdAt: new Date(),
+        };
+
+        if (!book) return;
+
+        const reviews = [...(book.reviews || []), newReview];
+        const avgRating = calculateAverageRating(reviews);
+
+        const updatedBook: ICreateBook & { reviews: Review[]; rating?: number } = {
+            title: book.title,
+            author: book.author,
+            isBook: book.isBook,
+            price: book.price,
+            stock: book.stock,
+            sold: book.sold ?? 0,
+            description: book.description ?? '',
+            coverImage: book.coverImage,
+            logo: book.logo,
+            attributes: book.attributes ?? {},
+            reviews,
+            rating: avgRating,
+        };
+
+        try {
+            await updateBookApi(updatedBook, String(book._id));
+            message.success('Đánh giá đã được gửi!');
+            setBook({ ...book, reviews, rating: avgRating });
+            setComment('');
+            setRating(0);
+        } catch (error) {
+            message.error('Không thể gửi đánh giá. Vui lòng thử lại!');
+        }
+    };
+
+    const calculateAverageRating = (reviews: Review[]): number => {
+        if (reviews.length === 0) return 0;
+        const total = reviews.reduce((sum, r) => sum + r.rating, 0);
+        return Number((total / reviews.length).toFixed(1));
     };
 
 
@@ -689,7 +743,7 @@ const BookDetailPage = () => {
                                             {book.reviews && book.reviews.length > 0 ? (
                                                 <List
                                                     itemLayout="vertical"
-                                                    dataSource={book.reviews.slice(0, 5)} // Chỉ hiển thị 10 đánh giá đầu tiên
+                                                    dataSource={book.reviews.slice(0, 5)}
                                                     renderItem={(review) => (
                                                         <List.Item>
                                                             <List.Item.Meta
@@ -713,6 +767,28 @@ const BookDetailPage = () => {
                                             ) : (
                                                 <Text>Chưa có đánh giá nào.</Text>
                                             )}
+
+                                            {/* Form đánh giá mới */}
+                                            <div style={{ marginTop: 24 }}>
+                                                <div style={{ display: "flex", gap: "12px" }}>
+                                                    <Title level={5}>Đánh giá của bạn</Title>
+                                                    <Rate value={rating} onChange={setRating} style={{ marginBottom: 8 }} />
+                                                </div>
+
+                                                <TextArea
+                                                    rows={3}
+                                                    placeholder="Nhập bình luận của bạn..."
+                                                    value={comment}
+                                                    onChange={(e) => setComment(e.target.value)}
+                                                    style={{ marginBottom: 8 }}
+                                                />
+                                                <div style={{ display: "flex", justifyContent: "right" }}>
+                                                    <Button type="primary" onClick={() => { handleSubmit(comment, rating) }} loading={loading}>
+                                                        Gửi đánh giá
+                                                    </Button>
+                                                </div>
+
+                                            </div>
                                         </Card>
                                         <ReviewsModal
                                             visible={isModalVisible}

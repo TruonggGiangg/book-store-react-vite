@@ -16,6 +16,7 @@ import NotFoundPage from "@/pages/results/404-page";
 import { createBrowserRouter } from "react-router-dom";
 import OrderPage from "@/pages/client/order/OrderPage";
 import CheckoutPage from "@/pages/client/order/Payment";
+import HistoryPage from "@/pages/client/history/history-page";
 
 export const router = createBrowserRouter([
     {
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
             {
                 path: "payment", // Route động cho trang chi tiết sách
                 element: <CheckoutPage />,
+            },
+            {
+                path: "history", // Route động cho trang chi tiết sách
+                element: <HistoryPage />,
             },
             {
                 path: "account",

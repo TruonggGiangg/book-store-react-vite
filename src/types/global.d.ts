@@ -106,7 +106,7 @@ declare global {
 
 
 
-
+    //Book
     export interface ProductAttributes {
         publisher?: string;
         publishedDate?: Date | number; // Hỗ trợ cả timestamp và Date
@@ -180,7 +180,7 @@ declare global {
         password?: string;
     }
 
-
+    //Category
     interface IGetCategories {
         _id: string;
         name: string;
@@ -207,7 +207,7 @@ declare global {
 
 
 
-
+    //Event
     interface IGetEvent {
         _id: Types.ObjectId | string;
         name: string;
@@ -228,6 +228,40 @@ declare global {
         description: string;
         image?: string;
 
+    }
+
+
+    //Order
+    export interface IOrderItem {
+        productId: Types.ObjectId | string;
+        name: string;
+        author: string;
+        price: number;
+        quantity: number;
+    }
+
+
+
+    export interface IGetOrder {
+        _id: Types.ObjectId | string;
+        items: IOrderItem[];
+        status: 'pending' | 'processing' | 'completed' | 'cancelled';
+        totalAmount: number;
+        shippingAddress: string;
+        createdAt?: Date;
+        updatedAt?: Date;
+        isDeleted?: Date;
+        createdBy?: UserReference;
+        updatedBy?: UserReference;
+        deletedBy?: UserReference;
+    }
+
+    export interface ICreateOrder {
+        _id: Types.ObjectId | string;
+        items: IOrderItem[];
+        status: 'pending' | 'processing' | 'completed' | 'cancelled';
+        totalAmount: number;
+        shippingAddress: string;
     }
 }
 

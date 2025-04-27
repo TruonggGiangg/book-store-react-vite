@@ -26,7 +26,6 @@ const ReviewsModal = ({ visible, onClose, reviews }: ReviewsModalProps) => {
         secondaryTextColor: isDarkTheme ? '#a0a0a0' : '#666',
         dividerColor: isDarkTheme ? '#333' : '#e8e8e8',
         hoverBackground: isDarkTheme ? '#2a2a2a' : '#f0f5ff',
-        avatarBackground: isDarkTheme ? '#40c4ff' : '#1890ff',
         maskBackground: isDarkTheme ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.5)',
         starColor: isDarkTheme ? '#ffd700' : '#fadb14', // Màu sao cho Rate
     };
@@ -91,7 +90,7 @@ const ReviewsModal = ({ visible, onClose, reviews }: ReviewsModalProps) => {
                                 avatar={
                                     <Avatar
                                         style={{
-                                            backgroundColor: themeStyles.avatarBackground,
+
                                             fontWeight: 'bold',
                                             fontSize: '16px',
                                             marginTop: '4px',
@@ -163,8 +162,7 @@ const ReviewsModal = ({ visible, onClose, reviews }: ReviewsModalProps) => {
                                 <a
                                     style={{
                                         color: themeStyles.textColor,
-                                        backgroundColor:
-                                            page === currentPage ? themeStyles.avatarBackground : 'transparent',
+
                                         borderRadius: '4px',
                                         padding: '4px 8px',
                                     }}
