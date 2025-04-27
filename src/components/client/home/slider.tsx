@@ -34,7 +34,7 @@ const HomeSlider = (props: IProps) => {
 
     return (
         <Container>
-            <Carousel arrows effect="scrollx" style={{ borderRadius: 8, overflow: "hidden" }}>
+            <Carousel autoplay arrows effect="scrollx" style={{ borderRadius: 8, overflow: "hidden" }}>
                 {data.map((category, i) => (
                     <div key={i} style={{ textAlign: "center" }}>
                         <div

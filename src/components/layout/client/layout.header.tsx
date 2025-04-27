@@ -64,7 +64,10 @@ const LayoutHeader = () => {
                 backdropFilter: `blur(${scrollY > 50 ? 8 : 0}px)`,
                 display: "flex",
                 alignItems: "center",
-                padding: "0px"
+                padding: "0px",
+                borderBottom: isDarkTheme
+                    ? "1px solid rgba(255, 255, 255, 0.1)" // Light border cho dark mode
+                    : "1px solid rgba(0, 0, 0, 0.1)", // Dark border cho light mode
             }}
         >
             <Container>
