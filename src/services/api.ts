@@ -152,6 +152,13 @@ export const deleteEventApi = (id: string) => {
 
 
 //ORDER
+
+
+export const createOrderApi = (order: ICreateOrder) => {
+    const url = `${baseURL}/api/v1/orders`;
+    return axios.post<IBackendRes<any>>(url, order);
+}
+
 export const getAllOrderApi = (query: string) => {
     const url = `${baseURL}/api/v1/orders?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IGetOrder>>>(url);
