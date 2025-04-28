@@ -17,6 +17,7 @@ import { createBrowserRouter } from "react-router-dom";
 import OrderPage from "@/pages/client/order/OrderPage";
 import CheckoutPage from "@/pages/client/order/Payment";
 import HistoryPage from "@/pages/client/history/history-page";
+import ToolPage from "@/pages/client/book/tool-page";
 
 export const router = createBrowserRouter([
     {
@@ -30,10 +31,13 @@ export const router = createBrowserRouter([
                 ),
 
             },
-
             {
                 path: "books", // Route động cho trang chi tiết sách
                 element: <BookPage />,
+            },
+            {
+                path: "tools", // Route động cho trang chi tiết sách
+                element: <ToolPage />,
             },
             {
                 path: "books/:id", // Route động cho trang chi tiết sách

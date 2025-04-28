@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Steps, Card, Button, Select, Form, Radio, message, Input, Table, Typography, Image, Descriptions } from 'antd';
+import { Steps, Card, Button, Select, Form, Radio, message, Input, Table, Typography, Image, Descriptions, Modal } from 'antd';
 import { ShoppingCartOutlined, HomeOutlined, CreditCardOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import Lottie from 'lottie-react';
@@ -8,6 +8,7 @@ import Container from '@/components/layout/client/container.layout';
 import CartBookList from '@/components/client/order/cart-product-list';
 import loadingAnimation from '@/assets/animation/loadingAnimation.json';
 import { ColumnsType } from 'antd/es/table';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -33,6 +34,9 @@ const CheckoutPage: React.FC = () => {
     const [district, setDistrict] = useState<string | undefined>(undefined);
     const [ward, setWard] = useState<string | undefined>(undefined);
     const [address, setAddress] = useState<string>('');
+
+
+    const navigate = useNavigate();
 
     const columns: ColumnsType<IGetBook> = [
         {
@@ -258,6 +262,7 @@ const CheckoutPage: React.FC = () => {
                     const response = await createOrderApi(orderData);
                     if (response.data) {
                         message.success('Đặt hàng COD thành công!');
+
                         // Reset state
                         setName('');
                         setPhone('');
@@ -269,8 +274,57 @@ const CheckoutPage: React.FC = () => {
                         setQuantities({});
                         form.resetFields();
                         setCurrentStep(0);
-                    } else {
-                        throw new Error('Failed to create order');
+
+                        let seconds = 3;
+                        const modal = Modal.confirm({
+                            title: 'Đặt hàng thành công!',
+                            content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
+                            okText: 'Về trang chủ ngay',
+
+                            onOk: () => {
+                                clearInterval(countdown);
+                                navigate('/');
+                            },
+
+                            okButtonProps: {
+                                style: {
+                                    backgroundColor: '#FF5733', // Màu tùy chỉnh nút "Về trang chủ ngay"
+                                    color: '#fff',
+                                    border: 'none',
+                                    fontWeight: 'bold',
+                                    padding: '0 20px',
+                                    borderRadius: '5px',
+                                    fontSize: '16px',
+                                },
+                            },
+                            cancelButtonProps: {
+                                style: {
+                                    backgroundColor: '#f1f1f1', // Màu nút "Ở lại"
+                                    color: '#000',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '5px',
+                                    fontSize: '16px',
+                                    padding: '0 20px',
+                                    display: 'none', // Ẩn nút "Ở lại"
+                                },
+                            },
+                        });
+
+                        const countdown = setInterval(() => {
+                            seconds--;
+                            if (seconds <= 0) {
+                                clearInterval(countdown);
+                                modal.destroy(); // Đóng modal
+                                navigate('/');
+                            } else {
+                                modal.update({
+                                    content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
+                                });
+                            }
+                        }, 1000);
+                    }
+                    else {
+                        message.error('Đặt hàng không thành công: ' + response.message);
                     }
                 } catch (error) {
                     message.error('Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin.');
