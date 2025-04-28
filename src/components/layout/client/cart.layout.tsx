@@ -1,9 +1,9 @@
 import { useAppProvider } from "../../context/app.context";
-import { Button, Badge, Popover, InputNumber } from "antd";
+import { Button, Badge, Popover, InputNumber, Tooltip, Typography } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { getBookApi } from "@/services/api";
-
+const { Text, Title } = Typography;
 // Định nghĩa kiểu ICart và IGetBook
 interface ICart {
   book: IGetBook;
@@ -87,15 +87,61 @@ const Cart = () => {
                   style={{ width: "50px", height: "70px" }}
                 />
 
-                <div style={{ fontWeight: "bold" }}>{item.book.title}</div>
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Tooltip title={item.book.title}>
+                    <span
+                      style={{
+                        fontSize: 17,
+                        whiteSpace: "nowrap", // Ngăn không cho văn bản xuống dòng
+                        overflow: "hidden", // Ẩn phần văn bản bị tràn
+                        textOverflow: "ellipsis", // Thêm dấu ba chấm khi văn bản bị tràn
+                        maxWidth: "300px", // Giới hạn độ rộng
+                      }}
+                    >
+                      {item.book.title}
+                    </span>
+                  </Tooltip>
+                  <Text
+                    type="secondary"
+                    style={{
+                      fontWeight: "normal",
+                      whiteSpace: "nowrap", // Ngăn không cho văn bản xuống dòng
+                      overflow: "hidden", // Ẩn phần văn bản bị tràn
+                      textOverflow: "ellipsis", // Thêm dấu ba chấm khi văn bản bị tràn
+                      maxWidth: "300px", // Giới hạn độ rộng
+                    }}
+                  >
+                    Tác giả: {item.book.author.join(", ")}
+                  </Text>
+                  <span style={{ fontSize: 16 }}>
+                    {item.book.price.toLocaleString()} VNĐ
+                  </span>
+                </div>
               </div>
               <div>
-                <span>Số lượng:</span>
-                <InputNumber defaultValue={item.quantity} min={1}></InputNumber>
+                <span>Số lượng: </span>
+                {/* {item.quantity} */}
+                <InputNumber
+                  defaultValue={item.quantity}
+                  min={1}
+                  disabled
+                ></InputNumber>
               </div>
             </div>
           ))}
-          <Button type="primary" style={{ width: "100%" }}>
+          <Button
+            type="primary"
+            style={{ width: "100%" }}
+            onClick={() => {
+              window.location.href = "/payment";
+            }}
+          >
             Thanh toán
           </Button>
         </div>

@@ -70,7 +70,9 @@ const AppLayoutClient: React.FC = () => {
                         colorBorder: isDarkTheme ? "#333" : "#dedede",
                         bodyPadding: 12,
                         borderRadius: 8,
-
+                        boxShadow: isDarkTheme
+                            ? "0px 0px 12px rgba(255, 255, 255, 0.07)" // Hiệu ứng sáng hơn trong dark mode
+                            : "0px 0px 12px rgba(0, 0, 0, 0.1)", // Hiệu ứng mềm hơn trong light mode
 
                     },
 
@@ -84,6 +86,15 @@ const AppLayoutClient: React.FC = () => {
                     Upload: {
 
                     },
+
+                    Skeleton: {
+
+                    },
+                    Collapse: {
+
+                        headerBg: isDarkTheme ? "#141414" : "#fff",
+                    },
+
 
 
 

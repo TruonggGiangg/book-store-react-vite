@@ -151,6 +151,17 @@ export const deleteEventApi = (id: string) => {
     return axios.delete<IBackendRes<any>>(url);
 }
 
+
+//ORDER
+export const getAllOrderApi = (query: string) => {
+    const url = `${baseURL}/api/v1/orders?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IGetOrder>>>(url);
+};
+
+export const updateOrderApi = (orderData: ICreateOrder, id: string) => {
+    const url = `${baseURL}/api/v1/orders/${id}`;
+    return axios.put<IBackendRes<any>>(url, orderData);
+};
 export const getAllPermissionApi = (query: string) => {
     const url = `${baseURL}/api/v1/permissions?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IPermission>>>(url);

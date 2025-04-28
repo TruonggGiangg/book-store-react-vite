@@ -34,7 +34,7 @@ const TableTool = () => {
 
     useEffect(() => {
         const get = async () => {
-            const res = await getAllCategoryApi();
+            const res = await getAllCategoryApi('isBook=false');
             if (res.data?.result) {
                 // Lọc ra các danh mục có `isBook === true`
                 const newRes: IGetCategories[] = res.data.result.filter(x => x.isBook === false);
@@ -259,6 +259,13 @@ const TableTool = () => {
                 dateFormatter="string"
                 actionRef={actionRef}
                 cardBordered
+                options={{
+                    setting: true,
+                    fullScreen: true,
+                    reload: true,
+                    density: true,
+                }}
+
                 request={async (params, sort, filter) => {
                     console.log(params, sort, filter);
 

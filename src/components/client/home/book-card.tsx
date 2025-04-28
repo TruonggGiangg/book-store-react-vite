@@ -1,4 +1,3 @@
-import { FC } from "react";
 import {
   Card,
   Col,
@@ -18,6 +17,9 @@ import {
   UserOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
+import { FC, useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useAppProvider } from "@/components/context/app.context";
 import TagScroller from "./tag-list";
 
@@ -47,7 +49,8 @@ const BookCard: FC<BookCardProps> = ({
   ribbonText = "HOT",
   ribbonColor = "red",
 }) => {
-  const { isDarkTheme, cart, setCart } = useAppProvider();
+  const { isDarkTheme } = useAppProvider();
+  const [quantity, setQuantity] = useState(1);
   // Tạo Tag từ ID
   const renderTag = (id: string) => {
     const category = listCategories.find((x) => x._id === id);
@@ -57,25 +60,25 @@ const BookCard: FC<BookCardProps> = ({
       </Tag>
     ) : null;
   };
+  const { setCart } = useAppProvider();
+  const addCart = (id: string, quantity: number) => {
+    const cart = localStorage.getItem("cart");
+    let cartItems = cart ? JSON.parse(cart) : [];
 
-  const addCart = (book: IGetBook) => {
-    const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
-
-    const existingItem = cartItems.find(
-      (item: { _id: string }) => item._id === book._id
+    const existingItemIndex = cartItems.findIndex(
+      (item: { _id: string }) => item._id === id
     );
 
-    if (existingItem) {
-      existingItem.quantity += 1;
+    if (existingItemIndex !== -1) {
+      // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng
+      cartItems[existingItemIndex].quantity += quantity;
     } else {
-      cartItems.push({ _id: book._id, quantity: 1 });
+      // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới
+      cartItems.push({ _id: id, quantity });
     }
-
+    setCart(cartItems);
     localStorage.setItem("cart", JSON.stringify(cartItems));
-
-    setCart(cartItems); //  Gán luôn mảng object
   };
-
   const CardContent = (
     <Card
       style={{
@@ -172,6 +175,10 @@ const BookCard: FC<BookCardProps> = ({
                 defaultValue={1}
                 size="small"
                 style={{ padding: "6px", width: "100%" }}
+                onChange={(value) => {
+                  if (value) setQuantity(value);
+                }}
+                // value={quantity}
               />
               <Button
                 type="primary"
@@ -181,7 +188,9 @@ const BookCard: FC<BookCardProps> = ({
                   borderColor: "#FF5733",
                   flex: 2,
                 }}
-                onClick={() => addCart(book)}
+                onClick={() => {
+                  addCart(book._id, quantity);
+                }}
               >
                 Add to cart
               </Button>

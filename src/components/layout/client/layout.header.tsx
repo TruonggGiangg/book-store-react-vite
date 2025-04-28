@@ -1,15 +1,6 @@
 import { Header } from "antd/es/layout/layout";
 import { useAppProvider } from "../../context/app.context";
-import {
-  Avatar,
-  Button,
-  Dropdown,
-  Input,
-  Switch,
-  Grid,
-  Badge,
-  Popover,
-} from "antd";
+import { Avatar, Button, Dropdown, Input, Switch, Grid } from "antd";
 import { MoonOutlined, SearchOutlined, SunOutlined } from "@ant-design/icons";
 import { logoutApi } from "@/services/api";
 import { useNavigate } from "react-router-dom";
@@ -107,6 +98,10 @@ const LayoutHeader = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              nav("/");
             }}
           >
             <img
