@@ -24,7 +24,7 @@ import {
     Input,
 } from "antd";
 import Container from "@/components/layout/client/container.layout";
-import { AlignLeftOutlined, CustomerServiceOutlined, FileProtectOutlined, InfoCircleOutlined, LeftOutlined, RightOutlined, StarOutlined, SwapOutlined, ToolOutlined } from "@ant-design/icons";
+import { AlignLeftOutlined, CustomerServiceOutlined, FileProtectOutlined, InfoCircleOutlined, LeftOutlined, RightOutlined, SwapOutlined, ToolOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 const { TextArea } = Input;
 

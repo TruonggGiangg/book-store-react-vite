@@ -26,6 +26,34 @@ import axios from "axios";
 import { getAllBookApi, getBookApi } from "@/services/api";
 import Container from "@/components/layout/client/container.layout";
 import CartBookList from "@/components/client/order/cart-product-list";
+import React, { useState, useEffect } from "react";
+import {
+  Steps,
+  Card,
+  Button,
+  Select,
+  Form,
+  Radio,
+  message,
+  Input,
+  Table,
+  Typography,
+  Image,
+  Descriptions,
+} from "antd";
+import {
+  ShoppingCartOutlined,
+  HomeOutlined,
+  CreditCardOutlined,
+} from "@ant-design/icons";
+import axios from "axios";
+import Lottie from "lottie-react";
+import { createOrderApi, getAllBookApi } from "@/services/api";
+import Container from "@/components/layout/client/container.layout";
+import CartBookList from "@/components/client/order/cart-product-list";
+import loadingAnimation from "@/assets/animation/loadingAnimation.json";
+import { ColumnsType } from "antd/es/table";
+
 const { Title, Text } = Typography;
 const { Step } = Steps;
 const { Option } = Select;
@@ -40,6 +68,24 @@ const CheckoutPage: React.FC = () => {
   const [wards, setWards] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<string>("cod");
   const [form] = Form.useForm();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [books, setBooks] = useState<IGetBook[]>([]);
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+  const [provinces, setProvinces] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [wards, setWards] = useState<any[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<string>("cod");
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // State cho bước 2
+  const [name, setName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [province, setProvince] = useState<string | undefined>(undefined);
+  const [district, setDistrict] = useState<string | undefined>(undefined);
+  const [ward, setWard] = useState<string | undefined>(undefined);
+  const [address, setAddress] = useState<string>("");
 
   const columns: ColumnsType<IGetBook> = [
     {
@@ -196,42 +242,12 @@ const CheckoutPage: React.FC = () => {
       message.error("Lỗi khi tải danh sách phường/xã");
     }
   };
-  const { setCart } = useAppProvider();
+
   // Handle quantity change
   const handleQuantityChange = (bookId: string, value: number | null) => {
     if (value !== null) {
       setQuantities((prev) => ({ ...prev, [bookId]: value }));
     }
-
-    setCartItems((prev) => {
-      const updatedCart = prev.map((item) => {
-        if (item.book._id === bookId) {
-          return { ...item, quantity: value || 1 };
-        }
-        return item;
-      });
-
-      // Cập nhật lại cartItems
-      localStorage.setItem(
-        "cart",
-        JSON.stringify(
-          updatedCart.map((item) => ({
-            _id: item.book._id,
-            quantity: item.quantity,
-          }))
-        )
-      );
-
-      // Cập nhật lại cart với giá trị _id và quantity
-      setCart(
-        updatedCart.map((item) => ({
-          _id: item.book._id,
-          quantity: item.quantity,
-        }))
-      );
-
-      return updatedCart; // Trả về giá trị đã cập nhật
-    });
   };
 
   // Handle remove book
@@ -268,8 +284,8 @@ const CheckoutPage: React.FC = () => {
 
   // Calculate total
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => {
-      return total + item.book.price * (item.quantity || 1);
+    return books.reduce((total, book) => {
+      return total + book.price * (quantities[book._id] || 1);
     }, 0);
   };
 
@@ -278,7 +294,7 @@ const CheckoutPage: React.FC = () => {
     try {
       await form.validateFields();
       if (currentStep === 0) {
-        if (cartItems.length === 0) {
+        if (books.length === 0) {
           message.error("Giỏ hàng trống, vui lòng thêm sách");
           return;
         }
@@ -308,14 +324,8 @@ const CheckoutPage: React.FC = () => {
       content: (
         <>
           <CartBookList
-            books={cartItems.map((item) => item.book)}
-            quantities={cartItems.reduce(
-              (acc: Record<string, number>, item) => {
-                acc[item.book._id] = item.quantity;
-                return acc;
-              },
-              {}
-            )}
+            books={books}
+            quantities={quantities}
             handleRemoveBook={handleRemoveBook}
             handleQuantityChange={handleQuantityChange}
             calculateTotal={calculateTotal}
@@ -436,7 +446,7 @@ const CheckoutPage: React.FC = () => {
             style={{ marginTop: 24, borderRadius: 12 }}
           >
             <Table
-              dataSource={cartItems.map((item) => item.book)}
+              dataSource={books}
               columns={columns}
               pagination={false}
               rowKey="_id"

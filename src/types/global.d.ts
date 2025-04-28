@@ -43,6 +43,7 @@ declare global {
         gender: string;
         address: string;
         email: string;
+        confirmPassword: string;
     }
 
 
@@ -259,7 +260,6 @@ declare global {
     }
 
     export interface ICreateOrder {
-        _id: Types.ObjectId | string;
         items: IOrderItem[];
         status: 'pending' | 'processing' | 'completed' | 'cancelled';
         totalAmount: number;
