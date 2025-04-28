@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react";
+import { FC, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Card, Col, Badge, Tooltip, Typography, Space,
@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { useAppProvider } from "@/components/context/app.context";
 import TagScroller from "./tag-list";
+import img404 from "@/assets/img/book-with-broken-pages.gif";
 
 interface BookCardProps {
     book: IGetBook;
@@ -24,7 +25,8 @@ interface BookCardProps {
 const BookCard: FC<BookCardProps> = ({
     book, gridSizes, listCategories,
     isBook = false, showRibbon = false,
-    ribbonText = "HOT", ribbonColor = "red"
+    ribbonText,
+    ribbonColor
 }) => {
     const { isDarkTheme } = useAppProvider();
     const navigate = useNavigate();
@@ -46,6 +48,34 @@ const BookCard: FC<BookCardProps> = ({
         navigate(`/book/${book._id}`);
     };
 
+    // Tính ribbonText và ribbonColor dựa vào book nếu props không truyền
+    const getRibbonInfo = () => {
+        if (ribbonText && ribbonColor) {
+            return { text: ribbonText, color: ribbonColor };
+        }
+        const now = new Date();
+        const createdAt = book.createdAt ? new Date(book.createdAt) : null;
+        const daysSinceCreated = createdAt ? (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24) : Infinity;
+
+
+        if (daysSinceCreated <= 15) {
+            return { text: "NEW", color: "blue" };
+        } else if (book.sold >= 10) {
+            return { text: "Bán chạy", color: "orange" };
+        } else {
+            return { text: "HOT", color: "red" };
+        }
+    };
+
+    const [imgSrc, setImgSrc] = useState(
+        `${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`
+    );
+    const handleImageError = () => {
+        setImgSrc('https://via.placeholder.com/150'); // Ảnh thay thế
+    };
+
+    const { text: dynamicRibbonText, color: dynamicRibbonColor } = getRibbonInfo();
+
     const CardContent = (
         <div onClick={handleCardClick} style={{ cursor: "pointer" }}>
             <Card
@@ -63,11 +93,17 @@ const BookCard: FC<BookCardProps> = ({
                         <img
                             alt={book.title}
                             src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`}
+                            loading="lazy"
                             style={{
                                 width: "100%",
                                 height: "100%",
                                 objectFit: "contain",
-                                transition: "transform 0.3s ease-in-out",
+                                transition: "transform 0.5s ease",
+                            }}
+                            onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.onerror = null; // Ngăn loop lỗi
+                                target.src = img404;
                             }}
                         />
                     </div>
@@ -76,11 +112,7 @@ const BookCard: FC<BookCardProps> = ({
                 <Card.Meta
                     title={
                         <Tooltip title={book.title}>
-                            <Typography.Title
-                                level={5}
-                                style={{ margin: 0 }}
-
-                            >
+                            <Typography.Title level={5} style={{ margin: 0 }}>
                                 {book.title}
                             </Typography.Title>
                         </Tooltip>
@@ -141,7 +173,7 @@ const BookCard: FC<BookCardProps> = ({
                                     style={{ background: "#FF5733", borderColor: "#FF5733", flex: 2 }}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        // Xử lý thêm vào giỏ hàng
+                                        // TODO: Xử lý thêm vào giỏ hàng
                                     }}
                                 >
                                     Add to cart
@@ -163,7 +195,7 @@ const BookCard: FC<BookCardProps> = ({
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
         >
             {showRibbon ? (
-                <Badge.Ribbon text={ribbonText} color={ribbonColor}>
+                <Badge.Ribbon text={dynamicRibbonText} color={dynamicRibbonColor}>
                     {CardContent}
                 </Badge.Ribbon>
             ) : (

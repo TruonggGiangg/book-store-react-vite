@@ -18,7 +18,7 @@ interface Filters {
     sortBy: 'priceAsc' | 'priceDesc' | 'newest' | 'bestSelling';
 }
 
-const BookPage: React.FC = () => {
+const ToolPage: React.FC = () => {
     const [filters, setFilters] = useState<Filters>({
         categories: [],
         priceRange: [0, 1000000],
@@ -33,49 +33,31 @@ const BookPage: React.FC = () => {
         sortBy: 'bestSelling',
     });
 
-
     const { isDarkTheme } = useAppProvider();
     const { id } = useParams();
     const nav = useNavigate();
 
-    const [dataBook, setDataBook] = useState<IGetBook[]>([]);
+    const [dataTool, setDataTool] = useState<IGetBook[]>([]);
     const [listCategories, setDataCategory] = useState<IGetCategories[]>([]);
-    const [loadingBook, setLoadingBook] = useState<boolean>(false);
+    const [loadingTool, setLoadingTool] = useState<boolean>(false);
     const [loadingMore, setLoadingMore] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [hasMore, setHasMore] = useState<boolean>(true);
-    const [allSelected, setAllSelected] = useState<boolean>(true); // Trạng thái chọn tất cả
-    const [filterVisible, setFilterVisible] = useState<boolean>(true); // Thêm dòng này
-
+    const [allSelected, setAllSelected] = useState<boolean>(true);
+    const [filterVisible, setFilterVisible] = useState<boolean>(true);
 
     const pageSize = 6;
-
-    useEffect(() => {
-        // Cuộn lên đầu trang mỗi khi route thay đổi
-        window.scrollTo(0, 0);
-    }, []);
 
     const buildQueryString = (currentFilters: Filters, page: number): string => {
         const params = new URLSearchParams({
             current: page.toString(),
             pageSize: pageSize.toString(),
-            isBook: 'true',
+            isBook: 'false',
         });
 
         if (currentFilters.categories.length > 0) {
             params.append('attributes.classification', currentFilters.categories.join(','));
         }
-
-        // if (currentFilters.priceRange[0] > 0) {
-        //     params.append('price>=', currentFilters.priceRange[0].toString());
-        // }
-        // if (currentFilters.priceRange[1] < 1000000) {
-        //     params.append('price<=', currentFilters.priceRange[1].toString());
-        // }
-
-        // if (currentFilters.rating > 0) {
-        //     params.append('rating>=', currentFilters.rating.toString());
-        // }
 
         switch (currentFilters.sortBy) {
             case 'priceAsc':
@@ -95,31 +77,31 @@ const BookPage: React.FC = () => {
         return params.toString();
     };
 
-    const fetchBooks = useCallback(
+    const fetchTools = useCallback(
         async (page: number, filtersToUse: Filters, isInitialLoad: boolean = false) => {
             try {
-                if (isInitialLoad) setLoadingBook(true);
+                if (isInitialLoad) setLoadingTool(true);
                 else setLoadingMore(true);
 
                 const query = buildQueryString(filtersToUse, page);
-                const bookRes = await getAllBookApi(query);
+                const toolRes = await getAllBookApi(query);
 
-                if (bookRes.data) {
-                    const newBooks = bookRes.data.result || [];
+                if (toolRes.data) {
+                    const newTools = toolRes.data.result || [];
                     if (isInitialLoad) {
-                        setDataBook(newBooks);
+                        setDataTool(newTools);
                     } else {
-                        setDataBook((prev) => [...prev, ...newBooks]);
+                        setDataTool((prev) => [...prev, ...newTools]);
                     }
-                    setHasMore(newBooks.length === pageSize && newBooks.length > 0);
+                    setHasMore(newTools.length === pageSize && newTools.length > 0);
                 } else {
                     setHasMore(false);
                 }
             } catch (error) {
-                console.error('Error fetching books:', error);
+                console.error('Error fetching tools:', error);
                 setHasMore(false);
             } finally {
-                if (isInitialLoad) setLoadingBook(false);
+                if (isInitialLoad) setLoadingTool(false);
                 else setLoadingMore(false);
             }
         },
@@ -129,30 +111,27 @@ const BookPage: React.FC = () => {
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                setLoadingBook(true);
+                setLoadingTool(true);
 
                 // Fetch categories
-                const categoryRes = await getAllCategoryApi('isBook=true');
+                const categoryRes = await getAllCategoryApi('isBook=false');
                 if (categoryRes.data) {
                     const categories = categoryRes.data.result;
                     setDataCategory(categories);
 
                     // Extract category ID from URL
-                    const url = window.location.pathname; // e.g., /books/67c019e6d2f912a645bb770c
-                    const categoryId = url.split('/books/')[1]; // Get the ID after /books/
+                    const url = window.location.pathname;
+                    const categoryId = url.split('/tools/')[1];
 
                     let initialCategories: string[] = [];
                     if (categoryId && categories.some(cat => cat._id === categoryId)) {
-                        // If a valid category ID is present, select only that category
                         initialCategories = [categoryId];
-                        setAllSelected(false); // Uncheck "All" since a specific category is selected
+                        setAllSelected(false);
                     } else {
-                        // If no ID or invalid ID, select all categories
                         initialCategories = categories.map((cat) => cat._id);
-                        setAllSelected(true); // Check "All"
+                        setAllSelected(true);
                     }
 
-                    // Set filters and appliedFilters
                     setFilters((prev) => ({
                         ...prev,
                         categories: initialCategories,
@@ -162,8 +141,7 @@ const BookPage: React.FC = () => {
                         categories: initialCategories,
                     }));
 
-                    // Fetch books with the initial filters
-                    await fetchBooks(1, {
+                    await fetchTools(1, {
                         ...appliedFilters,
                         categories: initialCategories,
                     }, true);
@@ -171,7 +149,7 @@ const BookPage: React.FC = () => {
             } catch (error) {
                 console.error('Error fetching initial data:', error);
             } finally {
-                setLoadingBook(false);
+                setLoadingTool(false);
             }
         };
 
@@ -188,7 +166,7 @@ const BookPage: React.FC = () => {
             ) {
                 setCurrentPage((prev) => {
                     const nextPage = prev + 1;
-                    fetchBooks(nextPage, appliedFilters);
+                    fetchTools(nextPage, appliedFilters);
                     return nextPage;
                 });
             }
@@ -198,15 +176,15 @@ const BookPage: React.FC = () => {
             window.addEventListener('scroll', handleScroll);
         }
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [loadingMore, hasMore, appliedFilters, fetchBooks]);
+    }, [loadingMore, hasMore, appliedFilters, fetchTools]);
 
     const handleFilterChange = (key: keyof Filters, value: any) => {
         if (key === 'categories') {
             const checkedValues = value as string[];
             if (checkedValues.length > 0 && checkedValues.length < listCategories.length) {
-                setAllSelected(false); // Bỏ chọn "Tất cả" khi chọn thể loại cụ thể
+                setAllSelected(false);
             } else if (checkedValues.length === listCategories.length) {
-                setAllSelected(true); // Chọn lại "Tất cả" khi tất cả thể loại được chọn
+                setAllSelected(true);
             }
         }
         setFilters((prev) => ({ ...prev, [key]: value }));
@@ -226,34 +204,34 @@ const BookPage: React.FC = () => {
 
     const applyFilters = async () => {
         try {
-            setLoadingBook(true);
+            setLoadingTool(true);
             const newFilters = { ...filters };
             setAppliedFilters(newFilters);
             setCurrentPage(1);
-            setDataBook([]);
+            setDataTool([]);
             setHasMore(true);
-            await fetchBooks(1, newFilters, true);
-            setFilterVisible(false); // Thêm dòng này để đóng Collapse
+            await fetchTools(1, newFilters, true);
+            setFilterVisible(false);
         } catch (error) {
             console.error('Error applying filters:', error);
         } finally {
-            setLoadingBook(false);
+            setLoadingTool(false);
         }
     };
 
-    const filterBook = (book: IGetBook) => {
+    const filterTool = (tool: IGetBook) => {
         const { categories, priceRange, rating } = appliedFilters;
 
         const categoryMatch =
             categories.length === 0 ||
-            (book.attributes?.classification &&
-                book.attributes.classification.some((cat) => categories.includes(cat)));
+            (tool.attributes?.classification &&
+                tool.attributes.classification.some((cat) => categories.includes(cat)));
 
         const priceMatch =
-            book.price >= priceRange[0] && book.price <= priceRange[1];
+            tool.price >= priceRange[0] && tool.price <= priceRange[1];
 
-        const bookRating = book.rating ?? 0;
-        const ratingMatch = bookRating >= rating;
+        const toolRating = tool.rating ?? 0;
+        const ratingMatch = toolRating >= rating;
 
         return categoryMatch && priceMatch && ratingMatch;
     };
@@ -268,20 +246,18 @@ const BookPage: React.FC = () => {
                         <a href="/">Trang chủ</a>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        Sách
+                        Dụng cụ
                     </Breadcrumb.Item>
                 </Breadcrumb>
-                {/* Filter Section with Collapse */}
                 <Collapse
-
                     style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden' }}
-                    activeKey={filterVisible ? ['1'] : []} // Thay bằng dòng này
+                    activeKey={filterVisible ? ['1'] : []}
                     onChange={(key) => {
                         setFilterVisible(key.length > 0);
                     }}
                     expandIcon={({ isActive }) => (
                         <CaretRightOutlined
-                            style={{ fontSize: '32px', color: "#ff5733", marginTop: "22px" }} // Điều chỉnh kích thước mũi tên ở đây
+                            style={{ fontSize: '32px', color: "#ff5733", marginTop: "22px" }}
                             rotate={isActive ? 90 : 0}
                         />
                     )}
@@ -291,19 +267,18 @@ const BookPage: React.FC = () => {
                             label: (
 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Text style={{ fontWeight: 600, color: "#ff5733", fontSize: "1.6rem" }}>Bộ lọc sách</Text>
+                                    <Text style={{ fontWeight: 600, color: "#ff5733", fontSize: "1.6rem" }}>Bộ lọc dụng cụ</Text>
                                     <Button
                                         type="primary"
                                         onClick={() => {
-                                            nav('/tools');
+                                            nav('/books');
                                         }}
                                     >
-                                        Trang dụng cụ
+                                        Trang sách
                                     </Button>
                                 </div>
 
                             ),
-
                             children: (
                                 <div style={{ padding: '16px' }}>
                                     <div style={{ marginBottom: '16px' }}>
@@ -395,7 +370,7 @@ const BookPage: React.FC = () => {
                                         </Select>
                                     </div>
 
-                                    <Button type="primary" block onClick={applyFilters} loading={loadingBook}>
+                                    <Button type="primary" block onClick={applyFilters} loading={loadingTool}>
                                         Lọc
                                     </Button>
                                 </div>
@@ -404,35 +379,31 @@ const BookPage: React.FC = () => {
                     ]}
                 />
 
-
-
                 <Card size="default" style={{
-
                     width: "100%",
                     boxShadow: isDarkTheme
-                        ? "0px 0px 12px rgba(255, 255, 255, 0.07)" // Hiệu ứng sáng hơn trong dark mode
-                        : "0px 0px 12px rgba(0, 0, 0, 0.1)", // Hiệu ứng mềm hơn trong light mode
+                        ? "0px 0px 12px rgba(255, 255, 255, 0.07)"
+                        : "0px 0px 12px rgba(0, 0, 0, 0.1)",
                 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                         <h2 style={{ margin: 0, color: "#FF5733" }}>
-                            Danh sách sách
+                            Danh sách dụng cụ
                         </h2>
                         <Button type="link" style={{ color: "#FF5733" }}>Xem tất cả</Button>
                     </div>
-                    {/* Book List Section */}
-                    {loadingBook ? (
+                    {loadingTool ? (
                         <ListCardSkeleton count={12} />
                     ) : (
                         <>
                             <Row gutter={[16, 16]}>
-                                {dataBook.map((x) =>
-                                    filterBook(x) ? (
+                                {dataTool.map((x) =>
+                                    filterTool(x) ? (
                                         <BookCard
                                             key={x._id.toString()}
                                             book={x}
                                             gridSizes={gridSizes}
                                             listCategories={listCategories}
-                                            isBook
+                                            isBook={false}
                                             showRibbon
                                         />
                                     ) : null
@@ -443,23 +414,22 @@ const BookPage: React.FC = () => {
                                     <Lottie animationData={loadingAnimation} loop={true} style={{ width: "20%" }} />
                                 </div>
                             )}
-                            {!hasMore && dataBook.length > 0 && (
+                            {!hasMore && dataTool.length > 0 && (
                                 <div style={{ textAlign: 'center', margin: '20px 0', fontSize: '16px', color: '#888' }}>
-                                    Đã hiển thị tất cả sách phù hợp
+                                    Đã hiển thị tất cả dụng cụ phù hợp
                                 </div>
                             )}
-                            {!hasMore && dataBook.length === 0 && (
+                            {!hasMore && dataTool.length === 0 && (
                                 <div style={{ textAlign: 'center', margin: '20px 0', fontSize: '16px', color: '#888' }}>
-                                    Không tìm thấy sách nào phù hợp
+                                    Không tìm thấy dụng cụ nào phù hợp
                                 </div>
                             )}
                         </>
                     )}
                 </Card>
-
             </Container>
-        </div >
+        </div>
     );
 };
 
-export default BookPage;
+export default ToolPage;

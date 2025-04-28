@@ -171,9 +171,8 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                     }}
-                                >
-                                    {category.description} {/* Tránh dangerouslySetInnerHTML */}
-                                </p>
+                                    dangerouslySetInnerHTML={{ __html: category.description }}
+                                />
                                 <div style={{ marginTop: '40px', display: 'flex', gap: '1.5rem' }}>
                                     <Button
                                         type="primary"

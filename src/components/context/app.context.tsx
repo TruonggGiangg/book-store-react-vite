@@ -8,30 +8,39 @@ interface IAppContext {
     isLoading: boolean;
     currUser: ICurrUser | null;
     role: string | null;
-    isDarkTheme: boolean
+    isDarkTheme: boolean;
     setIsAuthenticated: (v: boolean) => void;
     setIsLoading: (v: boolean) => void;
     setCurrUser: (v: ICurrUser | null) => void;
-    setRole: (v: string | null) => void
-    setIsDarkTheme: (v: boolean) => void
+    setRole: (v: string | null) => void;
+    setIsDarkTheme: (v: boolean) => void;
 }
 
 export const CurrentUserContext = createContext<IAppContext | null>(null);
 
 type TProps = {
-    children: React.ReactNode
-}
+    children: React.ReactNode;
+};
 
 export const AppProvider = (props: TProps) => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true)
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
     const [currUser, setCurrUser] = useState<ICurrUser | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [role, setRole] = useState<string | null>(null)
-    const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [role, setRole] = useState<string | null>(null);
+    const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
 
+    // Đọc giá trị theme từ localStorage khi component được load
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("isDarkTheme");
+        if (savedTheme) {
+            setIsDarkTheme(JSON.parse(savedTheme)); // Đọc giá trị và set lại theme
+        }
+    }, []);
+
+    // Fetch account và role khi component mount
     useEffect(() => {
         const fetchAccount = async () => {
-            setIsLoading(true)
+            setIsLoading(true);
             const resAccount = await getAccountApi();
             if (resAccount.data) {
                 setIsAuthenticated(true);
@@ -45,29 +54,44 @@ export const AppProvider = (props: TProps) => {
                 setRole(null);
                 setIsLoading(false);
             }
-            setIsLoading(false);
         };
 
         fetchAccount();
     }, []);
 
-    return (
-        isLoading === false
-            ?
-            <CurrentUserContext.Provider value={{ isAuthenticated, currUser, isLoading, role, isDarkTheme, setCurrUser, setIsAuthenticated, setIsLoading, setRole, setIsDarkTheme }}>
-                {props.children}
-            </CurrentUserContext.Provider>
-            :
-            <div style={{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: "translate(-50%, -50%)"
-            }}>
-                <LoadingPage
-                    isLoading={isLoading}
-                />
-            </div>
+    // Lưu giá trị theme vào localStorage khi theme thay đổi
+    useEffect(() => {
+        localStorage.setItem("isDarkTheme", JSON.stringify(isDarkTheme));
+    }, [isDarkTheme]);
+
+    return isLoading === false ? (
+        <CurrentUserContext.Provider
+            value={{
+                isAuthenticated,
+                currUser,
+                isLoading,
+                role,
+                isDarkTheme,
+                setCurrUser,
+                setIsAuthenticated,
+                setIsLoading,
+                setRole,
+                setIsDarkTheme,
+            }}
+        >
+            {props.children}
+        </CurrentUserContext.Provider>
+    ) : (
+        <div
+            style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+            }}
+        >
+            <LoadingPage isLoading={isLoading} />
+        </div>
     );
 };
 
@@ -75,8 +99,8 @@ export const useAppProvider = () => {
     const currentUserContext = useContext(CurrentUserContext);
     if (!currentUserContext) {
         throw new Error(
-            "useCurrentUser has to be used within <CurrentUserContext.Provider>"
-        )
+            "useAppProvider has to be used within <CurrentUserContext.Provider>"
+        );
     }
-    return currentUserContext
-}
+    return currentUserContext;
+};
