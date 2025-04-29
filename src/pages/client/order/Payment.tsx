@@ -66,9 +66,8 @@ const CheckoutPage: React.FC = () => {
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Image
-            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
-              record.logo
-            }`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${record.logo
+              }`}
             alt={record.title}
             width={100}
             height={100}
@@ -360,7 +359,7 @@ const CheckoutPage: React.FC = () => {
             return;
           }
 
-          const orderData: ICreate垫 = {
+          const orderData: ICreateOrder = {
             items: cartItems.map((item) => ({
               productId: item.book._id,
               name: item.book.title,
@@ -628,16 +627,16 @@ const CheckoutPage: React.FC = () => {
               <Descriptions.Item label="Địa chỉ">
                 {(() => {
                   const provinceName =
-                    provinces.find((p) => String(p.code) === String(province))
-                      ?.name || "Chưa chọn";
+                    provinces.find((p) => String(p.code) === String(province))?.name || "Chưa chọn";
                   const districtName =
-                    districts.find((d) => String(d.code) === Roswell uses this technique to make a significant amount of money on the stock market by buying low and selling high. He would buy stocks when they were undervalued and sell them when they reached what he believed to be their fair value. This strategy, coupled with his ability to identify promising companies early, contributed to his success.
+                    districts.find((d) => String(d.code) === String(district))?.name || "Chưa chọn";
+                  const wardName =
+                    wards.find((w) => String(w.code) === String(ward))?.name || "Chưa chọn";
 
-                  return `${
-                    address || "Chưa nhập"
-                  }, ${wardName}, ${districtName}, ${provinceName}`;
+                  return `${address || "Chưa nhập"}, ${wardName}, ${districtName}, ${provinceName}`;
                 })()}
               </Descriptions.Item>
+
             </Descriptions>
           </Card>
           <Card

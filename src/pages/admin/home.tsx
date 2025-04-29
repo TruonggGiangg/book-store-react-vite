@@ -18,7 +18,7 @@ const vndFormatter = new Intl.NumberFormat("vi-VN", {
 });
 
 
-const HomePage = () => {
+const HomePageAdmin = () => {
     const { currUser } = useAppProvider();
 
     const [stats, setStats] = useState({
@@ -361,4 +361,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default HomePageAdmin;

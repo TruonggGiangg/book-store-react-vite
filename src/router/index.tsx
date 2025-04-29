@@ -11,7 +11,7 @@ import LoginPage from "@/pages/client/auth/login";
 import RegisterPage from "@/pages/client/auth/register";
 import BookDetailPage from "@/pages/client/book/book-detail";
 import BookPage from "@/pages/client/book/books-page";
-import HomePage from "@/pages/client.home";
+
 import NotAuthorizedPage from "@/pages/results/403-page";
 import NotFoundPage from "@/pages/results/404-page";
 import { createBrowserRouter } from "react-router-dom";
@@ -19,6 +19,7 @@ import OrderPage from "@/pages/client/order/OrderPage";
 import CheckoutPage from "@/pages/client/order/Payment";
 import HistoryPage from "@/pages/client/history/history-page";
 import ToolPage from "@/pages/client/book/tool-page";
+import HomePage from "@/pages/client/home";
 
 export const router = createBrowserRouter([
   {
@@ -61,7 +62,7 @@ export const router = createBrowserRouter([
         path: "account",
         element: (
           <ProtectedRoute>
-            <HomePage />
+            <div>Account</div>
           </ProtectedRoute>
         ),
       },
