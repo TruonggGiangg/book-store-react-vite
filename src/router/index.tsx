@@ -1,6 +1,7 @@
 import CategoryAdminMain from "@/components/admin/category/main";
 import BookAdminMain from "@/components/admin/product/main";
 import EventAdminMain from "@/components/admin/event/main";
+import PermissionAdmin from "@/components/admin/permission/main";
 import ProtectedRoute from "@/components/auth/protected-route";
 import AppLayout from "@/components/layout/admin/app.layout";
 import AppLayoutClient from "@/components/layout/client/app.layout";
@@ -10,7 +11,7 @@ import LoginPage from "@/pages/client/auth/login";
 import RegisterPage from "@/pages/client/auth/register";
 import BookDetailPage from "@/pages/client/book/book-detail";
 import BookPage from "@/pages/client/book/books-page";
-import HomePage from "@/pages/client/home";
+import HomePage from "@/pages/client.home";
 import NotAuthorizedPage from "@/pages/results/403-page";
 import NotFoundPage from "@/pages/results/404-page";
 import { createBrowserRouter } from "react-router-dom";
@@ -20,113 +21,104 @@ import HistoryPage from "@/pages/client/history/history-page";
 import ToolPage from "@/pages/client/book/tool-page";
 
 export const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <AppLayoutClient />,
-        children: [
-            {
-                index: true,
-                element: (
-                    <HomePage />
-                ),
-
-            },
-            {
-                path: "books", // Route động cho trang chi tiết sách
-                element: <BookPage />,
-            },
-            {
-                path: "tools", // Route động cho trang chi tiết sách
-                element: <ToolPage />,
-            },
-            {
-                path: "books/:id", // Route động cho trang chi tiết sách
-                element: <BookPage />,
-            },
-            {
-                path: "book/:id", // Route động cho trang chi tiết sách
-                element: <BookDetailPage />,
-            },
-            {
-                path: "order", // Route động cho trang chi tiết sách
-                element: <OrderPage />,
-            },
-            {
-                path: "payment", // Route động cho trang chi tiết sách
-                element: <CheckoutPage />,
-            },
-            {
-                path: "history", // Route động cho trang chi tiết sách
-                element: <HistoryPage />,
-            },
-            {
-                path: "account",
-                element: (
-                    <ProtectedRoute>
-                        <HomePage />
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: "about",
-                element: <div>About</div>,
-            },
-        ],
-    },
-    {
-        path: "/admin",
+  {
+    path: "/",
+    element: <AppLayoutClient />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "books",
+        element: <BookPage />,
+      },
+      {
+        path: "tools",
+        element: <ToolPage />,
+      },
+      {
+        path: "books/:id",
+        element: <BookPage />,
+      },
+      {
+        path: "book/:id",
+        element: <BookDetailPage />,
+      },
+      {
+        path: "order",
+        element: <OrderPage />,
+      },
+      {
+        path: "payment",
+        element: <CheckoutPage />,
+      },
+      {
+        path: "history",
+        element: <HistoryPage />,
+      },
+      {
+        path: "account",
         element: (
-            <ProtectedRoute>
-                <AppLayout />
-            </ProtectedRoute>
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
         ),
-        children: [
-            {
-                index: true,
-                element: <HomePageAdmin />,
-            },
-            {
-                path: "user",
-                element: (
-
-                    <UserPage />
-                ),
-            },
-            {
-                path: "book",
-                element: (
-                    <BookAdminMain />
-                ),
-            },
-            {
-                path: "categories",
-                element: (
-                    <CategoryAdminMain />
-                )
-            },
-            {
-                path: "event",
-                element: (
-                    <EventAdminMain />
-                )
-            }
-
-        ],
-    },
-    {
-        path: "/login",
-        element: <LoginPage />,
-    },
-    {
-        path: "/register",
-        element: <RegisterPage />,
-    },
-    {
-        path: "/not-authorized",
-        element: <NotAuthorizedPage />,
-    },
-    {
-        path: "*", // Xử lý trang không tồn tại
-        element: <NotFoundPage />,
-    },
+      },
+      {
+        path: "about",
+        element: <div>About</div>,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute>
+        <AppLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <HomePageAdmin />,
+      },
+      {
+        path: "user",
+        element: <UserPage />,
+      },
+      {
+        path: "book",
+        element: <BookAdminMain />,
+      },
+      {
+        path: "categories",
+        element: <CategoryAdminMain />,
+      },
+      {
+        path: "event",
+        element: <EventAdminMain />,
+      },
+      {
+        path: "permission",
+        element: <PermissionAdmin />,
+      },
+    ],
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+  {
+    path: "/not-authorized",
+    element: <NotAuthorizedPage />,
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
 ]);

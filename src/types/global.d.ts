@@ -57,8 +57,10 @@ declare global {
     }
 
     interface IPermission {
+        _id: string;
         apiPath: string;
         method: string;
+        module: number;
     }
 
     interface IGetAccountAPI {
@@ -263,6 +265,24 @@ declare global {
         status: 'pending' | 'processing' | 'completed' | 'cancelled';
         totalAmount: number;
         shippingAddress: string;
+    }
+
+    interface IGetPermission {
+        _id: string;
+        apiPath: string;
+        method: string;
+        module: number;
+
+    }
+    interface ICreatePermission {
+        _id: string;
+        apiPath: string;
+        method: string;
+        module: number;
+    }
+    interface IUpdatePermission {
+        apiPath: string;
+        method: string;
     }
 }
 
