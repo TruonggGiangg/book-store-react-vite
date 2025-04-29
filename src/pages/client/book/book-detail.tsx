@@ -57,10 +57,7 @@ const BookDetailPage = () => {
     const [currentSlide, setCurrentSlide] = useState<number>(0);
     const carouselRef = useRef<any>(null);
 
-    useEffect(() => {
-        // Cuộn lên đầu trang mỗi khi route thay đổi
-        window.scrollTo(0, 0);
-    }, []);
+
 
     // Fetch book details and categories
     useEffect(() => {
@@ -122,7 +119,7 @@ const BookDetailPage = () => {
             setLoadingHotTool(false);
         };
         fetchHotTools();
-    }, []);
+    }, [id]);
 
     // Fetch Books by Category
     useEffect(() => {
@@ -145,7 +142,12 @@ const BookDetailPage = () => {
             }
         };
         fetchBooks();
-    }, [book]);
+    }, [book, id]);
+
+    useEffect(() => {
+        setBook(undefined)
+        window.scrollTo(0, 0);
+    }, [id]);
 
     // Format date
     const formatDate = (date?: Date | number | string) => {
