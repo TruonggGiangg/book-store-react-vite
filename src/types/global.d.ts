@@ -260,6 +260,7 @@ declare global {
     }
 
     export interface ICreateOrder {
+        _id?: Types.ObjectId | string | null;
         items: IOrderItem[];
         status: 'pending' | 'processing' | 'completed' | 'cancelled';
         totalAmount: number;

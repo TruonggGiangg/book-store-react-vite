@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useAppProvider } from "@/components/context/app.context";
 
@@ -9,8 +9,21 @@ const ThemeToggle = () => {
     const [rippleStyle, setRippleStyle] = useState({});
     const buttonRef = useRef<HTMLLabelElement>(null);
 
+    // Đọc trạng thái theme từ localStorage khi component load
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("isDarkTheme");
+        if (savedTheme) {
+            setIsDarkTheme(JSON.parse(savedTheme)); // Đọc giá trị và set lại theme
+        }
+    }, [setIsDarkTheme]);
+
     const toggleTheme = (e: React.MouseEvent<HTMLLabelElement>) => {
-        setIsDarkTheme(!isDarkTheme);
+        const newTheme = !isDarkTheme;
+        setIsDarkTheme(newTheme); // Cập nhật trạng thái theme
+
+        // Lưu trạng thái theme vào localStorage
+        localStorage.setItem("isDarkTheme", JSON.stringify(newTheme));
+
         setIconAnimating(true);
 
         setTimeout(() => {
@@ -41,9 +54,6 @@ const ThemeToggle = () => {
         }, 600);
     };
 
-
-
-
     return (
         <div style={{ position: "relative" }}>
             <input type="checkbox" id="theme-checkbox" checked={isDarkTheme} onChange={() => { }} style={{ display: "none" }} />
@@ -53,7 +63,6 @@ const ThemeToggle = () => {
                 htmlFor="theme-checkbox"
                 onClick={toggleTheme}
                 style={{
-
                     width: "40px",
                     height: "40px",
                     borderRadius: "50%",
@@ -67,7 +76,6 @@ const ThemeToggle = () => {
                     transition: "background 0.6s ease-in-out",
                     background: isDarkTheme ? "#222" : "#ff5733",
                     color: isDarkTheme ? "#ff5733" : "#fff",
-
                 }}
             >
                 <span

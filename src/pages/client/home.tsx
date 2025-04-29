@@ -4,6 +4,7 @@ import { getAllBookApi, getAllCategoryApi, getAllEventApi } from "@/services/api
 import EventHome from "@/components/client/home/envent";
 import Product from "@/components/client/home/product";
 import Container from "@/components/layout/client/container.layout";
+import { Breadcrumb } from "antd";
 
 const HomePage = () => {
     // const { currUser, role } = useAppProvider();
@@ -135,6 +136,12 @@ const HomePage = () => {
         <div style={{ marginTop: '100px' }}>
             <Container>
                 <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                    <Breadcrumb style={{ marginBottom: "16px" }}>
+                        <Breadcrumb.Item>
+                            Trang chủ
+                        </Breadcrumb.Item>
+
+                    </Breadcrumb>
                     <HomeSlider
                         data={dataCategory}
                         setData={setDataCategory}

@@ -1,6 +1,5 @@
 import { getAccountApi, getRoleApi } from "@/services/api";
 import { createContext, useContext, useEffect, useState } from "react";
-import { ScaleLoader } from "react-spinners";
 import LoadingPage from "../loading/loading";
 
 interface IAppContext {
@@ -31,6 +30,37 @@ export const AppProvider = (props: TProps) => {
   const [role, setRole] = useState<string | null>(null);
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
   const [cart, setCart] = useState<object[]>([]);
+
+  // Đọc giá trị theme từ localStorage khi component được load
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("isDarkTheme");
+    if (savedTheme) {
+      setIsDarkTheme(JSON.parse(savedTheme));
+    }
+  }, []);
+
+  // Lưu giá trị theme vào localStorage khi theme thay đổi
+  useEffect(() => {
+    localStorage.setItem("isDarkTheme", JSON.stringify(isDarkTheme));
+  }, [isDarkTheme]);
+
+  // Đồng bộ giỏ hàng từ localStorage
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      try {
+        const cartItems = JSON.parse(savedCart);
+        setCart(cartItems);
+      } catch (error) {
+        console.error("Lỗi parse cart:", error);
+        setCart([]); // Fallback an toàn nếu dữ liệu bị hỏng
+      }
+    } else {
+      setCart([]); // Không có dữ liệu thì set rỗng
+    }
+  }, []);
+
+  // Fetch account và role khi component mount
   useEffect(() => {
     const fetchAccount = async () => {
       setIsLoading(true);
@@ -40,31 +70,15 @@ export const AppProvider = (props: TProps) => {
         setCurrUser(resAccount.data.user);
         const resRole = await getRoleApi(resAccount.data.user.role);
         if (resRole.data) setRole(resRole.data.name);
-        setIsLoading(false);
       } else {
         setIsAuthenticated(false);
         setCurrUser(null);
         setRole(null);
-        setIsLoading(false);
       }
       setIsLoading(false);
     };
 
     fetchAccount();
-  }, []);
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
-        const cartItems = JSON.parse(savedCart);
-        setCart(cartItems);
-      } catch (error) {
-        console.error("Lỗi parse cart:", error);
-        setCart([]); // fallback an toàn nếu dữ liệu bị hỏng
-      }
-    } else {
-      setCart([]); // Không có gì trong local thì set rỗng
-    }
   }, []);
 
   return isLoading === false ? (
@@ -104,7 +118,7 @@ export const useAppProvider = () => {
   const currentUserContext = useContext(CurrentUserContext);
   if (!currentUserContext) {
     throw new Error(
-      "useCurrentUser has to be used within <CurrentUserContext.Provider>"
+      "useAppProvider has to be used within <CurrentUserContext.Provider>"
     );
   }
   return currentUserContext;
