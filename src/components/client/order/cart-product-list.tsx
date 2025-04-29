@@ -1,7 +1,7 @@
 import { Card, List, Button, InputNumber, Typography, Pagination, Image } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useState } from 'react';
-
+import img404 from "@/assets/img/book-with-broken-pages.gif";
 
 const { Text, Title } = Typography;
 
@@ -56,7 +56,9 @@ const CartBookList: React.FC<CartBookListProps> = ({
                             height={100}
                             style={{ borderRadius: 8, objectFit: 'contain' }} // Adjust the style as needed
                             preview
-                        //cover
+                            onError={(e) => {
+                                e.currentTarget.src = img404; // Dùng ảnh lỗi khi ảnh không thể tải
+                            }}
 
                         />
 

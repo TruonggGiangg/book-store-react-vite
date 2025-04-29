@@ -28,6 +28,7 @@ import loadingAnimation from "@/assets/animation/loadingAnimation.json";
 import { ColumnsType } from "antd/es/table";
 import { useAppProvider } from "@/components/context/app.context";
 import { useNavigate } from "react-router-dom";
+import img404 from "@/assets/img/book-with-broken-pages.gif";
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -58,6 +59,12 @@ const CheckoutPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [totalCart, setTotalCart] = useState(0);
 
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.onerror = null; // Ngăn lỗi lặp vô hạn
+    e.currentTarget.src = img404; // Thay bằng ảnh mặc định
+  };
+
   const columns: ColumnsType<IGetBook> = [
     {
       title: "Sản phẩm",
@@ -73,6 +80,9 @@ const CheckoutPage: React.FC = () => {
             height={100}
             style={{ borderRadius: 8, objectFit: "contain" }}
             preview
+            onError={(e) => {
+              e.currentTarget.src = img404; // Dùng ảnh lỗi khi ảnh không thể tải
+            }}
           />
           <div>
             <Text strong>{record.title}</Text>
@@ -391,15 +401,18 @@ const CheckoutPage: React.FC = () => {
             setCart([]);
             localStorage.removeItem("cart");
 
+
             // Hiển thị modal thông báo với đếm ngược
             let seconds = 3;
-            const modal = Modal.confirm({
+            const modal = Modal.success({
               title: "Đặt hàng thành công!",
               content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
               okText: "Về trang chủ ngay",
               onOk: () => {
                 clearInterval(countdown);
                 navigate("/");
+                setCart([]);
+                localStorage.removeItem("cart");
               },
               okButtonProps: {
                 style: {
@@ -423,6 +436,8 @@ const CheckoutPage: React.FC = () => {
                 clearInterval(countdown);
                 modal.destroy();
                 navigate("/");
+                setCart([]);
+                localStorage.removeItem("cart");
               } else {
                 modal.update({
                   content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
