@@ -20,6 +20,7 @@ import CheckoutPage from "@/pages/client/order/Payment";
 import HistoryPage from "@/pages/client/history/history-page";
 import ToolPage from "@/pages/client/book/tool-page";
 import HomePage from "@/pages/client/home";
+import OrderAdminMain from "@/components/admin/order/main";
 
 export const router = createBrowserRouter([
   {
@@ -103,6 +104,10 @@ export const router = createBrowserRouter([
       {
         path: "permission",
         element: <PermissionAdmin />,
+      },
+      {
+        path: "order",
+        element: <OrderAdminMain />,
       },
     ],
   },

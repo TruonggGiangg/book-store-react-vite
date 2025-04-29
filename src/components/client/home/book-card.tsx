@@ -206,9 +206,15 @@ const BookCard: FC<BookCardProps> = ({
                 </Typography.Paragraph>
               </Space>
 
-              <Space>
+              <Space align="center" size="small">
                 <HeartOutlined style={{ color: "#FF5733" }} />
-                <Rate disabled value={book.rating || 0} allowHalf />
+                {book.rating === 0 ? (
+                  <Typography.Paragraph style={{ margin: 0 }}>
+                    Chưa có đánh giá
+                  </Typography.Paragraph>
+                ) : (
+                  <Rate disabled value={book.rating || 0} allowHalf />
+                )}
               </Space>
 
               <Space

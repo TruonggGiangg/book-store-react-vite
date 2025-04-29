@@ -12,6 +12,9 @@ import {
   UserOutlined,
   WalletOutlined,
   TableOutlined,
+  OrderedListOutlined,
+  RedditCircleFilled,
+  FileDoneOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { ConfigProvider, Layout, Menu, theme } from "antd";
@@ -69,6 +72,9 @@ const AppLayout: React.FC = () => {
     getItem("Event", "7", <TableOutlined />, () => {
       nav("/admin/event");
     }),
+    getItem("Order", "8", <FileDoneOutlined />, () => {
+      nav("/admin/order");
+    }),
   ];
 
   const menuKeyMap: Record<string, string> = {
@@ -79,6 +85,7 @@ const AppLayout: React.FC = () => {
     "/admin/role": "5",
     "/admin/permission": "6",
     "/admin/event": "7",
+    "/admin/order": "8",
   };
 
   const selectedKey = menuKeyMap[location.pathname] || "1";

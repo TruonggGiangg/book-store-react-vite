@@ -9,6 +9,7 @@ import { Pie, Column } from "@ant-design/plots";
 import dayjs from "dayjs";
 import { useAppProvider } from "@/components/context/app.context";
 import { getAllOrderApi } from "@/services/api";
+import { Link } from "react-router-dom";
 
 // Define VND formatter
 const vndFormatter = new Intl.NumberFormat("vi-VN", {
@@ -292,24 +293,31 @@ const HomePageAdmin = () => {
 
                 <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12} lg={6}>
-                        <Card hoverable>
-                            <Statistic
-                                title="Tổng đơn hàng hôm nay"
-                                value={stats.today}
-                                prefix={<ShoppingOutlined style={{ color: "#1890ff" }} />}
-                            />
+                        <Link to="/admin/order">
 
-                        </Card>
+                            <Card hoverable>
+                                <Statistic
+                                    title="Tổng đơn hàng hôm nay"
+                                    value={stats.today}
+                                    prefix={<ShoppingOutlined style={{ color: "#1890ff" }} />}
+                                />
+
+                            </Card>
+
+                        </Link>
                     </Col>
                     <Col xs={24} sm={12} lg={6}>
-                        <Card hoverable>
-                            <Statistic
-                                title="Đơn chờ xử lý"
-                                value={stats.pending}
-                                prefix={<ClockCircleOutlined style={{ color: "#fa8c16" }} />}
-                            />
-                        </Card>
+                        <Link to="/admin/order">
+                            <Card hoverable>
+                                <Statistic
+                                    title="Đơn chờ xử lý"
+                                    value={stats.pending}
+                                    prefix={<ClockCircleOutlined style={{ color: "#fa8c16" }} />}
+                                />
+                            </Card>
+                        </Link>
                     </Col>
+
                     <Col xs={24} sm={12} lg={6}>
                         <Card hoverable>
                             <Statistic

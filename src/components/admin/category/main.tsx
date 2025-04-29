@@ -1,4 +1,4 @@
-import { deleteUserApi, getAllCategoryApi, getAllUserApi } from '@/services/api';
+import { deleteCategoryApi, deleteUserApi, getAllCategoryApi, getAllUserApi } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
 import { DeleteOutlined, EditOutlined, ExportOutlined, ImportOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -182,7 +182,7 @@ const CategoryAdminMain = () => {
 
 
     const handleDelete = async (id: string) => {
-        const res = await deleteUserApi(id);
+        const res = await deleteCategoryApi(id);
         if (res.data) {
             api.success({
                 message: "Xóa thành công"

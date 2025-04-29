@@ -57,9 +57,8 @@ const LayoutHeader = () => {
   const logoSize = Math.max(30, 60 - maxScroll / 10);
   const avatarSize = Math.max(28, 48 - maxScroll / 10);
   const opacity = Math.min(0.5 + (scrollY / 400) * 0.7, 1);
-  const backgroundColor = `rgba(${
-    isDarkTheme ? "20, 20, 20" : "255, 255, 255"
-  }, ${opacity})`;
+  const backgroundColor = `rgba(${isDarkTheme ? "20, 20, 20" : "255, 255, 255"
+    }, ${opacity})`;
 
   return (
     <Header
@@ -152,6 +151,8 @@ const LayoutHeader = () => {
                   items: [
                     { key: "profile", label: "Hồ sơ" },
                     { key: "logout", label: "Đăng xuất", onClick: logout },
+                    { key: "history", label: "Lịch sử mua", onClick: () => { nav('/history') } },
+
                   ],
                 }}
                 placement="bottomLeft"
