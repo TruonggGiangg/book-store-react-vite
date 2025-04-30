@@ -67,6 +67,7 @@ const EventAdminMain = () => {
       dataIndex: "description",
       copyable: true,
       ellipsis: true,
+      hideInTable: true,
       tooltip: "Mô tả",
       render: (_, record) => (
         <div
@@ -163,7 +164,7 @@ const EventAdminMain = () => {
   };
 
   //logic export
-  const handleExport = () => {};
+  const handleExport = () => { };
 
   const handleDelete = async (id: string) => {
     const res = await deleteEventApi(id);
@@ -218,8 +219,8 @@ const EventAdminMain = () => {
               ? "even-row-dark"
               : "even-row" // Hàng chẵn
             : isDarkTheme
-            ? "odd-row-dark"
-            : "odd-row"; // Hàng lẻ
+              ? "odd-row-dark"
+              : "odd-row"; // Hàng lẻ
         }}
         scroll={{ x: 1000 }} // Giá trị x đặt lớn hơn tổng chiều rộng bảng
         bordered={true}
@@ -246,9 +247,8 @@ const EventAdminMain = () => {
           }
 
           if (sort && sort.createdAt) {
-            query += `&sort=${
-              sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
-            }`;
+            query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
+              }`;
           } else {
             query += `&sort=-createdAt`;
           }

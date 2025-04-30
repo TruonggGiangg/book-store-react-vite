@@ -94,19 +94,7 @@ const PermissionAdmin = () => {
                 gap: "8px",
               }}
             >
-              <EditOutlined
-                onClick={() => {
-                  handleOpenUpdateModal();
-                  setDataDetailModal(record);
-                }}
-                style={{ cursor: "pointer", color: "#ff5733" }}
-              />
-              <DeleteOutlined
-                style={{ cursor: "pointer", color: "#ff5733" }}
-                onClick={() => {
-                  handleDelete(record._id);
-                }}
-              />
+
               <MoreOutlined
                 style={{ cursor: "pointer", color: "#ff5733" }}
                 onClick={() => handleOpenDetailModal(record)}
@@ -178,8 +166,8 @@ const PermissionAdmin = () => {
               ? "even-row-dark"
               : "even-row" // Hàng chẵn
             : isDarkTheme
-            ? "odd-row-dark"
-            : "odd-row"; // Hàng lẻ
+              ? "odd-row-dark"
+              : "odd-row"; // Hàng lẻ
         }}
         scroll={{ x: 1000 }} // Giá trị x đặt lớn hơn tổng chiều rộng bảng
         bordered={true}
@@ -202,9 +190,8 @@ const PermissionAdmin = () => {
             query += `&module=${params.module}`;
           }
           if (sort && sort.createdAt) {
-            query += `&sort=${
-              sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
-            }`;
+            query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
+              }`;
           } else {
             query += `&sort=-createdAt`;
           }

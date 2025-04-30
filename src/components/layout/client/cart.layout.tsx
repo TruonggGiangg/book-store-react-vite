@@ -3,23 +3,26 @@ import { Button, Badge, Popover, InputNumber, Tooltip, Typography } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { getBookApi } from "@/services/api";
-const { Text, Title } = Typography;
-// Định nghĩa kiểu ICart và IGetBook
-interface ICart {
-  book: IGetBook;
-  quantity: number;
-}
+const { Text } = Typography;
+import img404 from "@/assets/img/book-with-broken-pages.gif";
 
 const Cart = () => {
   const { cart } = useAppProvider();
   const [totalCart, setTotalCart] = useState(0);
   const [cartItems, setCartItems] = useState<any[]>([]); // Sử dụng `any` để không ép kiểu
 
+  // Xử lý lỗi tải ảnh
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.onerror = null; // Ngăn lỗi lặp vô hạn
+    e.currentTarget.src = img404; // Thay bằng ảnh mặc định
+  };
+
+  // Đồng bộ giỏ hàng khi cart thay đổi
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       try {
-        const cartData = JSON.parse(savedCart); // `cartData` vẫn giữ cấu trúc ban đầu
+        const cartData = JSON.parse(savedCart);
 
         // Tính tổng số lượng sản phẩm trong giỏ hàng
         const totalQuantity = cartData
@@ -27,32 +30,37 @@ const Cart = () => {
           .reduce((a: number, b: number) => a + b, 0);
         setTotalCart(totalQuantity);
 
-        // Lấy danh sách sách từ API dựa trên các ID sản phẩm trong giỏ hàng
+        // Lấy danh sách sách từ API
         const fetchBooks = async () => {
           try {
             const bookPromises = cartData.map(
               async (item: { _id: string; quantity: number }) => {
-                const res = await getBookApi(item._id); // Lấy sách theo _id
+                const res = await getBookApi(item._id);
                 if (res.data) {
-                  return { book: res.data, quantity: item.quantity }; // Thêm quantity vào dữ liệu sách
+                  return { book: res.data, quantity: item.quantity };
                 }
                 return null;
               }
             );
 
-            // Chờ tất cả các sách được lấy từ API
             const booksData = await Promise.all(bookPromises);
-            // Cập nhật giỏ hàng với sách và số lượng
-            setCartItems(booksData.filter((book) => book !== null)); // Cập nhật giỏ hàng
+            setCartItems(booksData.filter((book) => book !== null));
           } catch (error) {
             console.error("Error fetching books:", error);
+            setCartItems([]);
           }
         };
 
         fetchBooks();
       } catch (error) {
         console.error("Error parsing cart items:", error);
+        setTotalCart(0);
+        setCartItems([]);
       }
+    } else {
+      // Xử lý trường hợp giỏ hàng rỗng
+      setTotalCart(0);
+      setCartItems([]);
     }
   }, [cart]);
 
@@ -84,9 +92,15 @@ const Cart = () => {
                     item.book.logo
                   }`}
                   alt={item.book.title}
-                  style={{ width: "70px", height: "70px" }}
+                  style={{
+                    width: "50px",
+                    height: "75px",
+                    objectFit: "contain",
+                    aspectRatio: "2 / 3",
+                  }}
+                  loading="lazy"
+                  onError={handleImageError}
                 />
-
                 <div
                   style={{
                     fontWeight: "bold",
@@ -98,10 +112,10 @@ const Cart = () => {
                     <span
                       style={{
                         fontSize: 17,
-                        whiteSpace: "nowrap", // Ngăn không cho văn bản xuống dòng
-                        overflow: "hidden", // Ẩn phần văn bản bị tràn
-                        textOverflow: "ellipsis", // Thêm dấu ba chấm khi văn bản bị tràn
-                        maxWidth: "300px", // Giới hạn độ rộng
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: "300px",
                       }}
                     >
                       {item.book.title}
@@ -111,10 +125,10 @@ const Cart = () => {
                     type="secondary"
                     style={{
                       fontWeight: "normal",
-                      whiteSpace: "nowrap", // Ngăn không cho văn bản xuống dòng
-                      overflow: "hidden", // Ẩn phần văn bản bị tràn
-                      textOverflow: "ellipsis", // Thêm dấu ba chấm khi văn bản bị tràn
-                      maxWidth: "300px", // Giới hạn độ rộng
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: "300px",
                     }}
                   >
                     Tác giả: {item.book.author.join(", ")}
@@ -126,12 +140,7 @@ const Cart = () => {
               </div>
               <div>
                 <span>Số lượng: </span>
-                {/* {item.quantity} */}
-                <InputNumber
-                  defaultValue={item.quantity}
-                  min={1}
-                  disabled
-                ></InputNumber>
+                <InputNumber defaultValue={item.quantity} min={1} disabled />
               </div>
             </div>
           ))}
@@ -150,32 +159,30 @@ const Cart = () => {
   };
 
   return (
-    <>
-      <span
-        style={{
-          cursor: "pointer",
-          alignItems: "center",
-          display: "flex",
-          alignSelf: "center",
-        }}
+    <span
+      style={{
+        cursor: "pointer",
+        alignItems: "center",
+        display: "flex",
+        alignSelf: "center",
+      }}
+    >
+      <Popover
+        placement="bottom"
+        content={renderCartHTML()}
+        trigger="click"
+        title={title}
       >
-        <Popover
-          placement="bottom"
-          content={renderCartHTML()}
-          trigger="click"
-          title={title}
+        <Badge
+          count={totalCart}
+          size="small"
+          offset={[0, 0]}
+          overflowCount={99}
         >
-          <Badge
-            count={totalCart}
-            size="small"
-            offset={[0, 0]}
-            overflowCount={99}
-          >
-            <ShoppingCartOutlined style={{ fontSize: "30px" }} />
-          </Badge>
-        </Popover>
-      </span>
-    </>
+          <ShoppingCartOutlined style={{ fontSize: "30px" }} />
+        </Badge>
+      </Popover>
+    </span>
   );
 };
 

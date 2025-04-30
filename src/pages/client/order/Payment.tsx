@@ -28,6 +28,7 @@ import loadingAnimation from "@/assets/animation/loadingAnimation.json";
 import { ColumnsType } from "antd/es/table";
 import { useAppProvider } from "@/components/context/app.context";
 import { useNavigate } from "react-router-dom";
+import img404 from "@/assets/img/book-with-broken-pages.gif";
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -58,6 +59,12 @@ const CheckoutPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [totalCart, setTotalCart] = useState(0);
 
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.onerror = null; // Ngăn lỗi lặp vô hạn
+    e.currentTarget.src = img404; // Thay bằng ảnh mặc định
+  };
+
   const columns: ColumnsType<IGetBook> = [
     {
       title: "Sản phẩm",
@@ -66,14 +73,16 @@ const CheckoutPage: React.FC = () => {
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Image
-            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
-              record.logo
-            }`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${record.logo
+              }`}
             alt={record.title}
             width={100}
             height={100}
             style={{ borderRadius: 8, objectFit: "contain" }}
             preview
+            onError={(e) => {
+              e.currentTarget.src = img404; // Dùng ảnh lỗi khi ảnh không thể tải
+            }}
           />
           <div>
             <Text strong>{record.title}</Text>
@@ -360,7 +369,7 @@ const CheckoutPage: React.FC = () => {
             return;
           }
 
-          const orderData: ICreate垫 = {
+          const orderData: ICreateOrder = {
             items: cartItems.map((item) => ({
               productId: item.book._id,
               name: item.book.title,
@@ -392,15 +401,18 @@ const CheckoutPage: React.FC = () => {
             setCart([]);
             localStorage.removeItem("cart");
 
+
             // Hiển thị modal thông báo với đếm ngược
             let seconds = 3;
-            const modal = Modal.confirm({
+            const modal = Modal.success({
               title: "Đặt hàng thành công!",
               content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
               okText: "Về trang chủ ngay",
               onOk: () => {
                 clearInterval(countdown);
                 navigate("/");
+                setCart([]);
+                localStorage.removeItem("cart");
               },
               okButtonProps: {
                 style: {
@@ -424,6 +436,8 @@ const CheckoutPage: React.FC = () => {
                 clearInterval(countdown);
                 modal.destroy();
                 navigate("/");
+                setCart([]);
+                localStorage.removeItem("cart");
               } else {
                 modal.update({
                   content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
@@ -628,16 +642,16 @@ const CheckoutPage: React.FC = () => {
               <Descriptions.Item label="Địa chỉ">
                 {(() => {
                   const provinceName =
-                    provinces.find((p) => String(p.code) === String(province))
-                      ?.name || "Chưa chọn";
+                    provinces.find((p) => String(p.code) === String(province))?.name || "Chưa chọn";
                   const districtName =
-                    districts.find((d) => String(d.code) === Roswell uses this technique to make a significant amount of money on the stock market by buying low and selling high. He would buy stocks when they were undervalued and sell them when they reached what he believed to be their fair value. This strategy, coupled with his ability to identify promising companies early, contributed to his success.
+                    districts.find((d) => String(d.code) === String(district))?.name || "Chưa chọn";
+                  const wardName =
+                    wards.find((w) => String(w.code) === String(ward))?.name || "Chưa chọn";
 
-                  return `${
-                    address || "Chưa nhập"
-                  }, ${wardName}, ${districtName}, ${provinceName}`;
+                  return `${address || "Chưa nhập"}, ${wardName}, ${districtName}, ${provinceName}`;
                 })()}
               </Descriptions.Item>
+
             </Descriptions>
           </Card>
           <Card

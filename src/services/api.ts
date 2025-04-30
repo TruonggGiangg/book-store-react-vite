@@ -127,6 +127,12 @@ export const updateCategoryApi = (categoryData: ICreateCategory, id: string) => 
     return axios.put<IBackendRes<any>>(url, categoryData);
 };
 
+export const deleteCategoryApi = (id: string) => {
+    const url = `${baseURL}/api/v1/categories/${id}`;
+    return axios.delete<IBackendRes<any>>(url);
+};
+
+
 
 
 //EVENT
@@ -178,15 +184,15 @@ export const updatePermissionApi = (permissionData: IPermission, id: string) => 
     return axios.put<IBackendRes<any>>(url, permissionData);
 }
 
-export const getPermissionApiByPath=(path: string) => {
+export const getPermissionApiByPath = (path: string) => {
     const url = `${baseURL}/api/v1/permissions?path=${path}`;
     return axios.get<IBackendRes<IPermission>>(url);
 }
-export const getPermissionApiById=(id: string) => {
+export const getPermissionApiById = (id: string) => {
     const url = `${baseURL}/api/v1/permissions/${id}`;
     return axios.get<IBackendRes<IPermission>>(url);
 }
-export const deletePermissionApi=(id: string) => {
+export const deletePermissionApi = (id: string) => {
     const url = `${baseURL}/api/v1/permissions/${id}`;
     return axios.delete<IBackendRes<any>>(url);
 }
