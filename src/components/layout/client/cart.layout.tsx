@@ -84,7 +84,7 @@ const Cart = () => {
                     item.book.logo
                   }`}
                   alt={item.book.title}
-                  style={{ width: "50px", height: "70px" }}
+                  style={{ width: "70px", height: "70px" }}
                 />
 
                 <div
