@@ -25,7 +25,7 @@ import Container from "./container.layout";
 import ThemeToggle from "./toggle-theme.layout";
 import Cart from "./cart.layout";
 import { debounce } from "lodash";
-
+import img404 from "@/assets/img/book-with-broken-pages.gif";
 const { useBreakpoint } = Grid;
 
 // Define a Book type for search results
@@ -143,10 +143,14 @@ const LayoutHeader = () => {
   const logoSize = Math.max(30, 60 - maxScroll / 10);
   const avatarSize = Math.max(28, 48 - maxScroll / 10);
   const opacity = Math.min(0.5 + (scrollY / 400) * 0.7, 1);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const backgroundColor = `rgba(${
     isDarkTheme ? "20, 20, 20" : "255, 255, 255"
   }, ${opacity})`;
-
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.onerror = null; // Ngăn lỗi lặp vô hạn
+    e.currentTarget.src = img404; // Thay bằng ảnh mặc định
+  };
   return (
     <Header
       style={{
@@ -254,53 +258,43 @@ const LayoutHeader = () => {
                       renderItem={(book) => (
                         <List.Item
                           onClick={() => handleResultClick(book._id)}
+                          onMouseEnter={() => setHoveredId(book._id)}
+                          onMouseLeave={() => setHoveredId(null)}
                           style={{
                             cursor: "pointer",
                             padding: "12px 16px",
                             transition: "background-color 0.2s",
-                            backgroundColor: isDarkTheme ? "#1f1f1f" : "#fff",
-                            // ":hover": {
-                            //   backgroundColor: isDarkTheme ? "#2a2a2a" : "#f5f5f5",
-                            // },
+                            backgroundColor:
+                              hoveredId === book._id
+                                ? isDarkTheme
+                                  ? "#2a2a2a"
+                                  : "#f5f5f5"
+                                : isDarkTheme
+                                ? "#1f1f1f"
+                                : "#fff",
                           }}
                         >
                           <List.Item.Meta
                             avatar={
-                              book.logo ? (
-                                <img
-                                  src={
-                                    `${
-                                      import.meta.env.VITE_BACKEND_URL
-                                    }/images/product/${book.logo}` ||
-                                    "/placeholder.svg"
-                                  }
-                                  alt={book.title}
-                                  style={{
-                                    width: 40,
-                                    height: 60,
-                                    objectFit: "cover",
-                                  }}
-                                />
-                              ) : (
-                                <div
-                                  style={{
-                                    width: 40,
-                                    height: 60,
-                                    backgroundColor: isDarkTheme
-                                      ? "#333"
-                                      : "#eee",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    color: isDarkTheme ? "#aaa" : "#666",
-                                  }}
-                                >
-                                  📚
-                                </div>
-                              )
+                              <img
+                                src={
+                                  `${
+                                    import.meta.env.VITE_BACKEND_URL
+                                  }/images/product/${book.logo}` ||
+                                  "/placeholder.svg"
+                                }
+                                alt={book.title}
+                                style={{
+                                  width: 40,
+                                  height: 60,
+                                  objectFit: "cover",
+                                }}
+                                loading="lazy"
+                                onError={handleImageError}
+                              />
                             }
                             title={book.title}
-                            description={book.author}
+                            description={book.price.toLocaleString() + " VNĐ"}
                           />
                         </List.Item>
                       )}

@@ -94,7 +94,7 @@ const Cart = () => {
                   }`}
                   alt={item.book.title}
                   style={{
-                    width: "50px",
+                    width: "75px",
                     height: "75px",
                     objectFit: "contain",
                     aspectRatio: "2 / 3",
