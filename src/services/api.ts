@@ -85,6 +85,18 @@ export const deleteBookApi = (id: string) => {
     return axios.delete<IBackendRes<any>>(url);
 };
 
+export const searchBooksApi = (keyword: string, page: number = 1, pageSize: number = 10) => {
+    const url = `${baseURL}/api/v1/books/search`;
+    
+    // Add query parameters
+    const params = new URLSearchParams({
+      keyword,
+      page: page.toString(),
+      pageSize: pageSize.toString()
+    });
+    
+    return axios.get<IBackendRes<ISearchBooksResponse>>(`${url}?${params.toString()}`);
+};
 
 
 //ROLE

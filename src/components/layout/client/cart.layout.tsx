@@ -62,6 +62,7 @@ const Cart = () => {
       setTotalCart(0);
       setCartItems([]);
     }
+    console.log(cartItems);
   }, [cart]);
 
   const title = <h2>Giỏ hàng</h2>;
@@ -88,10 +89,12 @@ const Cart = () => {
                 style={{ display: "flex", gap: "10px", alignItems: "center" }}
               >
                 <img
-                  src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${item.book.logo}`}
+                  src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
+                    item.book.logo
+                  }`}
                   alt={item.book.title}
                   style={{
-                    width: "50px",
+                    width: "75px",
                     height: "75px",
                     objectFit: "contain",
                     aspectRatio: "2 / 3",
@@ -138,11 +141,7 @@ const Cart = () => {
               </div>
               <div>
                 <span>Số lượng: </span>
-                <InputNumber
-                  defaultValue={item.quantity}
-                  min={1}
-                  disabled
-                />
+                <InputNumber value={item.quantity} min={1} disabled />
               </div>
             </div>
           ))}
