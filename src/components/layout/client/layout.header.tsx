@@ -1,18 +1,34 @@
+"use client";
+
+import type React from "react";
+
 import { Header } from "antd/es/layout/layout";
 import { useAppProvider } from "../../context/app.context";
-import { Avatar, Button, Dropdown, Input, Switch, Grid } from "antd";
-import { MoonOutlined, SearchOutlined, SunOutlined } from "@ant-design/icons";
-import { logoutApi } from "@/services/api";
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  Input,
+  Switch,
+  Grid,
+  List,
+  Spin,
+} from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { logoutApi, searchBooksApi } from "@/services/api";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import logo_light from "@/assets/logo/light-logo.png";
 import logo_dark from "@/assets/logo/dark-logo.png";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Container from "./container.layout";
 import ThemeToggle from "./toggle-theme.layout";
-import { use } from "i18next";
 import Cart from "./cart.layout";
+import { debounce } from "lodash";
+
 const { useBreakpoint } = Grid;
+
+// Define a Book type for search results
 
 const LayoutHeader = () => {
   const nav = useNavigate();
@@ -27,6 +43,76 @@ const LayoutHeader = () => {
   } = useAppProvider();
   const [t, i18n] = useTranslation("global");
   const screens = useBreakpoint();
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<IGetBook[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchInputRef = useRef<HTMLDivElement>(null);
+
+  // Function to fetch search results
+  const fetchSearchResults = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      // Replace this with your actual API call
+      const response = await searchBooksApi(query);
+      if (response.data && response.data && response.data.result) {
+        setSearchResults(response.data.result);
+        // If you need pagination info
+        // setPaginationMeta(response.data.data.meta);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error searching books:", error);
+      // For demo purposes, let's add some mock data
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Debounce search to avoid too many requests
+  const debouncedSearch = debounce(fetchSearchResults, 300);
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    debouncedSearch(value);
+    setShowResults(!!value.trim());
+  };
+
+  // Handle clicking on a search result
+  const handleResultClick = (bookId: string) => {
+    nav(`/book/${bookId}`);
+    setShowResults(false);
+    setSearchQuery("");
+  };
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
+      ) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const logout = async () => {
     setIsLoading(true);
@@ -57,8 +143,9 @@ const LayoutHeader = () => {
   const logoSize = Math.max(30, 60 - maxScroll / 10);
   const avatarSize = Math.max(28, 48 - maxScroll / 10);
   const opacity = Math.min(0.5 + (scrollY / 400) * 0.7, 1);
-  const backgroundColor = `rgba(${isDarkTheme ? "20, 20, 20" : "255, 255, 255"
-    }, ${opacity})`;
+  const backgroundColor = `rgba(${
+    isDarkTheme ? "20, 20, 20" : "255, 255, 255"
+  }, ${opacity})`;
 
   return (
     <Header
@@ -115,17 +202,123 @@ const LayoutHeader = () => {
 
           {/* Ô tìm kiếm (ẩn trên mobile) */}
           {(screens.lg || screens.xl || screens.xxl) && (
-            <Input
-              placeholder={t("header.search")}
-              prefix={<SearchOutlined />}
+            <div
+              ref={searchInputRef}
               style={{
-                borderRadius: 6,
+                position: "relative",
                 margin: screens.xxl ? "0 32px" : "0 16px",
                 width: screens.xxl ? "50%" : "40%",
-                fontSize: screens.xxl ? "18px" : "14px",
-                transition: "all 0.3s ease-in-out",
               }}
-            />
+            >
+              <Input
+                placeholder={t("header.search")}
+                prefix={<SearchOutlined />}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                style={{
+                  borderRadius: 6,
+                  fontSize: screens.xxl ? "18px" : "14px",
+                  transition: "all 0.3s ease-in-out",
+                  width: "100%",
+                }}
+              />
+
+              {/* Search Results Dropdown */}
+              {showResults && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    backgroundColor: isDarkTheme ? "#1f1f1f" : "#fff",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                    borderRadius: "0 0 8px 8px",
+                    zIndex: 1001,
+                    maxHeight: "400px",
+                    overflowY: "auto",
+                    border: isDarkTheme
+                      ? "1px solid #333"
+                      : "1px solid #e8e8e8",
+                  }}
+                >
+                  {isSearching ? (
+                    <div style={{ padding: "20px", textAlign: "center" }}>
+                      <Spin size="small" />
+                      <div style={{ marginTop: "8px" }}>Đang tìm kiếm...</div>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <List
+                      itemLayout="horizontal"
+                      dataSource={searchResults}
+                      renderItem={(book) => (
+                        <List.Item
+                          onClick={() => handleResultClick(book._id)}
+                          style={{
+                            cursor: "pointer",
+                            padding: "12px 16px",
+                            transition: "background-color 0.2s",
+                            backgroundColor: isDarkTheme ? "#1f1f1f" : "#fff",
+                            // ":hover": {
+                            //   backgroundColor: isDarkTheme ? "#2a2a2a" : "#f5f5f5",
+                            // },
+                          }}
+                        >
+                          <List.Item.Meta
+                            avatar={
+                              book.logo ? (
+                                <img
+                                  src={
+                                    `${
+                                      import.meta.env.VITE_BACKEND_URL
+                                    }/images/product/${book.logo}` ||
+                                    "/placeholder.svg"
+                                  }
+                                  alt={book.title}
+                                  style={{
+                                    width: 40,
+                                    height: 60,
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              ) : (
+                                <div
+                                  style={{
+                                    width: 40,
+                                    height: 60,
+                                    backgroundColor: isDarkTheme
+                                      ? "#333"
+                                      : "#eee",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    color: isDarkTheme ? "#aaa" : "#666",
+                                  }}
+                                >
+                                  📚
+                                </div>
+                              )
+                            }
+                            title={book.title}
+                            description={book.author}
+                          />
+                        </List.Item>
+                      )}
+                    />
+                  ) : searchQuery.trim() ? (
+                    <div
+                      style={{
+                        padding: "20px",
+                        textAlign: "center",
+                        color: isDarkTheme ? "#aaa" : "#666",
+                      }}
+                    >
+                      Không tìm thấy sách phù hợp
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
           )}
 
           {/* Toggle Dark Mode & Avatar */}
@@ -151,8 +344,13 @@ const LayoutHeader = () => {
                   items: [
                     { key: "profile", label: "Hồ sơ" },
                     { key: "logout", label: "Đăng xuất", onClick: logout },
-                    { key: "history", label: "Lịch sử mua", onClick: () => { nav('/history') } },
-
+                    {
+                      key: "history",
+                      label: "Lịch sử mua",
+                      onClick: () => {
+                        nav("/history");
+                      },
+                    },
                   ],
                 }}
                 placement="bottomLeft"

@@ -151,7 +151,10 @@ declare global {
         __v?: number;
     }
 
-
+    interface ISearchBooksResponse {
+        meta: IPaginationMeta;
+        result: IGetBook[];
+      }
     interface ICreateBook {
         title: string;
         author: string[];

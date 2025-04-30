@@ -62,6 +62,7 @@ const Cart = () => {
       setTotalCart(0);
       setCartItems([]);
     }
+    console.log(cartItems);
   }, [cart]);
 
   const title = <h2>Giỏ hàng</h2>;
@@ -140,7 +141,7 @@ const Cart = () => {
               </div>
               <div>
                 <span>Số lượng: </span>
-                <InputNumber defaultValue={item.quantity} min={1} disabled />
+                <InputNumber value={item.quantity} min={1} disabled />
               </div>
             </div>
           ))}
