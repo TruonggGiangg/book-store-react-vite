@@ -12,6 +12,7 @@ import {
   Typography,
   Image,
   Descriptions,
+  Modal,
 } from "antd";
 import {
   ShoppingCartOutlined,
@@ -20,13 +21,14 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import Lottie from "lottie-react";
-import { createOrderApi, getAllBookApi, getBookApi } from "@/services/api";
+import { createOrderApi, getBookApi } from "@/services/api";
 import Container from "@/components/layout/client/container.layout";
 import CartBookList from "@/components/client/order/cart-product-list";
 import loadingAnimation from "@/assets/animation/loadingAnimation.json";
 import { ColumnsType } from "antd/es/table";
 import { useAppProvider } from "@/components/context/app.context";
-import Item from "antd/es/list/Item";
+import { useNavigate } from "react-router-dom";
+
 const { Title, Text } = Typography;
 const { Step } = Steps;
 const { Option } = Select;
@@ -42,7 +44,9 @@ const CheckoutPage: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { setCart } = useAppProvider();
+  const { setCart, cart } = useAppProvider();
+  const navigate = useNavigate();
+
   // State cho bước 2
   const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
@@ -50,6 +54,9 @@ const CheckoutPage: React.FC = () => {
   const [district, setDistrict] = useState<string | undefined>(undefined);
   const [ward, setWard] = useState<string | undefined>(undefined);
   const [address, setAddress] = useState<string>("");
+
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [totalCart, setTotalCart] = useState(0);
 
   const columns: ColumnsType<IGetBook> = [
     {
@@ -102,26 +109,45 @@ const CheckoutPage: React.FC = () => {
     },
   ];
 
-  const [cartItems, setCartItems] = useState<any[]>([]);
-  const { cart } = useAppProvider();
-  const [totalCart, setTotalCart] = useState(0);
-
-  // Fetch books from API
+  // Fetch books from cart
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         setLoading(true);
-        const res = await getAllBookApi("current=1&pageSize=12");
-        if (res.data) {
-          setBooks(res.data.result || []);
-          const initialQuantities = res.data.result.reduce(
-            (acc: { [key: string]: number }, book: IGetBook) => ({
-              ...acc,
-              [book._id]: 1,
-            }),
-            {} as { [key: string]: number }
+        const savedCart = localStorage.getItem("cart");
+        if (savedCart) {
+          const cartData = JSON.parse(savedCart);
+
+          // Tính tổng số lượng sản phẩm trong giỏ hàng
+          const totalQuantity = cartData
+            .map((item: { quantity: number }) => item.quantity)
+            .reduce((a: number, b: number) => a + b, 0);
+          setTotalCart(totalQuantity);
+
+          // Lấy danh sách sách từ API dựa trên các ID sản phẩm trong giỏ hàng
+          const bookPromises = cartData.map(
+            async (item: { _id: string; quantity: number }) => {
+              const res = await getBookApi(item._id);
+              if (res.data) {
+                return { book: res.data, quantity: item.quantity };
+              }
+              return null;
+            }
           );
-          // setQuantities(initialQuantities);
+
+          // Chờ tất cả các sách được lấy từ API
+          const booksData = await Promise.all(bookPromises);
+          const validBooks = booksData.filter((book) => book !== null);
+          setCartItems(validBooks);
+          setBooks(validBooks.map((item) => item.book));
+
+          // Cập nhật quantities từ cartData
+          setQuantities(
+            cartData.reduce((acc: { [key: string]: number }, item: any) => {
+              acc[item._id] = item.quantity;
+              return acc;
+            }, {})
+          );
         }
       } catch (error) {
         setError("Lỗi khi tải danh sách sách");
@@ -132,54 +158,8 @@ const CheckoutPage: React.FC = () => {
     };
 
     fetchBooks();
-  }, []);
-
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
-        const cartData = JSON.parse(savedCart);
-
-        // Tính tổng số lượng sản phẩm trong giỏ hàng
-        const totalQuantity = cartData
-          .map((item: { quantity: number }) => item.quantity)
-          .reduce((a: number, b: number) => a + b, 0);
-        setTotalCart(totalQuantity);
-
-        // Lấy danh sách sách từ API dựa trên các ID sản phẩm trong giỏ hàng
-        const fetchBooks = async () => {
-          try {
-            const bookPromises = cartData.map(
-              async (item: { _id: string; quantity: number }) => {
-                const res = await getBookApi(item._id); // Lấy sách theo _id
-                if (res.data) {
-                  return { book: res.data, quantity: item.quantity }; // Thêm quantity vào dữ liệu sách
-                }
-                return null;
-              }
-            );
-
-            // Chờ tất cả các sách được lấy từ API
-            const booksData = await Promise.all(bookPromises);
-            // Cập nhật giỏ hàng với sách và số lượng
-            setCartItems(booksData.filter((book) => book !== null)); // Cập nhật giỏ hàng
-          } catch (error) {
-            console.error("Error fetching books:", error);
-          }
-        };
-
-        fetchBooks();
-        setQuantities(
-          cartData.reduce((acc: { [key: string]: number }, item: any) => {
-            acc[item._id] = item.quantity;
-            return acc;
-          }, {})
-        );
-      } catch (error) {
-        console.error("Error parsing cart items:", error);
-      }
-    }
   }, [cart]);
+
   // Fetch provinces from Vietnam API
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -225,7 +205,6 @@ const CheckoutPage: React.FC = () => {
   };
 
   // Handle quantity change
-  // Handle quantity change
   const handleQuantityChange = (bookId: string, value: number | null) => {
     if (value !== null) {
       setQuantities((prev) => ({ ...prev, [bookId]: value }));
@@ -239,7 +218,7 @@ const CheckoutPage: React.FC = () => {
         return item;
       });
 
-      // Cập nhật lại cartItems
+      // Cập nhật localStorage
       localStorage.setItem(
         "cart",
         JSON.stringify(
@@ -250,7 +229,7 @@ const CheckoutPage: React.FC = () => {
         )
       );
 
-      // Cập nhật lại cart với giá trị _id và quantity
+      // Cập nhật context
       setCart(
         updatedCart.map((item) => ({
           _id: item.book._id,
@@ -258,7 +237,7 @@ const CheckoutPage: React.FC = () => {
         }))
       );
 
-      return updatedCart; // Trả về giá trị đã cập nhật
+      return updatedCart;
     });
   };
 
@@ -272,7 +251,8 @@ const CheckoutPage: React.FC = () => {
     });
     setCartItems((prev) => {
       const updatedCart = prev.filter((item) => item.book._id !== bookId);
-      // 2. Xóa trong localStorage
+
+      // Cập nhật localStorage
       localStorage.setItem(
         "cart",
         JSON.stringify(
@@ -282,12 +262,15 @@ const CheckoutPage: React.FC = () => {
           }))
         )
       );
+
+      // Cập nhật context
       setCart(
         updatedCart.map((item) => ({
           _id: item.book._id,
           quantity: item.quantity,
         }))
       );
+
       return updatedCart;
     });
 
@@ -343,22 +326,12 @@ const CheckoutPage: React.FC = () => {
         if (!validateStep2()) {
           return;
         }
-        console.log("Step 2 values:", {
-          name,
-          phone,
-          province,
-          district,
-          ward,
-          address,
-        });
         setCurrentStep(2);
       } else if (currentStep === 2) {
         try {
-          // Validate paymentMethod
           await form.validateFields(["paymentMethod"]);
           setLoading(true);
 
-          // Validate Step 2 data again
           if (!validateStep2()) {
             setLoading(false);
             return;
@@ -387,7 +360,7 @@ const CheckoutPage: React.FC = () => {
             return;
           }
 
-          const orderData: ICreateOrder = {
+          const orderData: ICreate垫 = {
             items: cartItems.map((item) => ({
               productId: item.book._id,
               name: item.book.title,
@@ -400,11 +373,10 @@ const CheckoutPage: React.FC = () => {
             shippingAddress: `${address}, ${wardName}, ${districtName}, ${provinceName}`,
           };
 
-          console.log("Step 3 orderData:", orderData);
-
           const response = await createOrderApi(orderData);
           if (response.data) {
             message.success("Đặt hàng COD thành công!");
+
             // Reset state
             setName("");
             setPhone("");
@@ -418,15 +390,51 @@ const CheckoutPage: React.FC = () => {
             setCurrentStep(0);
             setCartItems([]);
             setCart([]);
-            localStorage.removeItem("cart"); // Xóa giỏ hàng trong localStorage
-            setLoading(false);
+            localStorage.removeItem("cart");
+
+            // Hiển thị modal thông báo với đếm ngược
+            let seconds = 3;
+            const modal = Modal.confirm({
+              title: "Đặt hàng thành công!",
+              content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
+              okText: "Về trang chủ ngay",
+              onOk: () => {
+                clearInterval(countdown);
+                navigate("/");
+              },
+              okButtonProps: {
+                style: {
+                  backgroundColor: "#FF5733",
+                  color: "#fff",
+                  border: "none",
+                  fontWeight: "bold",
+                  padding: "0 20px",
+                  borderRadius: "5px",
+                  fontSize: "16px",
+                },
+              },
+              cancelButtonProps: {
+                style: { display: "none" }, // Ẩn nút "Ở lại"
+              },
+            });
+
+            const countdown = setInterval(() => {
+              seconds--;
+              if (seconds <= 0) {
+                clearInterval(countdown);
+                modal.destroy();
+                navigate("/");
+              } else {
+                modal.update({
+                  content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
+                });
+              }
+            }, 1000);
           } else {
-            throw new Error("Failed to create order");
+            message.error("Đặt hàng không thành công: " + response.message);
           }
         } catch (error) {
-          message.error(
-            "Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin."
-          );
+          message.error("Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin.");
         } finally {
           setLoading(false);
         }
@@ -623,11 +631,8 @@ const CheckoutPage: React.FC = () => {
                     provinces.find((p) => String(p.code) === String(province))
                       ?.name || "Chưa chọn";
                   const districtName =
-                    districts.find((d) => String(d.code) === String(district))
-                      ?.name || "Chưa chọn";
-                  const wardName =
-                    wards.find((w) => String(w.code) === String(ward))?.name ||
-                    "Chưa chọn";
+                    districts.find((d) => String(d.code) === Roswell uses this technique to make a significant amount of money on the stock market by buying low and selling high. He would buy stocks when they were undervalued and sell them when they reached what he believed to be their fair value. This strategy, coupled with his ability to identify promising companies early, contributed to his success.
+
                   return `${
                     address || "Chưa nhập"
                   }, ${wardName}, ${districtName}, ${provinceName}`;

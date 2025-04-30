@@ -23,6 +23,7 @@ import {
     message,
     Input,
 } from "antd";
+import img404 from '@/assets/img/book-with-broken-pages.gif'
 import Container from "@/components/layout/client/container.layout";
 import { AlignLeftOutlined, CustomerServiceOutlined, FileProtectOutlined, InfoCircleOutlined, LeftOutlined, RightOutlined, SwapOutlined, ToolOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -51,9 +52,12 @@ const BookDetailPage = () => {
     const [booksByCategory, setBooksByCategory] = useState<IGetBook[]>([]);
     const [loadingBooks, setLoadingBooks] = useState<boolean>(false);
     const { isDarkTheme } = useAppProvider();
+    const { currUser } = useAppProvider();
 
     const [currentSlide, setCurrentSlide] = useState<number>(0);
     const carouselRef = useRef<any>(null);
+
+
 
     // Fetch book details and categories
     useEffect(() => {
@@ -115,7 +119,7 @@ const BookDetailPage = () => {
             setLoadingHotTool(false);
         };
         fetchHotTools();
-    }, []);
+    }, [id]);
 
     // Fetch Books by Category
     useEffect(() => {
@@ -138,7 +142,12 @@ const BookDetailPage = () => {
             }
         };
         fetchBooks();
-    }, [book]);
+    }, [book, id]);
+
+    useEffect(() => {
+        setBook(undefined)
+        window.scrollTo(0, 0);
+    }, [id]);
 
     // Format date
     const formatDate = (date?: Date | number | string) => {
@@ -221,9 +230,20 @@ const BookDetailPage = () => {
 
 
     const handleSubmit = async (comment: string, rating: number) => {
+        if (!currUser) {
+            message.error('Vui lòng đăng nhập để đánh giá!');
+            return;
+        }
+
+        if (rating === 0) {
+            message.error('Vui lòng đánh giá ít nhất 1 sao!');
+            return;
+        }
+
+
         const newReview: Review = {
-            userId: 'u123', // từ context hoặc token
-            userName: 'Nguyễn Văn A',
+            userId: currUser?._id,
+            userName: currUser?.name || 'Người dùng',
             comment,
             rating,
             createdAt: new Date(),
@@ -358,7 +378,9 @@ const BookDetailPage = () => {
                             <Breadcrumb.Item>
                                 <a href="/books">Sách</a>
                             </Breadcrumb.Item>
-                            <Breadcrumb.Item>{book?.title || "Chi tiết sách"}</Breadcrumb.Item>
+                            <Breadcrumb.Item>
+                                {book?.title || "Chi tiết sách"}
+                            </Breadcrumb.Item>
                         </Breadcrumb>
 
                         {/* Main Layout: Split into Left and Right Sections */}
@@ -407,6 +429,9 @@ const BookDetailPage = () => {
                                                                     className="custom-image"
                                                                     onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.025)")}
                                                                     onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                                                                    onError={(e) => {
+                                                                        e.currentTarget.src = img404; // Dùng ảnh lỗi khi ảnh không thể tải
+                                                                    }}
                                                                 />
                                                             </div>
                                                         </div>
@@ -433,6 +458,9 @@ const BookDetailPage = () => {
                                                             onClick={() => {
                                                                 carouselRef.current?.goTo(index);
                                                                 setCurrentSlide(index);
+                                                            }}
+                                                            onError={(e) => {
+                                                                e.currentTarget.src = img404; // Dùng ảnh lỗi khi ảnh không thể tải
                                                             }}
                                                         />
                                                     </Col>
@@ -492,12 +520,7 @@ const BookDetailPage = () => {
                                                 >
                                                     {book.price.toLocaleString()} VND
                                                 </Text>
-                                                <Text
-                                                    delete
-                                                    style={{ display: "block", fontSize: "16px", color: "#888", marginBottom: "16px" }}
-                                                >
-                                                    {(book.price * 1.2).toLocaleString()} VND
-                                                </Text>
+
                                                 <Space direction="vertical" size="small" style={{ width: "100%", marginBottom: "16px" }}>
                                                     <Text>
                                                         <strong>Nhà xuất bản:</strong> {book.attributes?.publisher || "N/A"}
@@ -807,22 +830,20 @@ const BookDetailPage = () => {
                                         <Text strong style={{ fontSize: "20px", color: "#FF5733" }}>
                                             {book.price.toLocaleString()} VND
                                         </Text>
-                                        <Text
-                                            delete
-                                            style={{ display: "block", fontSize: "14px", color: "#888", marginBottom: "16px" }}
-                                        >
-                                            {(book.price * 1.2).toLocaleString()} VND
-                                        </Text>
-                                        <Text style={{ display: "block", marginBottom: "16px" }}>
-                                            <strong>Số lượng:</strong>
-                                        </Text>
-                                        <InputNumber
-                                            min={1}
-                                            max={book.stock}
-                                            value={quantity}
-                                            onChange={(value) => setQuantity(value || 1)}
-                                            style={{ width: "100%", marginBottom: "16px" }}
-                                        />
+
+                                        <div style={{ display: "flex", alignItems: "center", margin: "16px 0" }}>
+                                            <Text strong>
+                                                Số lượng
+                                            </Text>
+                                            <InputNumber
+                                                min={1}
+                                                max={book.stock}
+                                                value={quantity}
+                                                onChange={(value) => setQuantity(value || 1)}
+                                                style={{ flex: 1, marginLeft: "16px" }}
+                                            />
+                                        </div>
+
                                         <Text style={{ display: "block", marginBottom: "16px" }}>
                                             <strong>Tạm tính:</strong> {(book.price * quantity).toLocaleString()} VND
                                         </Text>

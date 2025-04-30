@@ -175,7 +175,6 @@ const Product: FC<IProps> = memo(({ dataBook, loading, dataCategory, dataBookHot
                                                 listCategories={dataCategory}
                                                 isBook
                                                 showRibbon
-
                                             />
                                         })}
                                     </Row>
