@@ -80,8 +80,6 @@ const Account: React.FC = () => {
     if (account) {
       form.setFieldsValue({
         name: account.name,
-        email: account.email,
-        password: account.password,
         age: account.age,
         gender: account.gender,
         address: account.address,
@@ -98,24 +96,31 @@ const Account: React.FC = () => {
     if (currUser) {
       form.setFieldsValue({
         name: account?.name,
-        email: account?.email,
         gender: account?.gender,
         address: account?.address,
         age: account?.age,
-        password: account?.password,
       });
     }
     setIsEditing(false);
   };
   console.log(account);
 
-  const handleSubmit = async (values: ICreateUser) => {
+  const handleSubmit = async (values: any) => {
     if (!currUser) return;
-
+    const updateAccount: ICreateUser = {
+      password: account?.password || "",
+      name: values.name,
+      age: values.age,
+      gender: values.gender,
+      address: values.address,
+      email: account?.email || "",
+      role: account?.role || "",
+      username: account?.username,
+    };
     setIsSaving(true);
     try {
       // Call API to update profile
-      const response = await updateUserApi(values, currUser._id);
+      const response = await updateUserApi(updateAccount, currUser._id);
 
       if (response.data && response.data) {
         // Update the context with new user data
@@ -212,7 +217,7 @@ const Account: React.FC = () => {
                 </Avatar>
                 <div>
                   <Title level={3}>{account?.name}</Title>
-                  <Text type="secondary">{account?.role}</Text>
+                  <Text type="secondary">{account?.email}</Text>
                 </div>
               </div>
               <div>
@@ -249,8 +254,6 @@ const Account: React.FC = () => {
               disabled={!isEditing}
               initialValues={{
                 name: account?.name,
-                email: account?.email,
-                password: account?.password,
                 gender: account?.gender.toLocaleLowerCase(),
                 age: account?.age,
                 address: account?.address,
@@ -276,54 +279,6 @@ const Account: React.FC = () => {
                     />
                   </Form.Item>
                 </Col>
-
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="email"
-                    label={t("Email") || "Email"}
-                    rules={[
-                      {
-                        required: true,
-                        message:
-                          t("Email không được bỏ trống") ||
-                          "Please enter your email",
-                      },
-                      {
-                        type: "email",
-                        message:
-                          t("account.emailInvalid") ||
-                          "Please enter a valid email",
-                      },
-                    ]}
-                  >
-                    <Input
-                      prefix={<MailOutlined />}
-                      placeholder={t("account.email") || "Email"}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Row gutter={[16, 16]}>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="password"
-                    label={t("Mật khẩu") || "Password"}
-                    rules={[
-                      {
-                        required: true,
-                        message:
-                          t("Mật khẩu không được bỏ trống") ||
-                          "Please enter your password",
-                      },
-                    ]}
-                  >
-                    <Input.Password
-                      prefix={<UserOutlined />}
-                      placeholder={t("account.password") || "Password"}
-                    />
-                  </Form.Item>
-                </Col>
                 <Col xs={24} md={12}>
                   <Form.Item
                     name="gender"
@@ -343,6 +298,9 @@ const Account: React.FC = () => {
                     </Select>
                   </Form.Item>
                 </Col>
+              </Row>
+
+              <Row gutter={[16, 16]}>
                 <Col xs={24} md={12}>
                   <Form.Item
                     name="age"

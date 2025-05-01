@@ -78,6 +78,7 @@ declare global {
 
     //user
     interface IGetUser {
+        username: sting
         _id: string
         name: string;
         email: string;

@@ -116,7 +116,7 @@ export const getAllRoleApi = () => {
 };
 export const updateRoleApi = (id: string, roleData: ICreateRole) => {
     const url = `${baseURL}/api/v1/roles/${id}`;
-    return axios.patch<IBackendRes<any>>(url, roleData);
+    return axios.put<IBackendRes<any>>(url, roleData);
   };
   export const createRoleApi=(roleData: ICreateRole)=>{
     const url=`${baseURL}/api/v1/roles`;
