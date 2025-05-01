@@ -346,7 +346,7 @@ const LayoutHeader = () => {
                       ...(role && typeof role === "string" && role.includes("ADMIN")
                         ? [{ key: "admin", label: "Trang quản trị", onClick: () => nav("/admin") }]
                         : []),
-                      { key: "logout", label: "Đăng xuất" },
+                      { key: "logout", label: "Đăng xuất", onClick: logout },
                     ],
                   }}
                   placement="bottomLeft"
