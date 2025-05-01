@@ -5,7 +5,7 @@ import EventHome from "@/components/client/home/envent";
 import Product from "@/components/client/home/product";
 import Container from "@/components/layout/client/container.layout";
 import { Breadcrumb } from "antd";
-import AppBreadcrumb from "@/components/nav/main";
+import AppBreadcrumb from "@/components/nav/AppBreadcrumb";
 
 const HomePage = () => {
     // const { currUser, role } = useAppProvider();

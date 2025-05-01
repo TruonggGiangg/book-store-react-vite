@@ -13,6 +13,7 @@ import {
   Image,
   Descriptions,
   Modal,
+  Grid,
 } from "antd";
 import {
   ShoppingCartOutlined,
@@ -30,7 +31,7 @@ import { ColumnsType } from "antd/es/table";
 import { useAppProvider } from "@/components/context/app.context";
 import { useNavigate } from "react-router-dom";
 import img404 from "@/assets/img/book-with-broken-pages.gif";
-import AppBreadcrumb from "@/components/nav/main";
+import AppBreadcrumb from "@/components/nav/AppBreadcrumb";
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -49,6 +50,9 @@ const CheckoutPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { setCart, cart } = useAppProvider();
   const navigate = useNavigate();
+
+
+  const screens = Grid.useBreakpoint();
 
   // State cho bước 2
   const [name, setName] = useState<string>("");
@@ -750,7 +754,28 @@ const CheckoutPage: React.FC = () => {
             <Step key={item.title} title={item.title} icon={item.icon} />
           ))}
         </Steps>
-        <div style={{ marginTop: 24, textAlign: "right" }}>
+        <div
+          style={
+            screens.lg
+              ? { marginTop: 24, textAlign: "right" }
+              : {
+                position: "fixed",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                padding: "32px",
+                zIndex: 1000,
+
+                boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
+
+              }
+
+          }
+        >
           {currentStep > 0 && (
             <Button
               style={{ marginRight: 8 }}

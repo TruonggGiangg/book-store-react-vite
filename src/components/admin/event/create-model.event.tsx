@@ -164,9 +164,8 @@ const EventCreate = (props: IProps) => {
           uid: file.uid,
           name: res.data.fileName,
           status: "done",
-          url: `${import.meta.env.VITE_BACKEND_URL}/images/event/${
-            res.data.fileName
-          }`,
+          url: `${import.meta.env.VITE_BACKEND_URL}/images/event/${res.data.fileName
+            }`,
         };
 
         setFileListLogo([{ ...uploadedFile }]);
@@ -194,7 +193,7 @@ const EventCreate = (props: IProps) => {
           form={form}
           name="control-hooks"
           onFinish={onFinish}
-          // style={{ maxWidth: 600 }}
+        // style={{ maxWidth: 600 }}
         >
           <Form.Item
             label="Tên sự kiện"

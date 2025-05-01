@@ -58,9 +58,8 @@ const EventDetail = (props: IProps) => {
             {dataDetailModal?.image ? (
               <Image
                 width={200}
-                src={`${import.meta.env.VITE_BACKEND_URL}/images/event/${
-                  dataDetailModal.image
-                }`}
+                src={`${import.meta.env.VITE_BACKEND_URL}/images/event/${dataDetailModal.image
+                  }`}
                 alt="coverImage"
               />
             ) : (

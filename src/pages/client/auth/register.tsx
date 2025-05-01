@@ -1,5 +1,6 @@
+import { useAppProvider } from "@/components/context/app.context";
 import { registerApi } from "@/services/api";
-import { Button, ConfigProvider, Form, FormProps, Input, message, Select } from "antd";
+import { Button, ConfigProvider, Form, FormProps, Input, message, Select, theme } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -7,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
     const navigate = useNavigate(); // Move useNavigate to top level
-    const isDarkTheme = false;
+
     const [isLoading, setIsLoading] = useState(false); // State to manage loading
 
     // Form submission handler
@@ -38,6 +39,8 @@ const RegisterPage = () => {
         console.log("Failed:", errorInfo);
     };
 
+    const { isDarkTheme } = useAppProvider()
+
     // Log environment variable (for debugging, remove in production)
     console.log(import.meta.env.VITE_BACKEND_URL);
 
@@ -58,10 +61,11 @@ const RegisterPage = () => {
             </style>
             <ConfigProvider
                 theme={{
+                    algorithm: isDarkTheme ? theme.darkAlgorithm : theme.defaultAlgorithm,
                     token: {
-                        colorPrimary: "#ff5733",
-                        colorBgLayout: isDarkTheme ? "#1a120b" : "#f9f4e8",
-                        colorText: isDarkTheme ? "#f9f4e8" : "#3c2f2f",
+                        colorPrimary: '#ff5733', // Giữ màu chính
+                        colorBgLayout: isDarkTheme ? '#1a120b' : '#f9f4e8', // Nền giấy cổ hoặc gỗ tối
+                        colorText: isDarkTheme ? '#f9f4e8' : '#3c2f2f', // Màu chữ
                         borderRadius: 12,
                     },
                 }}
@@ -217,7 +221,8 @@ const RegisterPage = () => {
                     >
                         <Form
                             name="basic"
-                            layout="vertical"
+                            labelCol={{ span: 8 }}
+                            wrapperCol={{ span: 16 }}
                             style={{ width: "100%" }}
                             initialValues={{ remember: true }}
                             onFinish={onFinish}
@@ -329,8 +334,15 @@ const RegisterPage = () => {
                                 <Input placeholder="Nhập địa chỉ" />
                             </Form.Item>
 
-                            <Form.Item style={{ textAlign: 'center' }}>
+                            <Form.Item
+                                //no label for the last item
+                                wrapperCol={{ offset: 3, span: 18 }} // Align with label column
+                                style={{ marginTop: "24px" }} // Add margin to the top
+                            // style={{ textAlign: 'center' }}
+                            >
                                 <Button
+
+
                                     loading={isLoading}
                                     type="primary"
                                     htmlType="submit"
@@ -349,7 +361,20 @@ const RegisterPage = () => {
                                 </Button>
                             </Form.Item>
                         </Form>
+                        <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                            <div
+                                onClick={() => navigate('/login')}
+                                style={{
+                                    color: '#ff5733',
+                                    fontWeight: '600',
+                                    fontSize: '16px',
+                                    transition: 'color 0.3s',
+                                }}
 
+                            >
+                                Đã có tài khoản? Đăng nhập ngay
+                            </div>
+                        </div>
 
 
 

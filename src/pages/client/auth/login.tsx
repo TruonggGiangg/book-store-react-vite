@@ -22,7 +22,7 @@ const LoginPage = () => {
             localStorage.setItem('access_token', res.data.access_token);
             setIsAuthenticated(true);
             setCurrUser(res.data.user);
-            nav('/');
+            window.location.href = '/';
             message.success({
                 content: "Đăng nhập thành công",
             });

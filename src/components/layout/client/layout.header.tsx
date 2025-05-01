@@ -46,6 +46,26 @@ const LayoutHeader = () => {
   const [t, i18n] = useTranslation("global");
   const screens = useBreakpoint();
 
+  // useEffect(() => {
+  //   const fetchRole = async () => {
+  //     try {
+  //       setIsLoading(true); // Optionally use roleLoading here
+  //       const res = await getRoleApi(currUser?._id || "");
+  //       if (res.data) {
+  //         setRole(res.data.name);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching role:", error);
+  //     } finally {
+  //       setIsLoading(false); // Optionally set roleLoading to false
+  //     }
+  //   };
+
+  //   if (currUser && !role) { // Only fetch if role is not already set
+  //     fetchRole();
+  //   }
+  // }, []); // Removed role from dependencies
+
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<IGetBook[]>([]);
@@ -360,7 +380,13 @@ const LayoutHeader = () => {
                       { key: "profile", label: "Hồ sơ", onClick: () => nav("/account") },
                       { key: "history", label: "Lịch sử mua", onClick: () => nav("/history") },
                       ...(role && typeof role === "string" && role.includes("ADMIN")
-                        ? [{ key: "admin", label: "Trang quản trị", onClick: () => nav("/admin") }]
+                        ? [
+                          {
+                            key: "admin",
+                            label: "Trang quản trị",
+                            onClick: () => nav("/admin"),
+                          },
+                        ]
                         : []),
                       { key: "logout", label: "Đăng xuất", onClick: logout },
                     ],
@@ -369,7 +395,7 @@ const LayoutHeader = () => {
                   trigger={["click"]}
                 >
                   <Avatar
-                    size={'large'}
+                    size="large"
                     style={{
                       cursor: "pointer",
                       transition: "all 0.3s ease-in-out",

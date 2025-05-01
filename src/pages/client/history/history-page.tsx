@@ -6,7 +6,7 @@ import Container from '@/components/layout/client/container.layout';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useAppProvider } from '@/components/context/app.context';
-import AppBreadcrumb from '@/components/nav/main';
+import AppBreadcrumb from '@/components/nav/AppBreadcrumb';
 
 const { Title } = Typography;
 

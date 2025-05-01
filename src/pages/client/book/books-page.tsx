@@ -10,7 +10,7 @@ import loadingAnimation from "@/assets/animation/loadingAnimation.json";
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useAppProvider } from '@/components/context/app.context';
 import { useNavigate, useParams } from 'react-router-dom';
-import AppBreadcrumb from '@/components/nav/main';
+import AppBreadcrumb from '@/components/nav/AppBreadcrumb';
 
 interface Filters {
     categories: string[];
