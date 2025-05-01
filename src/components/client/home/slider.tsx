@@ -15,6 +15,7 @@ type IProps = {
 
 const HomeSlider = ({ data, loading, dataBook }: IProps) => {
     const [scrollY, setScrollY] = useState(0);
+    const [isLoading, setIsLoading] = useState(true); // State mới để kiểm soát loading
     const carouselRef = useRef<any>(null);
     const navigate = useNavigate();
 
@@ -24,7 +25,20 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    if (loading) {
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (!loading) {
+            // Đợi ít nhất 4 giây trước khi tắt loading
+            timer = setTimeout(() => {
+                setIsLoading(false);
+            }, 4000);
+        } else {
+            setIsLoading(true);
+        }
+        return () => clearTimeout(timer); // Cleanup timer
+    }, [loading]);
+
+    if (isLoading) {
         return (
             <Container>
                 <div
@@ -33,8 +47,11 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: '100%',
-                        height: '544px', // Fixed size for layout
+                        height: '544px',
                         borderRadius: 8,
+                        //đậm tí
+                        border: '1px solid #ddd',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                     }}
                 >
                     <Lottie
@@ -42,7 +59,7 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                         loop
                         style={{
                             width: '15%',
-                            maxWidth: '200px', // Limit Lottie size
+                            maxWidth: '200px',
                             height: 'auto',
                             margin: 'auto',
                         }}
@@ -136,12 +153,10 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                             onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.025)')}
                             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                         >
-                            {/* Category name and description */}
                             <Row
                                 style={{
                                     position: 'absolute',
                                     left: '5%',
-
                                     top: '10%',
                                     color: 'white',
                                     fontSize: '32px',
@@ -198,7 +213,6 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                 </Col>
                             </Row>
 
-                            {/* Book list */}
                             <div
                                 style={{
                                     position: 'absolute',
@@ -208,10 +222,8 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                     overflow: 'hidden',
                                 }}
                             >
-
                                 {dataBook[category._id]?.length > 0 ? (
                                     dataBook[category._id].slice(0, 5).map((book) => (
-
                                         <div
                                             onClick={() => {
                                                 navigate(`/book/${book._id}`);
@@ -233,18 +245,15 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                                 alt={book.title}
                                                 style={{
                                                     width: '100px',
-
                                                     objectFit: 'cover',
                                                     aspectRatio: '2 / 3',
                                                 }}
                                             />
                                         </div>
-
                                     ))
                                 ) : (
-                                    <div style={{ width: '500px', height: '150px' }} /> // Placeholder
+                                    <div style={{ width: '500px', height: '150px' }} />
                                 )}
-
                             </div>
                         </div>
                     </div>

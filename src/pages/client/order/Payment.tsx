@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Steps,
   Card,
@@ -25,6 +25,7 @@ import { createOrderApi, getBookApi } from "@/services/api";
 import Container from "@/components/layout/client/container.layout";
 import CartBookList from "@/components/client/order/cart-product-list";
 import loadingAnimation from "@/assets/animation/loadingAnimation.json";
+import successAnimation from "@/assets/animation/successAnimation.json";
 import { ColumnsType } from "antd/es/table";
 import { useAppProvider } from "@/components/context/app.context";
 import { useNavigate } from "react-router-dom";
@@ -65,6 +66,8 @@ const CheckoutPage: React.FC = () => {
     e.currentTarget.src = img404; // Thay bằng ảnh mặc định
   };
 
+  const minimumDisplayTimeRef = useRef(false); // Theo dõi thời gian tối thiểu 4 giây
+
   const columns: ColumnsType<IGetBook> = [
     {
       title: "Sản phẩm",
@@ -73,9 +76,8 @@ const CheckoutPage: React.FC = () => {
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Image
-            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
-              record.logo
-            }`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${record.logo
+              }`}
             alt={record.title}
             width={100}
             height={100}
@@ -386,67 +388,123 @@ const CheckoutPage: React.FC = () => {
 
           const response = await createOrderApi(orderData);
           if (response.data) {
-            message.success("Đặt hàng COD thành công!");
+            message.success('Đặt hàng COD thành công!');
 
             // Reset state
-            setName("");
-            setPhone("");
+            setName('');
+            setPhone('');
             setProvince(undefined);
             setDistrict(undefined);
             setWard(undefined);
-            setAddress("");
+            setAddress('');
             setBooks([]);
             setQuantities({});
             form.resetFields();
             setCurrentStep(0);
             setCartItems([]);
             setCart([]);
-            localStorage.removeItem("cart");
+            localStorage.removeItem('cart');
+
+            // Đặt thời gian tối thiểu 4 giây
+            setTimeout(() => {
+              minimumDisplayTimeRef.current = true; // Đánh dấu đã đủ 4 giây
+            }, 4000);
 
             // Hiển thị modal thông báo với đếm ngược
-            let seconds = 3;
+            let seconds = 10;
             const modal = Modal.success({
-              title: "Đặt hàng thành công!",
-              content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
-              okText: "Về trang chủ ngay",
+              title: 'Đặt hàng thành công!',
+              content: (
+                <div style={{}}>
+                  <Lottie
+                    animationData={successAnimation}
+                    loop
+                    // speed={0.5} // Giảm tốc độ animation nếu cần (0.5 = chậm hơn 50%)
+                    style={{
+                      width: '40%',
+                      maxWidth: '200px',
+                      height: 'auto',
+                      margin: 'auto',
+                    }}
+                  />
+                  <Text strong style={{ fontSize: 16 }} id="countdown-text">
+                    Bạn có thể theo dõi đơn hàng của mình trong trang lịch sử mua hàng.
+                    {`Đang chuyển về trang chủ sau ${seconds} giây.`}
+                  </Text>
+                </div>
+              ),
+              okText: 'Về trang chủ ngay',
               onOk: () => {
+                if (!minimumDisplayTimeRef.current) {
+                  message.info('Vui lòng đợi ít nhất 4 giây!');
+                  return;
+                }
                 clearInterval(countdown);
-                navigate("/");
+                modal.destroy();
+                navigate('/');
                 setCart([]);
-                localStorage.removeItem("cart");
+                localStorage.removeItem('cart');
               },
               okButtonProps: {
+                disabled: !minimumDisplayTimeRef.current, // Vô hiệu hóa nút trong 4 giây đầu
                 style: {
-                  backgroundColor: "#FF5733",
-                  color: "#fff",
-                  border: "none",
-                  fontWeight: "bold",
-                  padding: "0 20px",
-                  borderRadius: "5px",
-                  fontSize: "16px",
+                  backgroundColor: minimumDisplayTimeRef.current ? '#FF5733' : '#d9d9d9',
+                  color: minimumDisplayTimeRef.current ? '#fff' : '#000',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  padding: '0 20px',
+                  borderRadius: '5px',
+                  fontSize: '16px',
                 },
               },
               cancelButtonProps: {
-                style: { display: "none" }, // Ẩn nút "Ở lại"
+                style: { display: 'none' }, // Ẩn nút "Ở lại"
               },
+              centered: true,
             });
+
+            // Cập nhật trạng thái nút sau 4 giây
+            setTimeout(() => {
+              modal.update({
+                okButtonProps: {
+                  disabled: false,
+                  style: {
+                    backgroundColor: '#FF5733',
+                    color: '#fff',
+                    border: 'none',
+                    fontWeight: 'bold',
+                    padding: '0 20px',
+                    borderRadius: '5px',
+                    fontSize: '16px',
+                  },
+                },
+              });
+            }, 4000);
 
             const countdown = setInterval(() => {
               seconds--;
               if (seconds <= 0) {
                 clearInterval(countdown);
                 modal.destroy();
-                navigate("/");
+                navigate('/');
                 setCart([]);
-                localStorage.removeItem("cart");
+                localStorage.removeItem('cart');
               } else {
-                modal.update({
-                  content: `Đang chuyển về trang chủ sau ${seconds} giây...`,
-                });
+                // Chỉ cập nhật text đếm ngược
+                const countdownText = document.getElementById('countdown-text');
+                if (countdownText) {
+                  countdownText.textContent = `Đang chuyển về trang chủ sau ${seconds} giây...`;
+                }
               }
             }, 1000);
+
+            // Cleanup khi component unmount
+            return () => {
+              clearInterval(countdown);
+              modal.destroy();
+            };
           } else {
-            message.error("Đặt hàng không thành công: " + response.message);
+            message.error('Đặt hàng không thành công: ' + response.message);
           }
         } catch (error) {
           message.error(
@@ -654,9 +712,8 @@ const CheckoutPage: React.FC = () => {
                     wards.find((w) => String(w.code) === String(ward))?.name ||
                     "Chưa chọn";
 
-                  return `${
-                    address || "Chưa nhập"
-                  }, ${wardName}, ${districtName}, ${provinceName}`;
+                  return `${address || "Chưa nhập"
+                    }, ${wardName}, ${districtName}, ${provinceName}`;
                 })()}
               </Descriptions.Item>
             </Descriptions>

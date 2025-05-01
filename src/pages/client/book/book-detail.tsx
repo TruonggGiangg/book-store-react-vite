@@ -174,6 +174,8 @@ const BookDetailPage = () => {
     return dayjs(date).format("DD/MM/YYYY");
   };
 
+
+
   // Tạo mảng tất cả ảnh (logo + coverImage)
   const allImages = [book?.logo, ...(book?.coverImage || [])].filter(
     Boolean
@@ -1089,19 +1091,9 @@ const BookDetailPage = () => {
                       <strong>Tạm tính:</strong>{" "}
                       {(book.price * quantity).toLocaleString()} VND
                     </Text>
+
                     <Button
                       type="primary"
-                      size="large"
-                      style={{
-                        width: "100%",
-                        height: "50px",
-                        fontSize: "18px",
-                        marginBottom: "16px",
-                      }}
-                    >
-                      Mua ngay
-                    </Button>
-                    <Button
                       size="large"
                       style={{
                         width: "100%",

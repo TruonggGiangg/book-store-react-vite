@@ -345,9 +345,9 @@ const LayoutHeader = () => {
                         nav("/account");
                       },
                     },
-                    { key: "logout", label: "Đăng xuất", onClick: logout },
 
-                    { key: "profile", label: "Hồ sơ" },
+
+
 
                     {
                       key: "history",
