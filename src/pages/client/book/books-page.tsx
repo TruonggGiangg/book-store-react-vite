@@ -1,7 +1,7 @@
 import BookCard from '@/components/client/home/book-card';
 import ListCardSkeleton from '@/components/client/home/skeleton';
 import Container from '@/components/layout/client/container.layout';
-import { getAllBookApi, getAllCategoryApi } from '@/services/api';
+import { getAllBookApi, getAllCategoryApi, getCategoryApi } from '@/services/api';
 import { Breadcrumb, Button, Card, Checkbox, Collapse, InputNumber, Row, Select, Slider, Spin, Typography } from 'antd';
 const { Text } = Typography;
 import Lottie from 'lottie-react';
@@ -48,7 +48,21 @@ const BookPage: React.FC = () => {
     const [allSelected, setAllSelected] = useState<boolean>(true); // Trạng thái chọn tất cả
     const [filterVisible, setFilterVisible] = useState<boolean>(true); // Thêm dòng này
 
+    const [category, setCategory] = useState<IGetCategories | null>(null);
 
+    useEffect(() => {
+        const fetchCategory = async () => {
+            if (id) {
+                const res = await getCategoryApi(id);
+                if (res.data) {
+                    setCategory(res.data);
+                } else {
+                    setCategory(null);
+                }
+            }
+        }
+        fetchCategory();
+    }, [id]);
     const pageSize = 12;
 
     useEffect(() => {
@@ -262,7 +276,7 @@ const BookPage: React.FC = () => {
     const gridSizes = { xxl: 4, xl: 6, lg: 6, md: 8, sm: 12, xs: 24 };
 
     return (
-        <div style={{ marginTop: '100px' }}>
+        <div style={{ marginTop: "160px" }}>
             <Container>
                 <AppBreadcrumb />
                 {/* Filter Section with Collapse */}
@@ -407,6 +421,17 @@ const BookPage: React.FC = () => {
                         ? "0px 0px 12px rgba(255, 255, 255, 0.07)" // Hiệu ứng sáng hơn trong dark mode
                         : "0px 0px 12px rgba(0, 0, 0, 0.1)", // Hiệu ứng mềm hơn trong light mode
                 }}>
+                    <div>
+                        <h1>Chi tiết thể loại</h1>
+                        {category ? (
+                            <>
+                                <p><strong>Tên:</strong> {category.name}</p>
+                                <p><strong>Mô tả:</strong> {category.description}</p>
+                            </>
+                        ) : (
+                            <p>Đang tải...</p>
+                        )}
+                    </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                         <h2 style={{ margin: 0, color: "#FF5733" }}>
                             Danh sách sách

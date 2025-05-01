@@ -259,7 +259,7 @@ const HistoryPage: React.FC = () => {
     };
 
     return (
-        <div style={{ marginTop: '100px' }}>
+        <div style={{ marginTop: "160px" }}>
             <Container>
                 <AppBreadcrumb />
                 <div>

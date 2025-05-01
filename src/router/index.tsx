@@ -50,6 +50,11 @@ export const router = createBrowserRouter([
       },
 
       {
+        path: "tools/:id",
+        element: <ToolPage />,
+      },
+
+      {
         path: "payment",
         element: <CheckoutPage />,
       },

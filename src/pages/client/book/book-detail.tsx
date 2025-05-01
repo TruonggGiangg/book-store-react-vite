@@ -495,7 +495,7 @@ const BookDetailPage = () => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   };
   return (
-    <div style={{ marginTop: "100px", position: "relative" }}>
+    <div style={{ marginTop: "160px", position: "relative" }}>
       <Container>
         {isLoading ? (
           <DetailedSkeleton />
@@ -647,6 +647,7 @@ const BookDetailPage = () => {
                               color: isDarkTheme ? "#FFF" : "#333",
                               //cho phép xuống hàng
                               whiteSpace: "normal",
+
                             }}
                           >
                             {book.title}

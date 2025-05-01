@@ -6,6 +6,7 @@ import { UpOutlined, FacebookOutlined, MessageOutlined, ArrowUpOutlined } from "
 import LayoutHeader from '@/components/layout/client/layout.header'
 import { useAppProvider } from '@/components/context/app.context';
 import Container from './container.layout';
+import SubNav from './sub-nav.layout';
 const { Content, Footer, Sider } = Layout;
 
 
