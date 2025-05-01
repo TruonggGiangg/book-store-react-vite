@@ -108,12 +108,14 @@ const AddBook = (props: IProps) => {
                 description: "Tạo sản phẩm thành công",
                 placement: "topRight",
             })
+            onReset()
         } else {
             api.error({
                 message: "Lỗi",
                 description: `${res.message}`,
                 placement: "topRight",
             });
+            onReset()
         }
         setIsLoading(false)
 

@@ -83,6 +83,19 @@ const OrderAdminMain = () => {
             },
         },
         {
+            title: 'Số điện thoại',
+            dataIndex: 'numberPhone',
+            key: 'numberPhone',
+            copyable: true,
+            ellipsis: true,
+            tooltip: 'Số điện thoại người nhận',
+            render: (_, record) => (
+                <a href={`tel:${record.numberPhone}`} style={{ color: '#ff5733' }}>
+                    {record.numberPhone}
+                </a>
+            ),
+        },
+        {
             title: 'Tổng tiền',
             dataIndex: 'totalAmount',
             hideInSearch: true,

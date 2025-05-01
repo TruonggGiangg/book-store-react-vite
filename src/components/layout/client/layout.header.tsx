@@ -15,7 +15,7 @@ import {
   Spin,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { logoutApi, searchBooksApi } from "@/services/api";
+import { getRoleApi, logoutApi, searchBooksApi } from "@/services/api";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import logo_light from "@/assets/logo/light-logo.png";
@@ -33,6 +33,7 @@ const { useBreakpoint } = Grid;
 const LayoutHeader = () => {
   const nav = useNavigate();
   const {
+    role,
     isDarkTheme,
     setIsDarkTheme,
     setIsLoading,
@@ -50,6 +51,8 @@ const LayoutHeader = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const searchInputRef = useRef<HTMLDivElement>(null);
+
+
 
   // Function to fetch search results
   const fetchSearchResults = async (query: string) => {
@@ -144,9 +147,8 @@ const LayoutHeader = () => {
   const avatarSize = Math.max(28, 48 - maxScroll / 10);
   const opacity = Math.min(0.5 + (scrollY / 400) * 0.7, 1);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const backgroundColor = `rgba(${
-    isDarkTheme ? "20, 20, 20" : "255, 255, 255"
-  }, ${opacity})`;
+  const backgroundColor = `rgba(${isDarkTheme ? "20, 20, 20" : "255, 255, 255"
+    }, ${opacity})`;
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.onerror = null; // Ngăn lỗi lặp vô hạn
     e.currentTarget.src = img404; // Thay bằng ảnh mặc định
@@ -270,16 +272,15 @@ const LayoutHeader = () => {
                                   ? "#2a2a2a"
                                   : "#f5f5f5"
                                 : isDarkTheme
-                                ? "#1f1f1f"
-                                : "#fff",
+                                  ? "#1f1f1f"
+                                  : "#fff",
                           }}
                         >
                           <List.Item.Meta
                             avatar={
                               <img
                                 src={
-                                  `${
-                                    import.meta.env.VITE_BACKEND_URL
+                                  `${import.meta.env.VITE_BACKEND_URL
                                   }/images/product/${book.logo}` ||
                                   "/placeholder.svg"
                                 }
@@ -336,6 +337,7 @@ const LayoutHeader = () => {
               <Dropdown
                 menu={{
                   items: [
+
                     {
                       key: "profile",
                       label: "Hồ sơ",
@@ -344,6 +346,9 @@ const LayoutHeader = () => {
                       },
                     },
                     { key: "logout", label: "Đăng xuất", onClick: logout },
+
+                    { key: "profile", label: "Hồ sơ" },
+
                     {
                       key: "history",
                       label: "Lịch sử mua",
@@ -351,13 +356,25 @@ const LayoutHeader = () => {
                         nav("/history");
                       },
                     },
+                    ...(role && typeof role === "string" && role.includes("ADMIN")
+                      ? [
+                        {
+                          key: "admin",
+                          label: "Trang quản trị",
+                          onClick: () => {
+                            nav("/admin");
+                          },
+                        },
+                      ]
+                      : []),
+                    { key: "logout", label: "Đăng xuất", onClick: logout },
                   ],
                 }}
                 placement="bottomLeft"
                 trigger={["click"]}
               >
                 <Avatar
-                  size={"large"}
+                  size="large"
                   style={{
                     cursor: "pointer",
                     transition: "all 0.3s ease-in-out",

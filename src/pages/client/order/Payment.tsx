@@ -29,6 +29,7 @@ import { ColumnsType } from "antd/es/table";
 import { useAppProvider } from "@/components/context/app.context";
 import { useNavigate } from "react-router-dom";
 import img404 from "@/assets/img/book-with-broken-pages.gif";
+import AppBreadcrumb from "@/components/nav/main";
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -380,6 +381,7 @@ const CheckoutPage: React.FC = () => {
             status: "pending",
             totalAmount: calculateTotal(),
             shippingAddress: `${address}, ${wardName}, ${districtName}, ${provinceName}`,
+            numberPhone: phone,
           };
 
           const response = await createOrderApi(orderData);
@@ -683,7 +685,9 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <div style={{ marginTop: "100px" }}>
+
       <Container>
+        <AppBreadcrumb />
         <Steps current={currentStep}>
           {steps.map((item) => (
             <Step key={item.title} title={item.title} icon={item.icon} />

@@ -57,7 +57,7 @@ export const deleteUserApi = (id: string) => {
     return axios.delete<IBackendRes<any>>(url);
 };
 
-export const getUserApi=(id: string)=>{
+export const getUserApi = (id: string) => {
     const url = `${baseURL}/api/v1/users/${id}`;
     return axios.get<IBackendRes<IGetUser>>(url)
 }
@@ -90,18 +90,20 @@ export const deleteBookApi = (id: string) => {
     return axios.delete<IBackendRes<any>>(url);
 };
 
+
 export const searchBooksApi = (keyword: string, page: number = 1, pageSize: number = 10) => {
     const url = `${baseURL}/api/v1/books/search`;
-    
+
     // Add query parameters
     const params = new URLSearchParams({
-      keyword,
-      page: page.toString(),
-      pageSize: pageSize.toString()
+        keyword,
+        page: page.toString(),
+        pageSize: pageSize.toString()
     });
-    
+
     return axios.get<IBackendRes<ISearchBooksResponse>>(`${url}?${params.toString()}`);
 };
+
 
 
 //ROLE
@@ -116,17 +118,17 @@ export const getAllRoleApi = () => {
 };
 export const updateRoleApi = (id: string, roleData: ICreateRole) => {
     const url = `${baseURL}/api/v1/roles/${id}`;
-    return axios.patch<IBackendRes<any>>(url, roleData);
-  };
-  export const createRoleApi=(roleData: ICreateRole)=>{
-    const url=`${baseURL}/api/v1/roles`;
-    return axios.post<IBackendRes<any>>(url,roleData);
-  }
-  export const deleteRoleApi=(id:string)=>{
+    return axios.put<IBackendRes<any>>(url, roleData);
+};
+export const createRoleApi = (roleData: ICreateRole) => {
+    const url = `${baseURL}/api/v1/roles`;
+    return axios.post<IBackendRes<any>>(url, roleData);
+}
+export const deleteRoleApi = (id: string) => {
     const url = `${baseURL}/api/v1/roles/${id}`;
     return axios.delete<IBackendRes<any>>(url);
-  }
-  
+}
+
 
 
 
@@ -204,6 +206,12 @@ export const updateOrderApi = (orderData: ICreateOrder, id: string) => {
     const url = `${baseURL}/api/v1/orders/${id}`;
     return axios.put<IBackendRes<any>>(url, orderData);
 };
+
+export const getOrderApi = (id: string) => {
+    const url = `${baseURL}/api/v1/orders/${id}`;
+    return axios.get<IBackendRes<IGetEvent>>(url);
+}
+
 export const getAllPermissionApi = (query: string) => {
     const url = `${baseURL}/api/v1/permissions?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IPermission>>>(url);
@@ -212,6 +220,8 @@ export const updatePermissionApi = (permissionData: IPermission, id: string) => 
     const url = `${baseURL}/api/v1/permissions/${id}`;
     return axios.put<IBackendRes<any>>(url, permissionData);
 }
+
+//permission
 
 export const getPermissionApiByPath = (path: string) => {
     const url = `${baseURL}/api/v1/permissions?path=${path}`;

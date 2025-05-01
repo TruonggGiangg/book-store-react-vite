@@ -94,10 +94,10 @@ const BookCard: FC<BookCardProps> = ({
       ? (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
       : Infinity;
 
-    if (daysSinceCreated <= 15) {
-      return { text: "NEW", color: "blue" };
-    } else if (book.sold >= 10) {
+    if (book.sold >= 1000) {
       return { text: "Bán chạy", color: "orange" };
+    } else if (daysSinceCreated <= 30) {
+      return { text: "NEW", color: "blue" };
     } else {
       return { text: "HOT", color: "red" };
     }

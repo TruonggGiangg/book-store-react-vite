@@ -2,7 +2,7 @@ import BookCard from '@/components/client/home/book-card';
 import ListCardSkeleton from '@/components/client/home/skeleton';
 import Container from '@/components/layout/client/container.layout';
 import { getAllBookApi, getAllCategoryApi } from '@/services/api';
-import { Breadcrumb, Button, Card, Checkbox, Collapse, InputNumber, Row, Select, Slider, Typography } from 'antd';
+import { Breadcrumb, Button, Card, Checkbox, Collapse, InputNumber, Row, Select, Slider, Spin, Typography } from 'antd';
 const { Text } = Typography;
 import Lottie from 'lottie-react';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -10,6 +10,7 @@ import loadingAnimation from "@/assets/animation/loadingAnimation.json";
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useAppProvider } from '@/components/context/app.context';
 import { useNavigate, useParams } from 'react-router-dom';
+import AppBreadcrumb from '@/components/nav/main';
 
 interface Filters {
     categories: string[];
@@ -48,7 +49,7 @@ const BookPage: React.FC = () => {
     const [filterVisible, setFilterVisible] = useState<boolean>(true); // Thêm dòng này
 
 
-    const pageSize = 6;
+    const pageSize = 12;
 
     useEffect(() => {
         // Cuộn lên đầu trang mỗi khi route thay đổi
@@ -263,14 +264,7 @@ const BookPage: React.FC = () => {
     return (
         <div style={{ marginTop: '100px' }}>
             <Container>
-                <Breadcrumb style={{ marginBottom: "16px" }}>
-                    <Breadcrumb.Item>
-                        <a href="/">Trang chủ</a>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        Sách
-                    </Breadcrumb.Item>
-                </Breadcrumb>
+                <AppBreadcrumb />
                 {/* Filter Section with Collapse */}
                 <Collapse
 
@@ -440,7 +434,8 @@ const BookPage: React.FC = () => {
                             </Row>
                             {loadingMore && (
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: "100%", height: "200px" }}>
-                                    <Lottie animationData={loadingAnimation} loop={true} style={{ width: "20%" }} />
+                                    {/* <Lottie animationData={loadingAnimation} loop={true} style={{ width: "20%" }} /> */}
+                                    <Spin size="large" />
                                 </div>
                             )}
                             {!hasMore && dataBook.length > 0 && (

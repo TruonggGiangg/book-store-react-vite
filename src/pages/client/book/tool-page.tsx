@@ -10,6 +10,7 @@ import loadingAnimation from "@/assets/animation/loadingAnimation.json";
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useAppProvider } from '@/components/context/app.context';
 import { useNavigate, useParams } from 'react-router-dom';
+import AppBreadcrumb from '@/components/nav/main';
 
 interface Filters {
     categories: string[];
@@ -241,14 +242,7 @@ const ToolPage: React.FC = () => {
     return (
         <div style={{ marginTop: '100px' }}>
             <Container>
-                <Breadcrumb style={{ marginBottom: "16px" }}>
-                    <Breadcrumb.Item>
-                        <a href="/">Trang chủ</a>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        Dụng cụ
-                    </Breadcrumb.Item>
-                </Breadcrumb>
+                <AppBreadcrumb />
                 <Collapse
                     style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden' }}
                     activeKey={filterVisible ? ['1'] : []}
