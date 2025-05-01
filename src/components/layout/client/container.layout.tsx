@@ -7,7 +7,7 @@ const Container: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 width: "100%",
                 maxWidth: "1400px", // Mặc định cho màn hình lớn hơn 1200px
                 margin: "0 auto",
-                padding: "8px",
+                padding: "4px",
                 boxSizing: "border-box",
                 transition: "all 0.3s ease-in-out",
 

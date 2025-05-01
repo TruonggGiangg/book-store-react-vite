@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, Carousel, Col, Row } from 'antd';
+import { Button, Carousel, Col, Grid, Row } from 'antd';
 import Lottie from 'lottie-react';
 import loadingAnimation from '@/assets/animation/loadingAnimation.json';
 import Container from '@/components/layout/client/container.layout';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { EyeOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 type IProps = {
@@ -18,7 +18,7 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
     const [isLoading, setIsLoading] = useState(true); // State mới để kiểm soát loading
     const carouselRef = useRef<any>(null);
     const navigate = useNavigate();
-
+    const screens = Grid.useBreakpoint();
     useEffect(() => {
         const handleScroll = () => setScrollY(window.scrollY);
         window.addEventListener('scroll', handleScroll);
@@ -49,7 +49,7 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                         width: '100%',
                         height: '544px',
                         borderRadius: 8,
-                        //đậm tí
+
                         border: '1px solid #ddd',
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                     }}
@@ -153,113 +153,116 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                             onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.025)')}
                             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                         >
-                            <Row
-                                style={{
-                                    position: 'absolute',
-                                    left: '5%',
-                                    top: '10%',
-                                    color: 'white',
-                                    fontSize: '32px',
-                                    fontWeight: 'bold',
-                                    textShadow: '3px 3px 12px rgba(0, 0, 0, 0.8)',
-                                    background: 'linear-gradient(90deg, rgba(0,0,0,0.8), rgba(0,0,0,0.5))',
-                                    padding: '32px 50px',
-                                    borderRadius: '10px',
-                                    width: '60%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    textAlign: 'left',
-                                }}
-                            >
-                                <Col xs={24} sm={24} md={24}>
-                                    <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>
-                                        {category.name}
-                                    </h2>
-                                </Col>
-                                <Col xs={24} sm={24} md={24}>
-                                    <p
-                                        style={{
-                                            fontSize: '1rem',
-                                            lineHeight: '1.6',
-                                            fontWeight: 400,
-                                            display: '-webkit-box',
-                                            WebkitBoxOrient: 'vertical',
-                                            WebkitLineClamp: 5,
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                        }}
-                                        dangerouslySetInnerHTML={{ __html: category.description }}
-                                    />
-                                </Col>
-                                <Col xs={24} sm={24} md={12} style={{ marginTop: '40px' }}>
-                                    <Button
-                                        type="primary"
-                                        size="large"
-                                        style={{
-                                            backgroundColor: '#FF5733',
-                                            borderColor: '#FF5733',
-                                            fontWeight: 'bold',
-                                            transition: 'all 0.3s ease-in-out',
-                                        }}
-                                        onClick={() => {
-                                            navigate(`books/${category._id}`);
-                                        }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#e04c2f')}
-                                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FF5733')}
-                                    >
-                                        Xem thêm sản phẩm
-                                    </Button>
-                                </Col>
-                            </Row>
-
                             <div
                                 style={{
                                     position: 'absolute',
-                                    bottom: '32px',
-                                    right: '48px',
-                                    height: '150px',
-                                    overflow: 'hidden',
+                                    top: screens.xs ? '12%' : '40%',
+                                    transform: 'translateY(-50%)',
+                                    left: '5%',
+                                    color: 'white',
+                                    width: screens.xs ? '90%' : '60%',
+                                    padding: '24px',
+                                    background: screens.xs ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.5)',
+                                    borderRadius: '10px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
                                 }}
                             >
-                                {dataBook[category._id]?.length > 0 ? (
-                                    dataBook[category._id].slice(0, 5).map((book) => (
-                                        <div
-                                            onClick={() => {
-                                                navigate(`/book/${book._id}`);
-                                            }}
-                                            style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                borderRadius: '8px',
-                                                overflow: 'hidden',
-                                                transition: 'transform 0.3s ease-in-out',
-                                                cursor: 'pointer',
-                                            }}
-                                            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-                                            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                                        >
+                                <div
+                                    style={{
+                                        display: 'flex',
+
+                                        justifyContent: 'left',
+                                        alignItems: 'center',
+                                        width: screens.xs ? '40%' : '100%',
+                                    }}
+                                >
+                                    <h2 style={{ fontSize: screens.xs ? '1.5rem' : '2.5rem' }}>{category.name}</h2>
+                                </div>
+
+
+                                {!screens.xs && (
+                                    <p
+                                        style={{
+                                            marginTop: 12,
+                                            fontSize: '1rem',
+                                            lineHeight: 1.6,
+                                            maxHeight: 120,
+                                            overflow: 'hidden',
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 4,
+                                            WebkitBoxOrient: 'vertical',
+                                        }}
+                                        dangerouslySetInnerHTML={{ __html: category.description }}
+                                    />
+                                )}
+
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'right',
+                                        alignItems: 'center',
+
+                                        width: screens.xs ? '40%' : '100%',
+                                    }}
+                                >
+                                    <Button
+                                        type="primary"
+                                        size={screens.xs ? 'middle' : 'large'}
+                                        icon={screens.xs ? <EyeOutlined /> : undefined}
+                                        style={{
+
+                                            backgroundColor: '#FF5733',
+                                            borderColor: '#FF5733',
+                                            fontWeight: 'bold',
+                                        }}
+                                        onClick={() => navigate(`books/${category._id}`)}
+                                    >
+                                        Xem thêm
+                                    </Button>
+                                </div>
+
+                            </div>
+
+                            {dataBook[category._id]?.length > 0 && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: 32,
+                                        right: 32,
+                                        display: 'flex',
+                                        gap: 16,
+                                    }}
+                                >
+                                    {dataBook[category._id]
+                                        .slice(0, screens.xs ? 2 : 4)
+                                        .map((book) => (
                                             <img
+                                                key={book._id}
                                                 src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`}
                                                 alt={book.title}
+                                                onClick={() => navigate(`/book/${book._id}`)}
                                                 style={{
-                                                    width: '100px',
-                                                    objectFit: 'cover',
+                                                    width: 100,
                                                     aspectRatio: '2 / 3',
+                                                    objectFit: 'cover',
+                                                    borderRadius: 8,
+                                                    cursor: 'pointer',
+                                                    transition: 'transform 0.3s ease',
                                                 }}
+                                                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                                                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                             />
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div style={{ width: '500px', height: '150px' }} />
-                                )}
-                            </div>
+                                        ))}
+                                </div>
+                            )}
                         </div>
                     </div>
-                ))}
-            </Carousel>
-        </div>
+                ))
+                }
+            </Carousel >
+        </div >
     );
 };
 

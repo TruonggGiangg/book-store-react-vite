@@ -63,8 +63,8 @@ const ThemeToggle = () => {
                 htmlFor="theme-checkbox"
                 onClick={toggleTheme}
                 style={{
-                    width: "40px",
-                    height: "40px",
+                    width: "38px",
+                    height: "38px",
                     borderRadius: "50%",
                     display: "flex",
                     alignItems: "center",

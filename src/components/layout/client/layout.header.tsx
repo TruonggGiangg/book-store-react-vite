@@ -144,10 +144,9 @@ const LayoutHeader = () => {
 
   const maxScroll = Math.min(scrollY, 400);
   const headerHeight = Math.max(60, 100 - maxScroll / 5);
-  const logoSize = Math.max(30, 60 - maxScroll / 10);
-  const avatarSize = Math.max(28, 48 - maxScroll / 10);
+
   const opacity = Math.min(0.5 + (scrollY / 400) * 0.7, 1);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
   const backgroundColor = `rgba(${isDarkTheme ? "20, 20, 20" : "255, 255, 255"
     }, ${opacity})`;
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -185,8 +184,8 @@ const LayoutHeader = () => {
             {/* Logo */}
             <div
               style={{
-                height: `${logoSize}px`,
-                width: `${logoSize}px`,
+                height: `62px`,
+                width: `62px`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -207,13 +206,25 @@ const LayoutHeader = () => {
             </div>
 
             {/* Search Input (hidden on mobile) */}
-            {(screens.lg || screens.xl || screens.xxl) && (
+            {(true) && (
               <div
                 ref={searchInputRef}
                 style={{
                   position: "relative",
-                  margin: screens.xxl ? "0 48px" : screens.xl ? "0 32px" : "0 16px",
-                  width: screens.xxl ? "600px" : screens.xl ? "500px" : "400px",
+                  margin: screens.xxl
+                    ? "0 48px"
+                    : screens.xl
+                      ? "0 32px"
+                      : screens.lg
+                        ? "0 16px"
+                        : "8px 12px", // padding nhỏ cho mobile
+                  width: screens.xxl
+                    ? "600px"
+                    : screens.xl
+                      ? "500px"
+                      : screens.lg
+                        ? "400px"
+                        : "100%", // full width cho mobile
                   maxWidth: "100%",
                 }}
               >
@@ -224,7 +235,7 @@ const LayoutHeader = () => {
                   onChange={handleSearchChange}
                   style={{
                     borderRadius: "8px",
-                    fontSize: screens.xxl ? "16px" : "14px",
+                    fontSize: screens.xxl || screens.xl ? "16px" : "14px",
                     padding: "8px 12px",
                     transition: "all 0.3s ease-in-out",
                     width: "100%",
@@ -336,7 +347,10 @@ const LayoutHeader = () => {
                 unCheckedChildren="EN"
               />
               <ThemeToggle />
-              <Cart />
+              <div style={{ marginRight: "8px" }}>
+                <Cart />
+              </div>
+
               {currUser ? (
                 <Dropdown
                   menu={{
@@ -353,7 +367,7 @@ const LayoutHeader = () => {
                   trigger={["click"]}
                 >
                   <Avatar
-                    size={screens.xxl ? 40 : screens.xl ? 36 : 32}
+                    size={'large'}
                     style={{
                       cursor: "pointer",
                       transition: "all 0.3s ease-in-out",
