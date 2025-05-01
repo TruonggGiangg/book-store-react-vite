@@ -167,6 +167,7 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
+                                    flexWrap: 'wrap',
                                 }}
                             >
                                 <div
@@ -193,6 +194,7 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                             display: '-webkit-box',
                                             WebkitLineClamp: 4,
                                             WebkitBoxOrient: 'vertical',
+                                            width: '100%',
                                         }}
                                         dangerouslySetInnerHTML={{ __html: category.description }}
                                     />
