@@ -59,7 +59,6 @@ const CheckoutPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [totalCart, setTotalCart] = useState(0);
 
-
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.onerror = null; // Ngăn lỗi lặp vô hạn
     e.currentTarget.src = img404; // Thay bằng ảnh mặc định
@@ -73,8 +72,9 @@ const CheckoutPage: React.FC = () => {
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Image
-            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${record.logo
-              }`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
+              record.logo
+            }`}
             alt={record.title}
             width={100}
             height={100}
@@ -167,7 +167,7 @@ const CheckoutPage: React.FC = () => {
     };
 
     fetchBooks();
-  }, [cart]);
+  }, []);
 
   // Fetch provinces from Vietnam API
   useEffect(() => {
@@ -401,7 +401,6 @@ const CheckoutPage: React.FC = () => {
             setCart([]);
             localStorage.removeItem("cart");
 
-
             // Hiển thị modal thông báo với đếm ngược
             let seconds = 3;
             const modal = Modal.success({
@@ -448,7 +447,9 @@ const CheckoutPage: React.FC = () => {
             message.error("Đặt hàng không thành công: " + response.message);
           }
         } catch (error) {
-          message.error("Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin.");
+          message.error(
+            "Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin."
+          );
         } finally {
           setLoading(false);
         }
@@ -642,16 +643,20 @@ const CheckoutPage: React.FC = () => {
               <Descriptions.Item label="Địa chỉ">
                 {(() => {
                   const provinceName =
-                    provinces.find((p) => String(p.code) === String(province))?.name || "Chưa chọn";
+                    provinces.find((p) => String(p.code) === String(province))
+                      ?.name || "Chưa chọn";
                   const districtName =
-                    districts.find((d) => String(d.code) === String(district))?.name || "Chưa chọn";
+                    districts.find((d) => String(d.code) === String(district))
+                      ?.name || "Chưa chọn";
                   const wardName =
-                    wards.find((w) => String(w.code) === String(ward))?.name || "Chưa chọn";
+                    wards.find((w) => String(w.code) === String(ward))?.name ||
+                    "Chưa chọn";
 
-                  return `${address || "Chưa nhập"}, ${wardName}, ${districtName}, ${provinceName}`;
+                  return `${
+                    address || "Chưa nhập"
+                  }, ${wardName}, ${districtName}, ${provinceName}`;
                 })()}
               </Descriptions.Item>
-
             </Descriptions>
           </Card>
           <Card

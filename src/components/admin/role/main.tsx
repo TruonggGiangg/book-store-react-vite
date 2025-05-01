@@ -3,11 +3,8 @@ import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { Button, notification } from "antd";
 import dayjs from "dayjs";
 import { useRef, useState } from "react";
-import {
-  getAllPermissionApi,
-  deletePermissionApi,
-  updatePermissionApi,
-} from "@/services/api";
+import { getRoleApi, getAllRoleApi, deleteRoleApi } from "@/services/api";
+
 import { dateRangeValidate } from "@/services/helper";
 import { useAppProvider } from "@/components/context/app.context";
 import {
@@ -18,98 +15,74 @@ import {
   MoreOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import PermissionDetail from "./detail.permission";
-import PermissionUpdate from "./update.permission";
-const PermissionAdmin = () => {
+import RoleDetail from "./detail.role";
+import RoleUpdate from "./update.role";
+import RoleCreate from "./create.role";
+const RoleAdmin = () => {
   type TSearch = {
     current: number;
-    apiPath: string;
+    name: string;
+    description: string;
     method: string;
     pageSize: number;
-    module: string;
-    name: string;
   };
   const [api, contextHolder] = notification.useNotification();
+  const [dataRole, setDataRole] = useState<IGetRole[]>([]);
+  const [isOpenDetailModal, setIsOpenDetailModal] = useState<boolean>(false);
+  const [dataDetailModal, setDataDetailModal] = useState<IGetRole | null>(null);
+
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
+  const handleOpenCreateModal = () => {
+    setIsOpenCreateModal(true);
+  };
+
+  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
+  const [dataUpdateModal, setDataUpdateModal] = useState<IGetRole | null>(null);
+  const handleOpenUpdateModal = (record: IGetRole) => {
+    setDataUpdateModal(record);
+    setIsOpenUpdateModal(true);
+  };
   const actionRef = useRef<ActionType>();
   const reload = () => {
     actionRef.current?.reload();
   };
-  const columns: ProColumns<IGetPermission>[] = [
+  const columns: ProColumns<IGetRole>[] = [
     {
       dataIndex: "index",
       valueType: "indexBorder",
       width: 48,
     },
-    // {
-    //   title: "ID",
-    //   dataIndex: "_id",
-    //   hideInSearch: true,
-    //   copyable: true,
-    //   ellipsis: true,
-    //   tooltip: "ID quyền",
-    //   render: (_, record) => {
-    //     return (
-    //       <a
-    //         onClick={() => {
-    //           //   handleOpenDetailModal(record);
-    //         }}
-    //       >{`${record._id}`}</a>
-    //     );
-    //   },
-    // },
     {
       title: "Name",
       dataIndex: "name",
       ellipsis: true,
       copyable: true,
-      tooltip: "Tên quyền",
+      tooltip: "Tên vai trò",
     },
     {
-      title: "Path API",
-      dataIndex: "apiPath",
+      title: "Mô tả",
+      dataIndex: "description",
       ellipsis: true,
       copyable: true,
-      tooltip: "Đường dẫn API",
-    },
-    {
-      title: "Method",
-      dataIndex: "method",
-      ellipsis: true,
-      copyable: true,
-      tooltip: "Phương thức API",
-    },
-    {
-      title: "Module",
-      dataIndex: "module",
-      ellipsis: true,
-      copyable: true,
-      tooltip: "Module",
-      render: (_, record) => {
-        return <span>{record.module}</span>;
-      },
-      sorter: true,
+      tooltip: "Mô tả",
     },
     {
       title: "Action",
       hideInSearch: true,
       width: " 100px",
-      render: (_, record) => {
-        return (
-          <>
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-              }}
-            >
-              <MoreOutlined
-                style={{ cursor: "pointer", color: "#ff5733" }}
-                onClick={() => handleOpenDetailModal(record)}
-              />
-            </div>
-          </>
-        );
-      },
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: 8 }}>
+          <EditOutlined
+            onClick={() => handleOpenUpdateModal(record)}
+            style={{ cursor: "pointer", color: "#ff5733" }}
+          />
+          <DeleteOutlined style={{ cursor: "pointer", color: "#ff5733" }} />
+          <MoreOutlined
+            onClick={() => handleOpenDetailModal(record)}
+            style={{ cursor: "pointer", color: "#ff5733" }}
+          />
+        </div>
+      ),
     },
   ];
 
@@ -120,17 +93,13 @@ const PermissionAdmin = () => {
     total: 0,
   });
   const { isDarkTheme } = useAppProvider();
-  const [dataPermission, setPermissionData] = useState<IGetPermission[]>([]);
-  const [isOpenDetailModal, setIsOpenDetailModal] = useState<boolean>(false);
-  const [dataDetailModal, setDataDetailModal] = useState<IGetPermission | null>(
-    null
-  );
-  const handleOpenDetailModal = (record: IGetPermission) => {
+
+  const handleOpenDetailModal = (record: IGetRole) => {
     setIsOpenDetailModal(true);
     setDataDetailModal(record);
   };
   const handleDelete = async (id: string) => {
-    const res = await deletePermissionApi(id);
+    const res = await deleteRoleApi(id);
     if (res.data) {
       api.success({
         message: "Xóa thành công",
@@ -142,29 +111,29 @@ const PermissionAdmin = () => {
       });
     }
   };
-
-  const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
-  const handleOpenUpdateModal = () => {
-    setIsOpenUpdateModal(true);
-  };
   return (
     <>
       {contextHolder}
-      <h1>Quản lý phân quyền </h1>
-      <PermissionDetail
+      <h1>Quản lí vai trò</h1>
+      <RoleDetail
         isOpenDetailModal={isOpenDetailModal}
         setIsOpenDetailModal={setIsOpenDetailModal}
         dataDetailModal={dataDetailModal}
         setDataDetailModal={setDataDetailModal}
       />
-      <PermissionUpdate
+      <RoleUpdate
         isOpenUpdateModal={isOpenUpdateModal}
         setIsOpenUpdateModal={setIsOpenUpdateModal}
-        dataDetailModal={dataDetailModal}
-        setDatadetailModal={setDataDetailModal}
+        dataUpdateModal={dataUpdateModal}
+        setDataUpdateModal={setDataUpdateModal}
+        fetchRoles={reload}
+      />
+      <RoleCreate
+        isOpenCreateModal={isOpenCreateModal}
+        setIsOpenCreateModal={setIsOpenCreateModal}
         reload={reload}
       />
-      <ProTable<IGetPermission, TSearch>
+      <ProTable<IGetRole, TSearch>
         direction="ltr"
         rowClassName={(record, index) => {
           if (index === 0) return isDarkTheme ? "first-row-dark" : "first-row"; // Hàng đầu tiên
@@ -186,17 +155,12 @@ const PermissionAdmin = () => {
           console.log(params, sort, filter);
 
           let query = `current=${params.current}&pageSize=${params.pageSize}`;
+
           if (params.name) {
             query += `&name=/${params.name}/i`;
           }
-          if (params.apiPath) {
-            query += `&apiPath=/${params.apiPath}/i`;
-          }
-          if (params.method) {
-            query += `&method=/${params.method}/i`;
-          }
-          if (params.module) {
-            query += `&module=${params.module}`;
+          if (params.description) {
+            query += `&description=${params.description}`;
           }
           if (sort && sort.createdAt) {
             query += `&sort=${
@@ -206,13 +170,13 @@ const PermissionAdmin = () => {
             query += `&sort=-createdAt`;
           }
 
-          const res = await getAllPermissionApi(query);
+          const res = await getAllRoleApi();
           if (res.data) {
             //set state meta
 
             setMeta(res.data.meta);
             //set data for logic
-            setPermissionData(res.data.result);
+            setDataRole(res.data.result);
           }
 
           return {
@@ -240,18 +204,18 @@ const PermissionAdmin = () => {
         }}
         headerTitle="Permission Table"
         toolBarRender={() => [
-          //   <Button
-          //     icon={<PlusOutlined />}
-          //     onClick={() => {
-          //       // handleOpenCreateModal();
-          //     }}
-          //     type="primary"
-          //   >
-          //     Thêm permission
-          //   </Button>,
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => {
+              handleOpenCreateModal();
+            }}
+            type="primary"
+          >
+            Thêm vai trò
+          </Button>,
         ]}
       />
     </>
   );
 };
-export default PermissionAdmin;
+export default RoleAdmin;
