@@ -61,6 +61,7 @@ declare global {
         apiPath: string;
         method: string;
         module: number;
+        name: string
     }
 
     interface IGetAccountAPI {
@@ -185,6 +186,12 @@ declare global {
         deletedBy?: UserReference;
         password?: string;
     }
+    interface ICreateRole{
+        _id?: string;
+        name: string;
+        description: string;
+        permissions: string[];
+    }
 
     //Category
     interface IGetCategories {
@@ -275,6 +282,7 @@ declare global {
         apiPath: string;
         method: string;
         module: number;
+        name: string
 
     }
     interface ICreatePermission {

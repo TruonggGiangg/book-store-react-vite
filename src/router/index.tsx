@@ -21,7 +21,8 @@ import HistoryPage from "@/pages/client/history/history-page";
 import ToolPage from "@/pages/client/book/tool-page";
 import HomePage from "@/pages/client/home";
 import OrderAdminMain from "@/components/admin/order/main";
-
+import Account from "@/pages/client/account/Account";
+import RoleAdmin from "@/components/admin/role/main";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -63,7 +64,7 @@ export const router = createBrowserRouter([
         path: "account",
         element: (
           <ProtectedRoute>
-            <div>Account</div>
+            <Account />
           </ProtectedRoute>
         ),
       },
@@ -108,6 +109,10 @@ export const router = createBrowserRouter([
       {
         path: "order",
         element: <OrderAdminMain />,
+      },
+      {
+        path: "role",
+        element: <RoleAdmin />,
       },
     ],
   },

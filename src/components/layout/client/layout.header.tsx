@@ -336,7 +336,13 @@ const LayoutHeader = () => {
               <Dropdown
                 menu={{
                   items: [
-                    { key: "profile", label: "Hồ sơ" },
+                    {
+                      key: "profile",
+                      label: "Hồ sơ",
+                      onClick: () => {
+                        nav("/account");
+                      },
+                    },
                     { key: "logout", label: "Đăng xuất", onClick: logout },
                     {
                       key: "history",

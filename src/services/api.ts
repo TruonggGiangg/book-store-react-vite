@@ -57,6 +57,11 @@ export const deleteUserApi = (id: string) => {
     return axios.delete<IBackendRes<any>>(url);
 };
 
+export const getUserApi=(id: string)=>{
+    const url = `${baseURL}/api/v1/users/${id}`;
+    return axios.get<IBackendRes<IGetUser>>(url)
+}
+
 //BOOK
 export const getAllBookApi = (query: string) => {
     //
@@ -109,7 +114,19 @@ export const getAllRoleApi = () => {
     const url = `${baseURL}/api/v1/roles`;
     return axios.get<IBackendRes<IModelPaginate<IGetRole>>>(url);
 };
-
+export const updateRoleApi = (id: string, roleData: ICreateRole) => {
+    const url = `${baseURL}/api/v1/roles/${id}`;
+    return axios.patch<IBackendRes<any>>(url, roleData);
+  };
+  export const createRoleApi=(roleData: ICreateRole)=>{
+    const url=`${baseURL}/api/v1/roles`;
+    return axios.post<IBackendRes<any>>(url,roleData);
+  }
+  export const deleteRoleApi=(id:string)=>{
+    const url = `${baseURL}/api/v1/roles/${id}`;
+    return axios.delete<IBackendRes<any>>(url);
+  }
+  
 
 
 

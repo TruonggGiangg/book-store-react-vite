@@ -64,7 +64,7 @@ const AppLayout: React.FC = () => {
       nav("/admin/categories");
     }),
     getItem("Role", "5", <LockOutlined />, () => {
-      nav("/admin/user");
+      nav("/admin/role");
     }),
     getItem("Permission", "6", <KeyOutlined />, () => {
       nav("/admin/permission");
