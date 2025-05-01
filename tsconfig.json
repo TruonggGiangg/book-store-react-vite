@@ -1,18 +1,7 @@
 {
-  "extends": "./tsconfig.app.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "access/*": ["./src/access/*"],
-      "components/*": ["./src/components/*"],
-      "pages/*": ["./src/pages/*"],
-      "styles/*": ["./src/styles/*"],
-      "services/*": ["./src/services/*"],
-      "types/*": ["./src/types/*"],
-      "router/*": ["./src/router/*"],
-      "languages/*": ["./src/languages/*"]
-    }
-  },
-  "include": ["src/**/*"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }

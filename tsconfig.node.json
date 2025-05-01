@@ -1,24 +1,22 @@
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-    "target": "ES2022",
-    "lib": ["ES2023"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "target": "ES2022",                   // Cập nhật lên ES2022 cho tính tương thích tốt hơn.
+    "lib": ["ES2023"],                    // Thêm thư viện ES2023.
+    "module": "ESNext",                   // Module ESNext giúp sử dụng import/export ES6.
+    "skipLibCheck": true,                 // Bỏ qua kiểm tra thư viện.
+    
+    "moduleResolution": "bundler",        // Chế độ phân giải module cho bundler.
+    "allowImportingTsExtensions": true,   // Cho phép nhập khẩu file TS có phần mở rộng.
+    "isolatedModules": true,              // Bảo vệ tránh lỗi liên quan đến module.
+    "moduleDetection": "force",           // Buộc xác định module.
+    "noEmit": true,                       // Không xuất file ra ngoài (có thể sẽ được thực hiện bởi bundler).
+    
+    "strict": true,                       // Bật chế độ strict để bảo vệ mã nguồn tốt hơn.
+    "noUnusedLocals": false,              // Không cảnh báo nếu có biến chưa sử dụng.
+    "noUnusedParameters": false,           // Cảnh báo khi có tham số chưa sử dụng.
+    "noFallthroughCasesInSwitch": true,   // Cảnh báo lỗi nếu có trường hợp fallthrough trong switch.
+    "noUncheckedSideEffectImports": true  // Cảnh báo khi import gây ra side effects.
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts"]           // Chỉ bao gồm file cấu hình Vite.
 }
