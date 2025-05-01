@@ -6,6 +6,7 @@ import Container from '@/components/layout/client/container.layout';
 import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useAppProvider } from '@/components/context/app.context';
+import AppBreadcrumb from '@/components/nav/main';
 
 const { Title } = Typography;
 
@@ -173,6 +174,12 @@ const HistoryPage: React.FC = () => {
             render: (createdAt: string) => <span>{dayjs(createdAt).format('DD/MM/YYYY HH:mm')}</span>,
         },
         {
+            title: 'Số điện thoại',
+            dataIndex: 'numberPhone',
+            key: 'numberPhone',
+            render: (numberPhone: string) => <span>{numberPhone}</span>,
+        },
+        {
             title: 'Hành động',
             key: 'action',
             render: (_: any, record: IGetOrder) => {
@@ -252,10 +259,11 @@ const HistoryPage: React.FC = () => {
     };
 
     return (
-        <div style={{ marginTop: '100px' }}>
+        <div style={{ marginTop: "160px" }}>
             <Container>
+                <AppBreadcrumb />
                 <div>
-                    <Title level={2}>Lịch sử đơn hàng</Title>
+                    <Title level={2}>Danh sách</Title>
 
                     {error && (
                         <Alert

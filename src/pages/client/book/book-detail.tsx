@@ -5,7 +5,7 @@ import {
   updateBookApi,
 } from "@/services/api";
 import { lazy, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Card,
   Skeleton,
@@ -34,6 +34,7 @@ import {
   AlignLeftOutlined,
   CustomerServiceOutlined,
   FileProtectOutlined,
+  HomeOutlined,
   InfoCircleOutlined,
   LeftOutlined,
   RightOutlined,
@@ -87,7 +88,7 @@ const BookDetailPage = () => {
         }
 
         // Fetch categories
-        const categoryRes = await getAllCategoryApi("isBook=true");
+        const categoryRes = await getAllCategoryApi("");
         if (categoryRes.data) {
           setDataCategory(categoryRes.data.result || []);
         }
@@ -172,6 +173,8 @@ const BookDetailPage = () => {
     if (!date) return "N/A";
     return dayjs(date).format("DD/MM/YYYY");
   };
+
+
 
   // Tạo mảng tất cả ảnh (logo + coverImage)
   const allImages = [book?.logo, ...(book?.coverImage || [])].filter(
@@ -492,7 +495,7 @@ const BookDetailPage = () => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   };
   return (
-    <div style={{ marginTop: "100px", position: "relative" }}>
+    <div style={{ marginTop: "160px", position: "relative" }}>
       <Container>
         {isLoading ? (
           <DetailedSkeleton />
@@ -501,7 +504,7 @@ const BookDetailPage = () => {
             {/* Breadcrumb */}
             <Breadcrumb style={{ marginBottom: "16px" }}>
               <Breadcrumb.Item>
-                <a href="/">Trang chủ</a>
+                <Link to="/"><HomeOutlined /></Link>
               </Breadcrumb.Item>
               <Breadcrumb.Item>
                 <a href="/books">Sách</a>
@@ -560,9 +563,8 @@ const BookDetailPage = () => {
                                 }}
                               >
                                 <Image
-                                  src={`${
-                                    import.meta.env.VITE_BACKEND_URL
-                                  }/images/product/${img}`}
+                                  src={`${import.meta.env.VITE_BACKEND_URL
+                                    }/images/product/${img}`}
                                   alt={`Image ${index + 1}`}
                                   preview
                                   style={{
@@ -573,12 +575,12 @@ const BookDetailPage = () => {
                                   }}
                                   className="custom-image"
                                   onMouseEnter={(e) =>
-                                    (e.currentTarget.style.transform =
-                                      "scale(1.025)")
+                                  (e.currentTarget.style.transform =
+                                    "scale(1.025)")
                                   }
                                   onMouseLeave={(e) =>
-                                    (e.currentTarget.style.transform =
-                                      "scale(1)")
+                                  (e.currentTarget.style.transform =
+                                    "scale(1)")
                                   }
                                   onError={(e) => {
                                     e.currentTarget.src = img404; // Dùng ảnh lỗi khi ảnh không thể tải
@@ -595,9 +597,8 @@ const BookDetailPage = () => {
                         {allImages.map((img, index) => (
                           <Col key={index}>
                             <Image
-                              src={`${
-                                import.meta.env.VITE_BACKEND_URL
-                              }/images/product/${img}`}
+                              src={`${import.meta.env.VITE_BACKEND_URL
+                                }/images/product/${img}`}
                               alt={`${book?.title} thumbnail ${index + 1}`}
                               style={{
                                 width: "60px",
@@ -637,14 +638,16 @@ const BookDetailPage = () => {
                           boxShadow: isDarkTheme
                             ? "0px 0px 12px rgba(255, 255, 255, 0.07)"
                             : "0px 0px 12px rgba(0, 0, 0, 0.1)",
-                          transition:
-                            "transform 0.3s ease, box-shadow 0.3s ease",
+                          transition: "transform 0.3s ease, box-shadow 0.3s ease",
                         }}
                         title={
                           <Typography.Title
                             style={{
                               fontWeight: "bold",
                               color: isDarkTheme ? "#FFF" : "#333",
+                              //cho phép xuống hàng
+                              whiteSpace: "normal",
+
                             }}
                           >
                             {book.title}
@@ -652,26 +655,27 @@ const BookDetailPage = () => {
                         }
                         onMouseEnter={(e) => {
                           e.currentTarget.style.transform = "translateY(-4px)";
-                          e.currentTarget.style.boxShadow =
-                            "0 8px 24px rgba(0, 0, 0, 0.2)";
+                          e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = "translateY(0)";
-                          e.currentTarget.style.boxShadow =
-                            "0 6px 16px rgba(0, 0, 0, 0.15)";
+                          e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.15)";
                         }}
                       >
-                        <Space wrap style={{ marginBottom: "16px" }}>
-                          {book.author.map((author, index) => (
-                            <Tag
-                              key={index}
-                              color="volcano-inverse"
-                              style={{ fontSize: "14px", padding: "4px 8px" }}
-                            >
-                              {author}
-                            </Tag>
-                          ))}
-                        </Space>
+                        {book.isBook ? (
+                          <Space wrap style={{ marginBottom: "16px" }}>
+                            {book.author.map((author, index) => (
+                              <Tag
+                                key={index}
+                                color="volcano-inverse"
+                                style={{ fontSize: "14px", padding: "4px 8px" }}
+                              >
+                                {author}
+                              </Tag>
+                            ))}
+                          </Space>
+                        ) : null}
+
                         <br />
 
                         <Text
@@ -680,47 +684,47 @@ const BookDetailPage = () => {
                             display: "block",
                             fontSize: "24px",
                             color: "#FF5733",
-                            marginBottom: "8px",
+                            marginBottom: "16px",
                           }}
                         >
                           {book.price.toLocaleString()} VND
                         </Text>
 
+                        {book.isBook ? (
+                          <Space
+                            direction="vertical" // Đặt direction="vertical" để mỗi Text xuống hàng
+                            size="small"
+                            style={{ width: "100%", marginBottom: "16px" }}
+                          >
+                            <Text>
+                              <strong>Nhà xuất bản:</strong> {book.attributes?.publisher || "N/A"}
+                            </Text>
+                            <Text>
+                              <strong>Ngày xuất bản:</strong> {formatDate(book.attributes?.publishedDate)}
+                            </Text>
+                            <Text>
+                              <strong>ISBN:</strong> {book.attributes?.isbn || "N/A"}
+                            </Text>
+                            <Text>
+                              <strong>Ngôn ngữ:</strong> {book.attributes?.language || "N/A"}
+                            </Text>
+                            <Text>
+                              <strong>Số trang:</strong> {book.attributes?.pages || "N/A"}
+                            </Text>
+                          </Space>
+                        ) : null}
+
                         <Space
-                          direction="vertical"
-                          size="small"
+                          direction="vertical" // Đặt direction="vertical" để các thông tin xuống hàng
+                          size="middle"
                           style={{ width: "100%", marginBottom: "16px" }}
                         >
                           <Text>
-                            <strong>Nhà xuất bản:</strong>{" "}
-                            {book.attributes?.publisher || "N/A"}
-                          </Text>
-                          <Text>
-                            <strong>Ngày xuất bản:</strong>{" "}
-                            {formatDate(book.attributes?.publishedDate)}
-                          </Text>
-                          <Text>
-                            <strong>ISBN:</strong>{" "}
-                            {book.attributes?.isbn || "N/A"}
-                          </Text>
-                          <Text>
-                            <strong>Ngôn ngữ:</strong>{" "}
-                            {book.attributes?.language || "N/A"}
-                          </Text>
-                          <Text>
-                            <strong>Số trang:</strong>{" "}
-                            {book.attributes?.pages || "N/A"}
-                          </Text>
-                          <Text>
-                            <strong style={{ marginRight: "6px" }}>
-                              Thể loại:
-                            </strong>{" "}
+                            <strong style={{ marginRight: "6px" }}>Thể loại:</strong>{" "}
                             {book.attributes?.classification?.length ? (
                               <Space wrap>
                                 {book.attributes.classification.map((catId) => {
-                                  const category = dataCategory.find(
-                                    (cat) => cat._id === catId
-                                  );
+                                  const category = dataCategory.find((cat) => cat._id === catId);
                                   return category ? (
                                     <Tag
                                       key={catId}
@@ -740,15 +744,16 @@ const BookDetailPage = () => {
                             )}
                           </Text>
                           <Text>
-                            <strong>Kho:</strong> {book.stock} cuốn
+                            <strong>Kho:</strong> {book.stock} sản phẩm
                           </Text>
                           <Text>
-                            <strong>Đã bán:</strong> {book.sold} cuốn
+                            <strong>Đã bán:</strong> {book.sold || 0} sản phẩm
                           </Text>
                         </Space>
+
                         <Space style={{ marginBottom: "16px" }}>
                           <Rate allowHalf disabled value={book.rating || 0} />
-                          <Text>({book.sold} Đã bán)</Text>
+                          <Text>({book.reviews?.length} lượt đánh giá)</Text>
                         </Space>
                       </Card>
                     </div>
@@ -1089,19 +1094,9 @@ const BookDetailPage = () => {
                       <strong>Tạm tính:</strong>{" "}
                       {(book.price * quantity).toLocaleString()} VND
                     </Text>
+
                     <Button
                       type="primary"
-                      size="large"
-                      style={{
-                        width: "100%",
-                        height: "50px",
-                        fontSize: "18px",
-                        marginBottom: "16px",
-                      }}
-                    >
-                      Mua ngay
-                    </Button>
-                    <Button
                       size="large"
                       style={{
                         width: "100%",

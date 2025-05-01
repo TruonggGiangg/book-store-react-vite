@@ -15,7 +15,7 @@ import BookPage from "@/pages/client/book/books-page";
 import NotAuthorizedPage from "@/pages/results/403-page";
 import NotFoundPage from "@/pages/results/404-page";
 import { createBrowserRouter } from "react-router-dom";
-import OrderPage from "@/pages/client/order/OrderPage";
+
 import CheckoutPage from "@/pages/client/order/Payment";
 import HistoryPage from "@/pages/client/history/history-page";
 import ToolPage from "@/pages/client/book/tool-page";
@@ -48,10 +48,12 @@ export const router = createBrowserRouter([
         path: "book/:id",
         element: <BookDetailPage />,
       },
+
       {
-        path: "order",
-        element: <OrderPage />,
+        path: "tools/:id",
+        element: <ToolPage />,
       },
+
       {
         path: "payment",
         element: <CheckoutPage />,

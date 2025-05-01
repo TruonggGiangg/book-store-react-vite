@@ -1,8 +1,8 @@
 import BookCard from '@/components/client/home/book-card';
 import ListCardSkeleton from '@/components/client/home/skeleton';
 import Container from '@/components/layout/client/container.layout';
-import { getAllBookApi, getAllCategoryApi } from '@/services/api';
-import { Breadcrumb, Button, Card, Checkbox, Collapse, InputNumber, Row, Select, Slider, Typography } from 'antd';
+import { getAllBookApi, getAllCategoryApi, getCategoryApi } from '@/services/api';
+import { Breadcrumb, Button, Card, Checkbox, Collapse, InputNumber, Row, Select, Slider, Spin, Typography } from 'antd';
 const { Text } = Typography;
 import Lottie from 'lottie-react';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -10,6 +10,7 @@ import loadingAnimation from "@/assets/animation/loadingAnimation.json";
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useAppProvider } from '@/components/context/app.context';
 import { useNavigate, useParams } from 'react-router-dom';
+import AppBreadcrumb from '@/components/nav/main';
 
 interface Filters {
     categories: string[];
@@ -47,8 +48,22 @@ const BookPage: React.FC = () => {
     const [allSelected, setAllSelected] = useState<boolean>(true); // Trạng thái chọn tất cả
     const [filterVisible, setFilterVisible] = useState<boolean>(true); // Thêm dòng này
 
+    const [category, setCategory] = useState<IGetCategories | null>(null);
 
-    const pageSize = 6;
+    useEffect(() => {
+        const fetchCategory = async () => {
+            if (id) {
+                const res = await getCategoryApi(id);
+                if (res.data) {
+                    setCategory(res.data);
+                } else {
+                    setCategory(null);
+                }
+            }
+        }
+        fetchCategory();
+    }, [id]);
+    const pageSize = 12;
 
     useEffect(() => {
         // Cuộn lên đầu trang mỗi khi route thay đổi
@@ -261,16 +276,9 @@ const BookPage: React.FC = () => {
     const gridSizes = { xxl: 4, xl: 6, lg: 6, md: 8, sm: 12, xs: 24 };
 
     return (
-        <div style={{ marginTop: '100px' }}>
+        <div style={{ marginTop: "160px" }}>
             <Container>
-                <Breadcrumb style={{ marginBottom: "16px" }}>
-                    <Breadcrumb.Item>
-                        <a href="/">Trang chủ</a>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        Sách
-                    </Breadcrumb.Item>
-                </Breadcrumb>
+                <AppBreadcrumb />
                 {/* Filter Section with Collapse */}
                 <Collapse
 
@@ -413,6 +421,17 @@ const BookPage: React.FC = () => {
                         ? "0px 0px 12px rgba(255, 255, 255, 0.07)" // Hiệu ứng sáng hơn trong dark mode
                         : "0px 0px 12px rgba(0, 0, 0, 0.1)", // Hiệu ứng mềm hơn trong light mode
                 }}>
+                    <div>
+                        <h1>Chi tiết thể loại</h1>
+                        {category ? (
+                            <>
+                                <p><strong>Tên:</strong> {category.name}</p>
+                                <p><strong>Mô tả:</strong> {category.description}</p>
+                            </>
+                        ) : (
+                            <p>Đang tải...</p>
+                        )}
+                    </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                         <h2 style={{ margin: 0, color: "#FF5733" }}>
                             Danh sách sách
@@ -440,7 +459,8 @@ const BookPage: React.FC = () => {
                             </Row>
                             {loadingMore && (
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: "100%", height: "200px" }}>
-                                    <Lottie animationData={loadingAnimation} loop={true} style={{ width: "20%" }} />
+                                    {/* <Lottie animationData={loadingAnimation} loop={true} style={{ width: "20%" }} /> */}
+                                    <Spin size="large" />
                                 </div>
                             )}
                             {!hasMore && dataBook.length > 0 && (

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, Carousel } from 'antd';
+import { Button, Carousel, Col, Row } from 'antd';
 import Lottie from 'lottie-react';
 import loadingAnimation from '@/assets/animation/loadingAnimation.json';
 import Container from '@/components/layout/client/container.layout';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 type IProps = {
     data: IGetCategories[];
@@ -14,7 +15,9 @@ type IProps = {
 
 const HomeSlider = ({ data, loading, dataBook }: IProps) => {
     const [scrollY, setScrollY] = useState(0);
+    const [isLoading, setIsLoading] = useState(true); // State mới để kiểm soát loading
     const carouselRef = useRef<any>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => setScrollY(window.scrollY);
@@ -22,7 +25,20 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    if (loading) {
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (!loading) {
+            // Đợi ít nhất 4 giây trước khi tắt loading
+            timer = setTimeout(() => {
+                setIsLoading(false);
+            }, 4000);
+        } else {
+            setIsLoading(true);
+        }
+        return () => clearTimeout(timer); // Cleanup timer
+    }, [loading]);
+
+    if (isLoading) {
         return (
             <Container>
                 <div
@@ -31,9 +47,11 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: '100%',
-                        height: '544px', // Kích thước cố định để tránh dịch layout
+                        height: '544px',
                         borderRadius: 8,
-
+                        //đậm tí
+                        border: '1px solid #ddd',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                     }}
                 >
                     <Lottie
@@ -41,7 +59,7 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                         loop
                         style={{
                             width: '15%',
-                            maxWidth: '200px', // Giới hạn kích thước Lottie
+                            maxWidth: '200px',
                             height: 'auto',
                             margin: 'auto',
                         }}
@@ -114,7 +132,7 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                 style={{
                     borderRadius: 8,
                     overflow: 'hidden',
-                    height: '600px', // Kích thước cố định
+                    height: '600px',
                     width: '100%',
                 }}
             >
@@ -135,13 +153,11 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                             onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.025)')}
                             onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                         >
-                            {/* Tên thể loại */}
-                            <div
+                            <Row
                                 style={{
                                     position: 'absolute',
                                     left: '5%',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
+                                    top: '10%',
                                     color: 'white',
                                     fontSize: '32px',
                                     fontWeight: 'bold',
@@ -149,31 +165,34 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                     background: 'linear-gradient(90deg, rgba(0,0,0,0.8), rgba(0,0,0,0.5))',
                                     padding: '32px 50px',
                                     borderRadius: '10px',
-                                    width: '45%',
-                                    minHeight: '300px', // Đảm bảo kích thước tối thiểu
+                                    width: '60%',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'center',
                                     textAlign: 'left',
                                 }}
                             >
-                                <h2 style={{ fontSize: '3.2rem', marginBottom: '10px', fontWeight: 500 }}>
-                                    {category.name}
-                                </h2>
-                                <p
-                                    style={{
-                                        fontSize: '1rem',
-                                        lineHeight: '1.6',
-                                        fontWeight: 400,
-                                        display: '-webkit-box',
-                                        WebkitBoxOrient: 'vertical',
-                                        WebkitLineClamp: 6,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                    }}
-                                    dangerouslySetInnerHTML={{ __html: category.description }}
-                                />
-                                <div style={{ marginTop: '40px', display: 'flex', gap: '1.5rem' }}>
+                                <Col xs={24} sm={24} md={24}>
+                                    <h2 style={{ fontSize: '2rem', marginBottom: '10px' }}>
+                                        {category.name}
+                                    </h2>
+                                </Col>
+                                <Col xs={24} sm={24} md={24}>
+                                    <p
+                                        style={{
+                                            fontSize: '1rem',
+                                            lineHeight: '1.6',
+                                            fontWeight: 400,
+                                            display: '-webkit-box',
+                                            WebkitBoxOrient: 'vertical',
+                                            WebkitLineClamp: 5,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                        }}
+                                        dangerouslySetInnerHTML={{ __html: category.description }}
+                                    />
+                                </Col>
+                                <Col xs={24} sm={24} md={12} style={{ marginTop: '40px' }}>
                                     <Button
                                         type="primary"
                                         size="large"
@@ -183,19 +202,19 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                             fontWeight: 'bold',
                                             transition: 'all 0.3s ease-in-out',
                                         }}
+                                        onClick={() => {
+                                            navigate(`books/${category._id}`);
+                                        }}
                                         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#e04c2f')}
                                         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FF5733')}
                                     >
                                         Xem thêm sản phẩm
                                     </Button>
-                                </div>
-                            </div>
+                                </Col>
+                            </Row>
 
-                            {/* Danh sách sách theo danh mục */}
                             <div
                                 style={{
-                                    display: 'flex',
-                                    gap: '15px',
                                     position: 'absolute',
                                     bottom: '32px',
                                     right: '48px',
@@ -206,10 +225,10 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                 {dataBook[category._id]?.length > 0 ? (
                                     dataBook[category._id].slice(0, 5).map((book) => (
                                         <div
-                                            key={book._id}
+                                            onClick={() => {
+                                                navigate(`/book/${book._id}`);
+                                            }}
                                             style={{
-                                                width: '100px',
-                                                height: '150px',
                                                 display: 'flex',
                                                 flexDirection: 'column',
                                                 alignItems: 'center',
@@ -226,17 +245,14 @@ const HomeSlider = ({ data, loading, dataBook }: IProps) => {
                                                 alt={book.title}
                                                 style={{
                                                     width: '100px',
-                                                    height: '150px',
                                                     objectFit: 'cover',
-                                                    borderRadius: '8px',
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                                                    padding: '4px',
+                                                    aspectRatio: '2 / 3',
                                                 }}
                                             />
                                         </div>
                                     ))
                                 ) : (
-                                    <div style={{ width: '500px', height: '150px' }} /> // Placeholder để giữ không gian
+                                    <div style={{ width: '500px', height: '150px' }} />
                                 )}
                             </div>
                         </div>

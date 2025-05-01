@@ -5,6 +5,7 @@ import EventHome from "@/components/client/home/envent";
 import Product from "@/components/client/home/product";
 import Container from "@/components/layout/client/container.layout";
 import { Breadcrumb } from "antd";
+import AppBreadcrumb from "@/components/nav/main";
 
 const HomePage = () => {
     // const { currUser, role } = useAppProvider();
@@ -133,15 +134,10 @@ const HomePage = () => {
     }, [dataCategory]);
 
     return (
-        <div style={{ marginTop: '100px' }}>
+        <div style={{ marginTop: "160px" }}>
             <Container>
                 <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <Breadcrumb style={{ marginBottom: "16px" }}>
-                        <Breadcrumb.Item>
-                            Trang chủ
-                        </Breadcrumb.Item>
-
-                    </Breadcrumb>
+                    <AppBreadcrumb />
                     <HomeSlider
                         data={dataCategory}
                         setData={setDataCategory}

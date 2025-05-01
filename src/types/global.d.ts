@@ -156,7 +156,7 @@ declare global {
     interface ISearchBooksResponse {
         meta: IPaginationMeta;
         result: IGetBook[];
-      }
+    }
     interface ICreateBook {
         title: string;
         author: string[];
@@ -261,6 +261,7 @@ declare global {
         items: IOrderItem[];
         status: 'pending' | 'processing' | 'completed' | 'cancelled';
         totalAmount: number;
+        numberPhone: string;
         shippingAddress: string;
         createdAt?: Date;
         updatedAt?: Date;
@@ -276,6 +277,7 @@ declare global {
         status: 'pending' | 'processing' | 'completed' | 'cancelled';
         totalAmount: number;
         shippingAddress: string;
+        numberPhone: string;
     }
 
     interface IGetPermission {
