@@ -103,7 +103,7 @@ const SubNav: React.FC = () => {
 
                 <Space size={screens.lg ? 12 : 8}>
                     <Button
-                        type="primary"
+                        type={isBook ? "primary" : "default"}
                         icon={<BookOutlined />}
                         style={buttonStyle(isBook)}
                         onClick={() => handleToggle(true)}
