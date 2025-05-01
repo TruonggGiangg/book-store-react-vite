@@ -167,7 +167,7 @@ const CheckoutPage: React.FC = () => {
     };
 
     fetchBooks();
-  }, [cart]);
+  }, []);
 
   // Fetch provinces from Vietnam API
   useEffect(() => {

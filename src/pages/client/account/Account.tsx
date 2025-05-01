@@ -125,25 +125,29 @@ const Account: React.FC = () => {
         });
 
         notification.success({
-          message: t("account.updateSuccess") || "Profile updated successfully",
+          message:
+            t("Cập nhật tài khoản thành công") ||
+            "Profile updated successfully",
           placement: "top",
         });
 
         setIsEditing(false);
       } else {
         notification.error({
-          message: t("account.updateError") || "Failed to update profile",
+          message:
+            t("Cập nhật Tài khoản thất bại") || "Failed to update profile",
           description:
-            response.data || t("account.tryAgain") || "Please try again later",
+            response.data || t("Thử lại") || "Please try again later",
           placement: "top",
         });
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Lỗi cập nhật tài khoản:", error);
       notification.error({
-        message: t("account.updateError") || "Failed to update profile",
+        message: t("Lỗi cập nhật tài khoản") || "Failed to update profile",
         description:
-          t("account.serverError") || "Server error. Please try again later",
+          t("Cập nhật lỗi, hãy thử lại") ||
+          "Server error. Please try again later",
         placement: "top",
       });
     } finally {
@@ -184,11 +188,12 @@ const Account: React.FC = () => {
           <Card
             title={
               <div className="flex items-center">
-                <UserOutlined className="mr-2" />
-                <p>Hồ sơ của tôi</p>
+                {/* <UserOutlined className="mr-2" /> */}
+                <h1>Hồ sơ của tôi</h1>
                 <div> Quản lý thông tin hồ sơ để bảo mật tài khoản</div>
               </div>
             }
+            // headStyle={{ backgroundColor: "#ff5733", color: "#fff" }}
           >
             <div
               style={{
