@@ -187,7 +187,7 @@ declare global {
         deletedBy?: UserReference;
         password?: string;
     }
-    interface ICreateRole{
+    interface ICreateRole {
         _id?: string;
         name: string;
         description: string;
@@ -289,7 +289,7 @@ declare global {
 
     }
     interface ICreatePermission {
-        _id: string;
+        _id?: string;
         apiPath: string;
         method: string;
         module: number;

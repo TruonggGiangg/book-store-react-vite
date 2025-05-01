@@ -66,7 +66,7 @@ const PermissionUpdate = (props: IProps) => {
     const event: ICreatePermission = {
       apiPath: String(values.apiPath),
       method: String(values.method),
-      _id: String(dataDetailModal?._id || ""),
+
       module: Number(dataDetailModal?.module),
     };
     const res = await updatePermissionApi(event, dataDetailModal?._id || "");

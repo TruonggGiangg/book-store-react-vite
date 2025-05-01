@@ -218,7 +218,7 @@ export const getAllPermissionApi = (query: string) => {
     const url = `${baseURL}/api/v1/permissions?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IPermission>>>(url);
 }
-export const updatePermissionApi = (permissionData: IPermission, id: string) => {
+export const updatePermissionApi = (permissionData: ICreatePermission, id: string) => {
     const url = `${baseURL}/api/v1/permissions/${id}`;
     return axios.put<IBackendRes<any>>(url, permissionData);
 }
