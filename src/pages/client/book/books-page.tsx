@@ -279,138 +279,143 @@ const BookPage: React.FC = () => {
         <div style={{ marginTop: "160px" }}>
             <Container>
                 <AppBreadcrumb />
-                {/* Filter Section with Collapse */}
-                <Collapse
+                {
+                    !id && (
+                        <Collapse
 
-                    style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden' }}
-                    activeKey={filterVisible ? ['1'] : []} // Thay bằng dòng này
-                    onChange={(key) => {
-                        setFilterVisible(key.length > 0);
-                    }}
-                    expandIcon={({ isActive }) => (
-                        <CaretRightOutlined
-                            style={{ fontSize: '32px', color: "#ff5733", marginTop: "22px" }} // Điều chỉnh kích thước mũi tên ở đây
-                            rotate={isActive ? 90 : 0}
-                        />
-                    )}
-                    items={[
-                        {
-                            key: '1',
-                            label: (
+                            style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden' }}
+                            activeKey={filterVisible ? ['1'] : []} // Thay bằng dòng này
+                            onChange={(key) => {
+                                setFilterVisible(key.length > 0);
+                            }}
+                            expandIcon={({ isActive }) => (
+                                <CaretRightOutlined
+                                    style={{ fontSize: '32px', color: "#ff5733", marginTop: "22px" }} // Điều chỉnh kích thước mũi tên ở đây
+                                    rotate={isActive ? 90 : 0}
+                                />
+                            )}
+                            items={[
+                                {
+                                    key: '1',
+                                    label: (
 
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Text style={{ fontWeight: 600, color: "#ff5733", fontSize: "1.6rem" }}>Bộ lọc sách</Text>
-                                    <Button
-                                        type="primary"
-                                        onClick={() => {
-                                            nav('/tools');
-                                        }}
-                                    >
-                                        Trang dụng cụ
-                                    </Button>
-                                </div>
-
-                            ),
-
-                            children: (
-                                <div style={{ padding: '16px' }}>
-                                    <div style={{ marginBottom: '16px' }}>
-                                        <h4>Thể loại</h4>
-                                        <Checkbox
-                                            checked={allSelected}
-                                            onChange={(e) => handleAllCategoriesChange(e.target.checked)}
-                                        >
-                                            Tất cả
-                                        </Checkbox>
-                                        <Checkbox.Group
-                                            value={filters.categories}
-                                            onChange={(checkedValues) =>
-                                                handleFilterChange('categories', checkedValues as string[])
-                                            }
-                                        >
-                                            {listCategories.map((category) => (
-                                                <Checkbox key={category._id} value={category._id}>
-                                                    {category.name || 'Unknown Category'}
-                                                </Checkbox>
-                                            ))}
-                                        </Checkbox.Group>
-                                    </div>
-
-                                    <div style={{ marginBottom: '16px' }}>
-                                        <h4>Khoảng giá</h4>
-                                        <Slider
-                                            range
-                                            min={0}
-                                            max={1000000}
-                                            step={10000}
-                                            value={filters.priceRange}
-                                            onChange={(value) => handleFilterChange('priceRange', value as [number, number])}
-                                        />
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <InputNumber
-                                                min={0}
-                                                max={filters.priceRange[1]}
-                                                value={filters.priceRange[0]}
-                                                onChange={(value) =>
-                                                    handleFilterChange('priceRange', [
-                                                        value || 0,
-                                                        filters.priceRange[1],
-                                                    ])
-                                                }
-                                            />
-                                            <InputNumber
-                                                min={filters.priceRange[0]}
-                                                max={1000000}
-                                                value={filters.priceRange[1]}
-                                                onChange={(value) =>
-                                                    handleFilterChange('priceRange', [
-                                                        filters.priceRange[0],
-                                                        value || 1000000,
-                                                    ])
-                                                }
-                                            />
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <Text style={{ fontWeight: 600, color: "#ff5733", fontSize: "1.6rem" }}>Bộ lọc sách</Text>
+                                            <Button
+                                                type="primary"
+                                                onClick={() => {
+                                                    nav('/tools');
+                                                }}
+                                            >
+                                                Trang dụng cụ
+                                            </Button>
                                         </div>
-                                    </div>
 
-                                    <div style={{ marginBottom: '16px' }}>
-                                        <h4>Đánh giá tối thiểu</h4>
-                                        <Select
-                                            style={{ width: '100%' }}
-                                            value={filters.rating}
-                                            onChange={(value) => handleFilterChange('rating', value as number)}
-                                        >
-                                            <Select.Option value={0}>Tất cả</Select.Option>
-                                            <Select.Option value={1}>1 sao trở lên</Select.Option>
-                                            <Select.Option value={2}>2 sao trở lên</Select.Option>
-                                            <Select.Option value={3}>3 sao trở lên</Select.Option>
-                                            <Select.Option value={4}>4 sao trở lên</Select.Option>
-                                        </Select>
-                                    </div>
+                                    ),
 
-                                    <div style={{ marginBottom: '16px' }}>
-                                        <h4>Sắp xếp theo</h4>
-                                        <Select
-                                            style={{ width: '100%' }}
-                                            value={filters.sortBy}
-                                            onChange={(value) =>
-                                                handleFilterChange('sortBy', value as Filters['sortBy'])
-                                            }
-                                        >
-                                            <Select.Option value="priceAsc">Giá tăng dần</Select.Option>
-                                            <Select.Option value="priceDesc">Giá giảm dần</Select.Option>
-                                            <Select.Option value="newest">Mới nhất</Select.Option>
-                                            <Select.Option value="bestSelling">Bán chạy</Select.Option>
-                                        </Select>
-                                    </div>
+                                    children: (
+                                        <div style={{ padding: '16px' }}>
+                                            <div style={{ marginBottom: '16px' }}>
+                                                <h4>Thể loại</h4>
+                                                <Checkbox
+                                                    checked={allSelected}
+                                                    onChange={(e) => handleAllCategoriesChange(e.target.checked)}
+                                                >
+                                                    Tất cả
+                                                </Checkbox>
+                                                <Checkbox.Group
+                                                    value={filters.categories}
+                                                    onChange={(checkedValues) =>
+                                                        handleFilterChange('categories', checkedValues as string[])
+                                                    }
+                                                >
+                                                    {listCategories.map((category) => (
+                                                        <Checkbox key={category._id} value={category._id}>
+                                                            {category.name || 'Unknown Category'}
+                                                        </Checkbox>
+                                                    ))}
+                                                </Checkbox.Group>
+                                            </div>
 
-                                    <Button type="primary" block onClick={applyFilters} loading={loadingBook}>
-                                        Lọc
-                                    </Button>
-                                </div>
-                            ),
-                        },
-                    ]}
-                />
+                                            <div style={{ marginBottom: '16px' }}>
+                                                <h4>Khoảng giá</h4>
+                                                <Slider
+                                                    range
+                                                    min={0}
+                                                    max={1000000}
+                                                    step={10000}
+                                                    value={filters.priceRange}
+                                                    onChange={(value) => handleFilterChange('priceRange', value as [number, number])}
+                                                />
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <InputNumber
+                                                        min={0}
+                                                        max={filters.priceRange[1]}
+                                                        value={filters.priceRange[0]}
+                                                        onChange={(value) =>
+                                                            handleFilterChange('priceRange', [
+                                                                value || 0,
+                                                                filters.priceRange[1],
+                                                            ])
+                                                        }
+                                                    />
+                                                    <InputNumber
+                                                        min={filters.priceRange[0]}
+                                                        max={1000000}
+                                                        value={filters.priceRange[1]}
+                                                        onChange={(value) =>
+                                                            handleFilterChange('priceRange', [
+                                                                filters.priceRange[0],
+                                                                value || 1000000,
+                                                            ])
+                                                        }
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ marginBottom: '16px' }}>
+                                                <h4>Đánh giá tối thiểu</h4>
+                                                <Select
+                                                    style={{ width: '100%' }}
+                                                    value={filters.rating}
+                                                    onChange={(value) => handleFilterChange('rating', value as number)}
+                                                >
+                                                    <Select.Option value={0}>Tất cả</Select.Option>
+                                                    <Select.Option value={1}>1 sao trở lên</Select.Option>
+                                                    <Select.Option value={2}>2 sao trở lên</Select.Option>
+                                                    <Select.Option value={3}>3 sao trở lên</Select.Option>
+                                                    <Select.Option value={4}>4 sao trở lên</Select.Option>
+                                                </Select>
+                                            </div>
+
+                                            <div style={{ marginBottom: '16px' }}>
+                                                <h4>Sắp xếp theo</h4>
+                                                <Select
+                                                    style={{ width: '100%' }}
+                                                    value={filters.sortBy}
+                                                    onChange={(value) =>
+                                                        handleFilterChange('sortBy', value as Filters['sortBy'])
+                                                    }
+                                                >
+                                                    <Select.Option value="priceAsc">Giá tăng dần</Select.Option>
+                                                    <Select.Option value="priceDesc">Giá giảm dần</Select.Option>
+                                                    <Select.Option value="newest">Mới nhất</Select.Option>
+                                                    <Select.Option value="bestSelling">Bán chạy</Select.Option>
+                                                </Select>
+                                            </div>
+
+                                            <Button type="primary" block onClick={applyFilters} loading={loadingBook}>
+                                                Lọc
+                                            </Button>
+                                        </div>
+                                    ),
+                                },
+                            ]}
+                        />
+                    )
+                }
+                {/* Filter Section with Collapse */}
+
 
 
 
@@ -421,22 +426,39 @@ const BookPage: React.FC = () => {
                         ? "0px 0px 12px rgba(255, 255, 255, 0.07)" // Hiệu ứng sáng hơn trong dark mode
                         : "0px 0px 12px rgba(0, 0, 0, 0.1)", // Hiệu ứng mềm hơn trong light mode
                 }}>
-                    <div>
-                        <h1>Chi tiết thể loại</h1>
-                        {category ? (
-                            <>
-                                <p><strong>Tên:</strong> {category.name}</p>
-                                <p><strong>Mô tả:</strong> {category.description}</p>
-                            </>
-                        ) : (
-                            <p>Đang tải...</p>
-                        )}
-                    </div>
+                    {
+                        id && (
+                            <div>
+
+                                <Card style={{ margin: "16px 20px", padding: " 16px" }}>
+                                    {category ? (
+                                        <>
+                                            <Text strong style={{ fontSize: "2rem", color: "#FF5733" }}>
+                                                {category.name}
+                                            </Text>
+
+                                            <div
+                                                style={{
+                                                    margin: "16px 0px",
+                                                }}
+                                                dangerouslySetInnerHTML={{ __html: category.description }}
+
+                                            />
+                                        </>
+                                    ) : (
+                                        <Spin size="large" style={{ margin: "16px 16px" }} />
+                                    )}
+                                </Card>
+
+                            </div>
+                        )
+                    }
+
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                         <h2 style={{ margin: 0, color: "#FF5733" }}>
                             Danh sách sách
                         </h2>
-                        <Button type="link" style={{ color: "#FF5733" }}>Xem tất cả</Button>
+
                     </div>
                     {/* Book List Section */}
                     {loadingBook ? (
