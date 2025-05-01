@@ -186,7 +186,7 @@ const Account: React.FC = () => {
   return (
     <div
       className="container mx-auto py-8 px-4"
-      style={{ margin: "160px 0px 50px 0px" }}
+      style={{ margin: "172px 0px 50px 0px" }}
     >
       <Row gutter={[24, 24]} justify="center">
         <Col xs={24} md={20} lg={18} xl={16}>

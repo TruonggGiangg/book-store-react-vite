@@ -495,7 +495,7 @@ const BookDetailPage = () => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   };
   return (
-    <div style={{ marginTop: "160px", position: "relative" }}>
+    <div style={{ marginTop: "172px", position: "relative" }}>
       <Container>
         {isLoading ? (
           <DetailedSkeleton />

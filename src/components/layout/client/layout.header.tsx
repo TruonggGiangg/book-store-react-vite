@@ -250,6 +250,7 @@ const LayoutHeader = () => {
                       top: "100%",
                       left: 0,
                       right: 0,
+                      width: screens.lg ? "100%" : "80vw", // mobile: 80vw, desktop: full width
                       backgroundColor: isDarkTheme ? "#1f1f1f" : "#fff",
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
                       borderRadius: "0 0 8px 8px",
@@ -257,6 +258,7 @@ const LayoutHeader = () => {
                       maxHeight: "300px",
                       overflowY: "auto",
                       border: isDarkTheme ? "1px solid #333" : "1px solid #e8e8e8",
+                      margin: screens.lg ? "0" : "0 auto", // căn giữa khi là 80vw
                     }}
                   >
                     {isSearching ? (

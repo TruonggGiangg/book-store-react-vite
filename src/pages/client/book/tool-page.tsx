@@ -240,7 +240,7 @@ const ToolPage: React.FC = () => {
     const gridSizes = { xxl: 4, xl: 6, lg: 6, md: 8, sm: 12, xs: 24 };
 
     return (
-        <div style={{ marginTop: "160px" }}>
+        <div style={{ marginTop: "172px" }}>
             <Container>
                 <AppBreadcrumb />
                 <Collapse

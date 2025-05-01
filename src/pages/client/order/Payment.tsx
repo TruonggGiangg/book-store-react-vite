@@ -741,7 +741,7 @@ const CheckoutPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ marginTop: "160px" }}>
+    <div style={{ marginTop: "172px" }}>
 
       <Container>
         <AppBreadcrumb />

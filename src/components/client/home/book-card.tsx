@@ -190,11 +190,13 @@ const BookCard: FC<BookCardProps> = ({
                 <Typography.Paragraph style={{ margin: 0 }}>
                   Đã bán: {book.sold ?? 0}
                 </Typography.Paragraph>
+              </Space>
+              {/* <Space>
                 <CalendarOutlined style={{ color: "#FF5733" }} />
                 <Typography.Paragraph style={{ margin: 0 }}>
                   {new Date(book.createdAt || "").toLocaleDateString()}
                 </Typography.Paragraph>
-              </Space>
+              </Space> */}
 
               <Space>
                 <TagOutlined style={{ color: "#FF5733" }} />

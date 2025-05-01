@@ -7,11 +7,15 @@ const { Text } = Typography;
 import img404 from "@/assets/img/book-with-broken-pages.gif";
 import { useNavigate } from "react-router-dom";
 
+import { Grid } from "antd";
+const { useBreakpoint } = Grid;
+
 const Cart = () => {
   const { cart } = useAppProvider();
   const [totalCart, setTotalCart] = useState(0);
   const [cartItems, setCartItems] = useState<any[]>([]); // Sử dụng `any` để không ép kiểu
   const nav = useNavigate(); // Lấy hàm điều hướng từ context
+  const screens = useBreakpoint();
   // Xử lý lỗi tải ảnh
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.onerror = null; // Ngăn lỗi lặp vô hạn
@@ -73,92 +77,94 @@ const Cart = () => {
     }
 
     return (
-      <>
-        <div style={{ maxHeight: "400px", overflowY: "auto", width: "600px" }}>
-          {cartItems.map((item: any, index: number) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: "10px",
-                display: "flex",
-                gap: "30px",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
+      <div
+        style={{
+          margin: "0 10px",
+          maxHeight: "400px",
+          overflowY: "auto",
+          width: screens.lg ? "600px" : "90vw", // responsive width
+          padding: screens.lg ? "0" : "8px",
+        }}
+      >
+        {cartItems.map((item: any, index: number) => (
+          <div
+            key={index}
+            style={{
+              marginBottom: "10px",
+              display: "flex",
+              gap: "30px",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap", // tránh vỡ layout
+            }}
+          >
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <img
+                src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${item.book.logo}`}
+                alt={item.book.title}
+                style={{
+                  width: "75px",
+                  height: "75px",
+                  objectFit: "contain",
+                  aspectRatio: "2 / 3",
+                }}
+                loading="lazy"
+                onError={handleImageError}
+              />
               <div
-                style={{ display: "flex", gap: "10px", alignItems: "center" }}
+                style={{
+                  fontWeight: "bold",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
               >
-                <img
-                  src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${item.book.logo
-                    }`}
-                  alt={item.book.title}
-                  style={{
-                    width: "75px",
-                    height: "75px",
-                    objectFit: "contain",
-                    aspectRatio: "2 / 3",
-                  }}
-                  loading="lazy"
-                  onError={handleImageError}
-                />
-                <div
-                  style={{
-                    fontWeight: "bold",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Tooltip title={item.book.title}>
-                    <span
-                      style={{
-                        fontSize: 17,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        maxWidth: "300px",
-                      }}
-                    >
-                      {item.book.title}
-                    </span>
-                  </Tooltip>
-                  <Text
-                    type="secondary"
+                <Tooltip title={item.book.title}>
+                  <span
                     style={{
-                      fontWeight: "normal",
+                      fontSize: 17,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       maxWidth: "300px",
                     }}
                   >
-                    Tác giả: {item.book.author.join(", ")}
-                  </Text>
-                  <span style={{ fontSize: 16 }}>
-                    {item.book.price.toLocaleString()} VNĐ
+                    {item.book.title}
                   </span>
-                </div>
-              </div>
-              <div>
-                <span>Số lượng: </span>
-                <InputNumber value={item.quantity} min={1} disabled />
+                </Tooltip>
+                <Text
+                  type="secondary"
+                  style={{
+                    fontWeight: "normal",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "300px",
+                  }}
+                >
+                  Tác giả: {item.book.author.join(", ")}
+                </Text>
+                <span style={{ fontSize: 16 }}>
+                  {item.book.price.toLocaleString()} VNĐ
+                </span>
               </div>
             </div>
-          ))}
-          <Button
-            type="primary"
-            style={{ width: "100%" }}
-            onClick={() => {
-              nav("/payment");
-
-            }}
-          >
-            Thanh toán
-          </Button>
-        </div>
-      </>
+            <div>
+              <span>Số lượng: </span>
+              <InputNumber value={item.quantity} min={1} disabled />
+            </div>
+          </div>
+        ))}
+        <Button
+          type="primary"
+          style={{ width: "100%" }}
+          onClick={() => nav("/payment")}
+        >
+          Thanh toán
+        </Button>
+      </div>
     );
   };
+
 
   return (
     <span

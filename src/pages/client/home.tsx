@@ -134,7 +134,7 @@ const HomePage = () => {
     }, [dataCategory]);
 
     return (
-        <div style={{ marginTop: "160px" }}>
+        <div style={{ marginTop: "172px" }}>
             <Container>
                 <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                     <AppBreadcrumb />
