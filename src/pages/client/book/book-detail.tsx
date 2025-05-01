@@ -645,6 +645,8 @@ const BookDetailPage = () => {
                             style={{
                               fontWeight: "bold",
                               color: isDarkTheme ? "#FFF" : "#333",
+                              //cho phép xuống hàng
+                              whiteSpace: "normal",
                             }}
                           >
                             {book.title}
@@ -744,13 +746,13 @@ const BookDetailPage = () => {
                             <strong>Kho:</strong> {book.stock} sản phẩm
                           </Text>
                           <Text>
-                            <strong>Đã bán:</strong> {book.sold} sản phẩm
+                            <strong>Đã bán:</strong> {book.sold || 0} sản phẩm
                           </Text>
                         </Space>
 
                         <Space style={{ marginBottom: "16px" }}>
                           <Rate allowHalf disabled value={book.rating || 0} />
-                          <Text>({book.sold} Đã bán)</Text>
+                          <Text>({book.reviews?.length} lượt đánh giá)</Text>
                         </Space>
                       </Card>
                     </div>
