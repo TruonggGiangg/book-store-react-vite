@@ -11,6 +11,7 @@ import {
   InputNumber,
   Button,
   Tag,
+  notification,
 } from "antd";
 import {
   ShoppingCartOutlined,
@@ -23,6 +24,7 @@ import {
 import { useAppProvider } from "@/components/context/app.context";
 import TagScroller from "./tag-list";
 import img404 from "@/assets/img/book-with-broken-pages.gif";
+import { getBookApi } from "@/services/api";
 
 interface BookCardProps {
   book: IGetBook;
@@ -50,7 +52,7 @@ const BookCard: FC<BookCardProps> = ({
   ribbonText,
   ribbonColor,
 }) => {
-  const { isDarkTheme, setCart } = useAppProvider();
+  const { isDarkTheme, setCart, currUser } = useAppProvider();
   const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
 
@@ -65,22 +67,48 @@ const BookCard: FC<BookCardProps> = ({
   };
 
   // Logic thêm sản phẩm vào giỏ hàng
-  const addCart = (id: string, quantity: number) => {
-    const cart = localStorage.getItem("cart");
-    let cartItems = cart ? JSON.parse(cart) : [];
-
-    const existingItemIndex = cartItems.findIndex(
-      (item: { _id: string }) => item._id === id
-    );
-
-    if (existingItemIndex !== -1) {
-      cartItems[existingItemIndex].quantity += quantity;
-    } else {
-      cartItems.push({ _id: id, quantity });
+  const addCart = async (id: string, quantity: number) => {
+    if (!currUser?._id) {
+      notification.error({
+        message: "Thao tác thất bại",
+        description: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.",
+        placement: "topRight",
+      });
+      return;
     }
 
-    setCart(cartItems);
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    const userID = currUser._id;
+    const storedCart = localStorage.getItem("cart");
+    let cartObject = storedCart ? JSON.parse(storedCart) : {};
+
+    // Nếu chưa có giỏ hàng cho user hiện tại, khởi tạo mảng rỗng
+    if (!cartObject[userID]) {
+      cartObject[userID] = [];
+    }
+
+    const userCart = cartObject[userID];
+    const existingItemIndex = userCart.findIndex(
+      (item: { _id: string }) => item._id === id
+    );
+    const bookSearch = await getBookApi(id);
+    const stock = bookSearch.data?.stock || 0;
+    if (stock < quantity) {
+      notification.error({
+        message: "Thao tác thất bại",
+        description: "Số lượng sản phẩm không đủ trong kho.",
+        placement: "topRight",
+      });
+      return;
+    }
+    if (existingItemIndex !== -1) {
+      userCart[existingItemIndex].quantity += quantity;
+    } else {
+      userCart.push({ _id: id, quantity });
+    }
+
+    cartObject[userID] = userCart;
+    localStorage.setItem("cart", JSON.stringify(cartObject));
+    setCart(userCart); // Cập nhật state theo cart của user hiện tại
   };
 
   // Tính ribbonText và ribbonColor động
@@ -116,7 +144,8 @@ const BookCard: FC<BookCardProps> = ({
     navigate(`/book/${book._id}`);
   }, [navigate, book._id]);
 
-  const { text: dynamicRibbonText, color: dynamicRibbonColor } = getRibbonInfo();
+  const { text: dynamicRibbonText, color: dynamicRibbonColor } =
+    getRibbonInfo();
 
   const CardContent = (
     <div onClick={handleCardClick} style={{ cursor: "pointer" }}>
@@ -163,7 +192,9 @@ const BookCard: FC<BookCardProps> = ({
             </Tooltip>
           }
           description={
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
               {isBook && (
                 <div onClick={(e) => e.stopPropagation()}>
                   <TagScroller
@@ -236,7 +267,11 @@ const BookCard: FC<BookCardProps> = ({
                 <Button
                   type="primary"
                   icon={<ShoppingCartOutlined />}
-                  style={{ background: "#FF5733", borderColor: "#FF5733", flex: 2 }}
+                  style={{
+                    background: "#FF5733",
+                    borderColor: "#FF5733",
+                    flex: 2,
+                  }}
                   onClick={() => addCart(book._id, quantity)}
                 >
                   Add to cart

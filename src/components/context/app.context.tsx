@@ -46,19 +46,21 @@ export const AppProvider = (props: TProps) => {
 
   // Đồng bộ giỏ hàng từ localStorage
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      try {
-        const cartItems = JSON.parse(savedCart);
-        setCart(cartItems);
-      } catch (error) {
-        console.error("Lỗi parse cart:", error);
-        setCart([]); // Fallback an toàn nếu dữ liệu bị hỏng
+    if (currUser != null) {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        try {
+          const cartItems = JSON.parse(savedCart);
+          setCart(cartItems);
+        } catch (error) {
+          console.error("Lỗi parse cart:", error);
+          setCart([]);
+        }
+      } else {
+        setCart([]);
       }
-    } else {
-      setCart([]); // Không có dữ liệu thì set rỗng
     }
-  }, []);
+  }, [currUser]);
 
   // Fetch account và role khi component mount
   useEffect(() => {

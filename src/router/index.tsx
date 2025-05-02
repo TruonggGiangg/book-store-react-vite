@@ -56,7 +56,11 @@ export const router = createBrowserRouter([
 
       {
         path: "payment",
-        element: <CheckoutPage />,
+        element: (
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "history",

@@ -11,7 +11,7 @@ import { Grid } from "antd";
 const { useBreakpoint } = Grid;
 
 const Cart = () => {
-  const { cart } = useAppProvider();
+  const { cart, currUser } = useAppProvider();
   const [totalCart, setTotalCart] = useState(0);
   const [cartItems, setCartItems] = useState<any[]>([]); // Sử dụng `any` để không ép kiểu
   const nav = useNavigate(); // Lấy hàm điều hướng từ context
@@ -24,29 +24,35 @@ const Cart = () => {
 
   // Đồng bộ giỏ hàng khi cart thay đổi
   useEffect(() => {
+    if (currUser == null) return;
+
+    const userID = currUser._id;
     const savedCart = localStorage.getItem("cart");
+
     if (savedCart) {
       try {
         const cartData = JSON.parse(savedCart);
 
-        // Tính tổng số lượng sản phẩm trong giỏ hàng
-        const totalQuantity = cartData
-          .map((item: { quantity: number }) => item.quantity)
-          .reduce((a: number, b: number) => a + b, 0);
+        const userCart: { _id: string; quantity: number }[] =
+          cartData[userID] || [];
+
+        // Tính tổng số lượng sản phẩm trong giỏ hàng của user
+        const totalQuantity = userCart.reduce(
+          (total, item) => total + item.quantity,
+          0
+        );
         setTotalCart(totalQuantity);
 
         // Lấy danh sách sách từ API
         const fetchBooks = async () => {
           try {
-            const bookPromises = cartData.map(
-              async (item: { _id: string; quantity: number }) => {
-                const res = await getBookApi(item._id);
-                if (res.data) {
-                  return { book: res.data, quantity: item.quantity };
-                }
-                return null;
+            const bookPromises = userCart.map(async (item) => {
+              const res = await getBookApi(item._id);
+              if (res.data) {
+                return { book: res.data, quantity: item.quantity };
               }
-            );
+              return null;
+            });
 
             const booksData = await Promise.all(bookPromises);
             setCartItems(booksData.filter((book) => book !== null));
@@ -63,15 +69,17 @@ const Cart = () => {
         setCartItems([]);
       }
     } else {
-      // Xử lý trường hợp giỏ hàng rỗng
+      // Xử lý khi không có dữ liệu cart
       setTotalCart(0);
       setCartItems([]);
     }
-    console.log(cartItems);
-  }, [cart]);
+  }, [cart, currUser]);
 
   const title = <h2>Giỏ hàng</h2>;
   const renderCartHTML = () => {
+    if (currUser == null) {
+      return <p>Vui lòng đăng nhập để xem giỏ hàng.</p>;
+    }
     if (cartItems.length === 0) {
       return <p>Giỏ hàng của bạn hiện đang trống.</p>;
     }
@@ -100,7 +108,9 @@ const Cart = () => {
           >
             <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
               <img
-                src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${item.book.logo}`}
+                src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
+                  item.book.logo
+                }`}
                 alt={item.book.title}
                 style={{
                   width: "75px",
@@ -164,7 +174,6 @@ const Cart = () => {
       </div>
     );
   };
-
 
   return (
     <span
