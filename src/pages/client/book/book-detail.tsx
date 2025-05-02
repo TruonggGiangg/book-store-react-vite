@@ -28,6 +28,7 @@ import {
   message,
   Input,
   Grid,
+  notification,
 } from "antd";
 import img404 from "@/assets/img/book-with-broken-pages.gif";
 import Container from "@/components/layout/client/container.layout";
@@ -176,7 +177,6 @@ const BookDetailPage = () => {
   };
 
   const screens = Grid.useBreakpoint();
-
 
   // Tạo mảng tất cả ảnh (logo + coverImage)
   const allImages = [book?.logo, ...(book?.coverImage || [])].filter(
@@ -479,22 +479,48 @@ const BookDetailPage = () => {
       </Row>
     </div>
   );
-  const addCart = (id: string, quantity: number) => {
-    const cart = localStorage.getItem("cart");
-    let cartItems = cart ? JSON.parse(cart) : [];
-
-    const existingItemIndex = cartItems.findIndex(
-      (item: { _id: string }) => item._id === id
-    );
-
-    if (existingItemIndex !== -1) {
-      cartItems[existingItemIndex].quantity += quantity;
-    } else {
-      cartItems.push({ _id: id, quantity });
+  const addCart = async (id: string, quantity: number) => {
+    if (!currUser?._id) {
+      notification.error({
+        message: "Thao tác thất bại",
+        description: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.",
+        placement: "topRight",
+      });
+      return;
     }
 
-    setCart(cartItems);
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    const userID = currUser._id;
+    const storedCart = localStorage.getItem("cart");
+    let cartObject = storedCart ? JSON.parse(storedCart) : {};
+
+    // Nếu chưa có giỏ hàng cho user hiện tại, khởi tạo mảng rỗng
+    if (!cartObject[userID]) {
+      cartObject[userID] = [];
+    }
+
+    const userCart = cartObject[userID];
+    const existingItemIndex = userCart.findIndex(
+      (item: { _id: string }) => item._id === id
+    );
+    const bookSearch = await getBookApi(id);
+    const stock = bookSearch.data?.stock || 0;
+    if (stock < quantity) {
+      notification.error({
+        message: "Thao tác thất bại",
+        description: "Số lượng sản phẩm không đủ trong kho.",
+        placement: "topRight",
+      });
+      return;
+    }
+    if (existingItemIndex !== -1) {
+      userCart[existingItemIndex].quantity += quantity;
+    } else {
+      userCart.push({ _id: id, quantity });
+    }
+
+    cartObject[userID] = userCart;
+    localStorage.setItem("cart", JSON.stringify(cartObject));
+    setCart(userCart); // Cập nhật state theo cart của user hiện tại
   };
   return (
     <div style={{ marginTop: "172px", position: "relative" }}>
@@ -506,7 +532,9 @@ const BookDetailPage = () => {
             {/* Breadcrumb */}
             <Breadcrumb style={{ marginBottom: "16px" }}>
               <Breadcrumb.Item>
-                <Link to="/"><HomeOutlined /></Link>
+                <Link to="/">
+                  <HomeOutlined />
+                </Link>
               </Breadcrumb.Item>
               <Breadcrumb.Item>
                 <a href="/books">Sách</a>
@@ -517,7 +545,10 @@ const BookDetailPage = () => {
             </Breadcrumb>
 
             {/* Main Layout: Split into Left and Right Sections */}
-            <Row gutter={[16, 16]} style={{ marginBottom: screens.lg ? 0 : "80px" }}>
+            <Row
+              gutter={[16, 16]}
+              style={{ marginBottom: screens.lg ? 0 : "80px" }}
+            >
               {/* Left Section: Images, Book Details, Description */}
               <Col sm={24} md={24} lg={18}>
                 <Row gutter={[16, 16]}>
@@ -564,7 +595,9 @@ const BookDetailPage = () => {
                                 }}
                               >
                                 <Image
-                                  src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${img}`}
+                                  src={`${
+                                    import.meta.env.VITE_BACKEND_URL
+                                  }/images/product/${img}`}
                                   alt={`Image ${index + 1}`}
                                   preview
                                   style={{
@@ -574,8 +607,14 @@ const BookDetailPage = () => {
                                     objectFit: "cover",
                                   }}
                                   className="custom-image"
-                                  onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.025)")}
-                                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                                  onMouseEnter={(e) =>
+                                    (e.currentTarget.style.transform =
+                                      "scale(1.025)")
+                                  }
+                                  onMouseLeave={(e) =>
+                                    (e.currentTarget.style.transform =
+                                      "scale(1)")
+                                  }
                                   onError={(e) => {
                                     e.currentTarget.src = img404;
                                   }}
@@ -591,7 +630,9 @@ const BookDetailPage = () => {
                         {allImages.map((img, index) => (
                           <Col key={index}>
                             <Image
-                              src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${img}`}
+                              src={`${
+                                import.meta.env.VITE_BACKEND_URL
+                              }/images/product/${img}`}
                               alt={`${book?.title} thumbnail ${index + 1}`}
                               style={{
                                 width: "60px",
@@ -599,7 +640,10 @@ const BookDetailPage = () => {
                                 objectFit: "cover",
                                 borderRadius: "4px",
                                 cursor: "pointer",
-                                border: currentSlide === index ? "2px solid #1890FF" : "1px solid #ddd",
+                                border:
+                                  currentSlide === index
+                                    ? "2px solid #1890FF"
+                                    : "1px solid #ddd",
                               }}
                               preview={false}
                               onClick={() => {
@@ -628,7 +672,8 @@ const BookDetailPage = () => {
                           boxShadow: isDarkTheme
                             ? "0px 0px 12px rgba(255, 255, 255, 0.07)"
                             : "0px 0px 12px rgba(0, 0, 0, 0.1)",
-                          transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                          transition:
+                            "transform 0.3s ease, box-shadow 0.3s ease",
                         }}
                         title={
                           <Typography.Title
@@ -643,11 +688,13 @@ const BookDetailPage = () => {
                         }
                         onMouseEnter={(e) => {
                           e.currentTarget.style.transform = "translateY(-4px)";
-                          e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
+                          e.currentTarget.style.boxShadow =
+                            "0 8px 24px rgba(0, 0, 0, 0.2)";
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = "translateY(0)";
-                          e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.15)";
+                          e.currentTarget.style.boxShadow =
+                            "0 6px 16px rgba(0, 0, 0, 0.15)";
                         }}
                       >
                         {book.isBook ? (
@@ -685,19 +732,24 @@ const BookDetailPage = () => {
                             style={{ width: "100%", marginBottom: "16px" }}
                           >
                             <Text>
-                              <strong>Nhà xuất bản:</strong> {book.attributes?.publisher || "N/A"}
+                              <strong>Nhà xuất bản:</strong>{" "}
+                              {book.attributes?.publisher || "N/A"}
                             </Text>
                             <Text>
-                              <strong>Ngày xuất bản:</strong> {formatDate(book.attributes?.publishedDate)}
+                              <strong>Ngày xuất bản:</strong>{" "}
+                              {formatDate(book.attributes?.publishedDate)}
                             </Text>
                             <Text>
-                              <strong>ISBN:</strong> {book.attributes?.isbn || "N/A"}
+                              <strong>ISBN:</strong>{" "}
+                              {book.attributes?.isbn || "N/A"}
                             </Text>
                             <Text>
-                              <strong>Ngôn ngữ:</strong> {book.attributes?.language || "N/A"}
+                              <strong>Ngôn ngữ:</strong>{" "}
+                              {book.attributes?.language || "N/A"}
                             </Text>
                             <Text>
-                              <strong>Số trang:</strong> {book.attributes?.pages || "N/A"}
+                              <strong>Số trang:</strong>{" "}
+                              {book.attributes?.pages || "N/A"}
                             </Text>
                           </Space>
                         ) : null}
@@ -708,11 +760,15 @@ const BookDetailPage = () => {
                           style={{ width: "100%", marginBottom: "16px" }}
                         >
                           <Text>
-                            <strong style={{ marginRight: "6px" }}>Thể loại:</strong>{" "}
+                            <strong style={{ marginRight: "6px" }}>
+                              Thể loại:
+                            </strong>{" "}
                             {book.attributes?.classification?.length ? (
                               <Space wrap>
                                 {book.attributes.classification.map((catId) => {
-                                  const category = dataCategory.find((cat) => cat._id === catId);
+                                  const category = dataCategory.find(
+                                    (cat) => cat._id === catId
+                                  );
                                   return category ? (
                                     <Tag
                                       key={catId}
@@ -770,11 +826,13 @@ const BookDetailPage = () => {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = "translateY(-4px)";
-                        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 24px rgba(0, 0, 0, 0.2)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.15)";
+                        e.currentTarget.style.boxShadow =
+                          "0 6px 16px rgba(0, 0, 0, 0.15)";
                       }}
                     >
                       <div
@@ -818,15 +876,18 @@ const BookDetailPage = () => {
                       hoverable
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = "translateY(-4px)";
-                        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 24px rgba(0, 0, 0, 0.2)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.15)";
+                        e.currentTarget.style.boxShadow =
+                          "0 6px 16px rgba(0, 0, 0, 0.15)";
                       }}
                     >
                       <Paragraph>
-                        Dưới đây là những thông tin bổ sung giúp bạn hiểu rõ hơn về sản phẩm và dịch vụ liên quan.
+                        Dưới đây là những thông tin bổ sung giúp bạn hiểu rõ hơn
+                        về sản phẩm và dịch vụ liên quan.
                       </Paragraph>
 
                       <Collapse
@@ -849,7 +910,11 @@ const BookDetailPage = () => {
                           style={{ borderBottom: "1px solid #E8E8E8" }}
                         >
                           <Text>
-                            Sản phẩm được đổi trả trong vòng <strong>7 ngày</strong> nếu có lỗi do nhà sản xuất hoặc bị hư hỏng trong quá trình vận chuyển. Vui lòng giữ hóa đơn và bao bì sản phẩm để được hỗ trợ nhanh chóng.
+                            Sản phẩm được đổi trả trong vòng{" "}
+                            <strong>7 ngày</strong> nếu có lỗi do nhà sản xuất
+                            hoặc bị hư hỏng trong quá trình vận chuyển. Vui lòng
+                            giữ hóa đơn và bao bì sản phẩm để được hỗ trợ nhanh
+                            chóng.
                           </Text>
                         </Panel>
 
@@ -864,7 +929,9 @@ const BookDetailPage = () => {
                           style={{ borderBottom: "1px solid #E8E8E8" }}
                         >
                           <Text>
-                            Sản phẩm không áp dụng chính sách bảo hành. Mọi hỗ trợ liên quan đến lỗi sản xuất sẽ được xử lý thông qua chính sách đổi trả.
+                            Sản phẩm không áp dụng chính sách bảo hành. Mọi hỗ
+                            trợ liên quan đến lỗi sản xuất sẽ được xử lý thông
+                            qua chính sách đổi trả.
                           </Text>
                         </Panel>
 
@@ -886,7 +953,8 @@ const BookDetailPage = () => {
                               <strong>Hotline:</strong> 1900 636 999
                             </Text>
                             <Text>
-                              <strong>Thời gian hỗ trợ:</strong> 8:00 - 17:00 (Thứ 2 - Thứ 7)
+                              <strong>Thời gian hỗ trợ:</strong> 8:00 - 17:00
+                              (Thứ 2 - Thứ 7)
                             </Text>
                           </Space>
                           <Badge
@@ -909,7 +977,9 @@ const BookDetailPage = () => {
                           style={{ borderBottom: "1px solid #E8E8E8" }}
                         >
                           <Text>
-                            Tránh tiếp xúc sản phẩm với nước, ánh nắng trực tiếp. Bảo quản sách nơi khô ráo, tránh ẩm mốc để giữ độ bền lâu dài.
+                            Tránh tiếp xúc sản phẩm với nước, ánh nắng trực
+                            tiếp. Bảo quản sách nơi khô ráo, tránh ẩm mốc để giữ
+                            độ bền lâu dài.
                           </Text>
                         </Panel>
                       </Collapse>
@@ -922,7 +992,8 @@ const BookDetailPage = () => {
                           margin: 0,
                         }}
                       >
-                        Mọi thắc mắc khác, vui lòng liên hệ chúng tôi để được tư vấn chi tiết hơn.
+                        Mọi thắc mắc khác, vui lòng liên hệ chúng tôi để được tư
+                        vấn chi tiết hơn.
                       </Paragraph>
                     </Card>
                     <Card
@@ -948,18 +1019,28 @@ const BookDetailPage = () => {
                           renderItem={(review) => (
                             <List.Item>
                               <List.Item.Meta
-                                avatar={<Avatar>{review.userId.slice(0, 1).toUpperCase()}</Avatar>}
+                                avatar={
+                                  <Avatar>
+                                    {review.userId.slice(0, 1).toUpperCase()}
+                                  </Avatar>
+                                }
                                 title={
                                   <Space>
                                     <Text strong>{review.userName}</Text>
-                                    <Rate allowHalf disabled value={review.rating} />
+                                    <Rate
+                                      allowHalf
+                                      disabled
+                                      value={review.rating}
+                                    />
                                   </Space>
                                 }
                                 description={
                                   <>
                                     <Paragraph>{review.comment}</Paragraph>
                                     <Text type="secondary">
-                                      {dayjs(review.createdAt).format("DD/MM/YYYY HH:mm")}
+                                      {dayjs(review.createdAt).format(
+                                        "DD/MM/YYYY HH:mm"
+                                      )}
                                     </Text>
                                   </>
                                 }
@@ -989,7 +1070,9 @@ const BookDetailPage = () => {
                           onChange={(e) => setComment(e.target.value)}
                           style={{ marginBottom: 8 }}
                         />
-                        <div style={{ display: "flex", justifyContent: "right" }}>
+                        <div
+                          style={{ display: "flex", justifyContent: "right" }}
+                        >
                           <Button
                             type="primary"
                             onClick={() => {
@@ -1016,27 +1099,39 @@ const BookDetailPage = () => {
                 <div
                   style={
                     screens.lg
-                      ? { position: "sticky", top: "100px", marginBottom: "24px" }
+                      ? {
+                          position: "sticky",
+                          top: "100px",
+                          marginBottom: "24px",
+                        }
                       : {
-                        position: "fixed",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        zIndex: 1000,
+                          position: "fixed",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          zIndex: 1000,
 
-                        // boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
-                        padding: "16px",
-                      }
+                          // boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
+                          padding: "16px",
+                        }
                   }
                 >
                   <Card
                     style={{
                       borderRadius: "8px",
-                      boxShadow: screens.lg ? "0 4px 12px rgba(0,0,0,0.1)" : "none",
+                      boxShadow: screens.lg
+                        ? "0 4px 12px rgba(0,0,0,0.1)"
+                        : "none",
                       width: "100%",
                     }}
                   >
-                    <Text strong style={{ fontSize: screens.lg ? "20px" : "16px", color: "#FF5733" }}>
+                    <Text
+                      strong
+                      style={{
+                        fontSize: screens.lg ? "20px" : "16px",
+                        color: "#FF5733",
+                      }}
+                    >
                       {book.price.toLocaleString()} VND
                     </Text>
 
@@ -1047,36 +1142,49 @@ const BookDetailPage = () => {
                         margin: "12px 0",
                       }}
                     >
-                      <Text strong style={{
-                        fontSize: screens.lg ? "16px" : "12px"
-                      }}>Số lượng</Text>
+                      <Text
+                        strong
+                        style={{
+                          fontSize: screens.lg ? "16px" : "12px",
+                        }}
+                      >
+                        Số lượng
+                      </Text>
                       <InputNumber
                         min={1}
                         max={book.stock}
                         value={quantity}
                         onChange={(value) => setQuantity(value || 1)}
-                        style={{ flex: 1, marginLeft: "12px", fontSize: screens.lg ? "16px" : "12px" }}
+                        style={{
+                          flex: 1,
+                          marginLeft: "12px",
+                          fontSize: screens.lg ? "16px" : "12px",
+                        }}
                       />
                     </div>
 
-                    <Text style={{ display: "block", marginBottom: "12px", fontSize: screens.lg ? "16px" : "12px" }}>
-                      <strong>Tạm tính:</strong> {(book.price * quantity).toLocaleString()} VND
+                    <Text
+                      style={{
+                        display: "block",
+                        marginBottom: "12px",
+                        fontSize: screens.lg ? "16px" : "12px",
+                      }}
+                    >
+                      <strong>Tạm tính:</strong>{" "}
+                      {(book.price * quantity).toLocaleString()} VND
                     </Text>
 
                     <Button
                       type="primary"
-
                       style={{
                         width: "100%",
                         padding: "12px",
                         fontSize: "18px",
-
                       }}
                       onClick={() => addCart(book._id, quantity)}
                     >
                       Thêm vào giỏ
                     </Button>
-
                   </Card>
                 </div>
               </Col>

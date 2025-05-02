@@ -48,9 +48,8 @@ const CheckoutPage: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { setCart, cart } = useAppProvider();
+  const { setCart, cart, currUser } = useAppProvider();
   const navigate = useNavigate();
-
 
   const screens = Grid.useBreakpoint();
 
@@ -80,8 +79,9 @@ const CheckoutPage: React.FC = () => {
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Image
-            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${record.logo
-              }`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
+              record.logo
+            }`}
             alt={record.title}
             width={100}
             height={100}
@@ -128,42 +128,49 @@ const CheckoutPage: React.FC = () => {
   // Fetch books from cart
   useEffect(() => {
     const fetchBooks = async () => {
+      if (!currUser?._id) return;
+
       try {
         setLoading(true);
         const savedCart = localStorage.getItem("cart");
+
         if (savedCart) {
           const cartData = JSON.parse(savedCart);
+          const userCart: { _id: string; quantity: number }[] =
+            cartData[currUser._id] || [];
 
-          // Tính tổng số lượng sản phẩm trong giỏ hàng
-          const totalQuantity = cartData
-            .map((item: { quantity: number }) => item.quantity)
-            .reduce((a: number, b: number) => a + b, 0);
+          // Tính tổng số lượng sản phẩm
+          const totalQuantity = userCart.reduce(
+            (sum: number, item: { quantity: number }) => sum + item.quantity,
+            0
+          );
           setTotalCart(totalQuantity);
 
-          // Lấy danh sách sách từ API dựa trên các ID sản phẩm trong giỏ hàng
-          const bookPromises = cartData.map(
-            async (item: { _id: string; quantity: number }) => {
-              const res = await getBookApi(item._id);
-              if (res.data) {
-                return { book: res.data, quantity: item.quantity };
-              }
-              return null;
+          // Gọi API để lấy thông tin từng sách
+          const bookPromises = userCart.map(async (item) => {
+            const res = await getBookApi(item._id);
+            if (res.data) {
+              return { book: res.data, quantity: item.quantity };
             }
-          );
+            return null;
+          });
 
-          // Chờ tất cả các sách được lấy từ API
           const booksData = await Promise.all(bookPromises);
           const validBooks = booksData.filter((book) => book !== null);
+
           setCartItems(validBooks);
           setBooks(validBooks.map((item) => item.book));
-
-          // Cập nhật quantities từ cartData
           setQuantities(
-            cartData.reduce((acc: { [key: string]: number }, item: any) => {
+            userCart.reduce((acc: { [key: string]: number }, item) => {
               acc[item._id] = item.quantity;
               return acc;
             }, {})
           );
+        } else {
+          setCartItems([]);
+          setBooks([]);
+          setQuantities({});
+          setTotalCart(0);
         }
       } catch (error) {
         setError("Lỗi khi tải danh sách sách");
@@ -174,7 +181,7 @@ const CheckoutPage: React.FC = () => {
     };
 
     fetchBooks();
-  }, []);
+  }, [currUser]);
 
   // Fetch provinces from Vietnam API
   useEffect(() => {
@@ -221,40 +228,58 @@ const CheckoutPage: React.FC = () => {
   };
 
   // Handle quantity change
-  const handleQuantityChange = (bookId: string, value: number | null) => {
-    if (value !== null) {
-      setQuantities((prev) => ({ ...prev, [bookId]: value }));
-    }
+  const handleQuantityChange = async (bookId: string, value: number | null) => {
+    if (!currUser?._id || value === null) return;
 
-    setCartItems((prev) => {
-      const updatedCart = prev.map((item) => {
-        if (item.book._id === bookId) {
-          return { ...item, quantity: value || 1 };
-        }
-        return item;
-      });
+    const userID = currUser._id;
 
-      // Cập nhật localStorage
-      localStorage.setItem(
-        "cart",
-        JSON.stringify(
-          updatedCart.map((item) => ({
-            _id: item.book._id,
-            quantity: item.quantity,
-          }))
-        )
-      );
+    try {
+      const bookItem = await getBookApi(bookId);
+      const stock = bookItem.data?.stock || 0;
 
-      // Cập nhật context
-      setCart(
-        updatedCart.map((item) => ({
+      let finalValue = value;
+
+      if (value > stock) {
+        message.warning(
+          `Số lượng vượt quá tồn kho. Chỉ còn lại ${stock} sản phẩm.`
+        );
+        finalValue = stock; // Set lại giá trị hợp lệ
+      }
+
+      // Cập nhật số lượng
+      setQuantities((prev) => ({ ...prev, [bookId]: finalValue }));
+
+      setCartItems((prev) => {
+        const updatedCart = prev.map((item) => {
+          if (item.book._id === bookId) {
+            return { ...item, quantity: finalValue };
+          }
+          return item;
+        });
+
+        // Lấy giỏ hàng hiện tại từ localStorage
+        const storedCart = localStorage.getItem("cart");
+        const cartObject: {
+          [key: string]: { _id: string; quantity: number }[];
+        } = storedCart ? JSON.parse(storedCart) : {};
+
+        // Cập nhật giỏ hàng của user hiện tại
+        cartObject[userID] = updatedCart.map((item) => ({
           _id: item.book._id,
           quantity: item.quantity,
-        }))
-      );
+        }));
 
-      return updatedCart;
-    });
+        // Ghi lại vào localStorage
+        localStorage.setItem("cart", JSON.stringify(cartObject));
+
+        // Cập nhật context
+        setCart(cartObject[userID]);
+
+        return updatedCart;
+      });
+    } catch (error) {
+      message.error("Lỗi khi cập nhật số lượng sản phẩm");
+    }
   };
 
   // Handle remove book
@@ -392,22 +417,30 @@ const CheckoutPage: React.FC = () => {
 
           const response = await createOrderApi(orderData);
           if (response.data) {
-            message.success('Đặt hàng COD thành công!');
+            message.success("Đặt hàng COD thành công!");
 
             // Reset state
-            setName('');
-            setPhone('');
+            setName("");
+            setPhone("");
             setProvince(undefined);
             setDistrict(undefined);
             setWard(undefined);
-            setAddress('');
+            setAddress("");
             setBooks([]);
             setQuantities({});
             form.resetFields();
             setCurrentStep(0);
             setCartItems([]);
+            if (currUser?._id) {
+              const userID = currUser._id;
+              const storedCart = localStorage.getItem("cart");
+              if (storedCart) {
+                const cartObject = JSON.parse(storedCart);
+                delete cartObject[userID]; // Xóa giỏ hàng của user hiện tại
+                localStorage.setItem("cart", JSON.stringify(cartObject));
+              }
+            }
             setCart([]);
-            localStorage.removeItem('cart');
 
             // Đặt thời gian tối thiểu 4 giây
             setTimeout(() => {
@@ -417,7 +450,7 @@ const CheckoutPage: React.FC = () => {
             // Hiển thị modal thông báo với đếm ngược
             let seconds = 10;
             const modal = Modal.success({
-              title: 'Đặt hàng thành công!',
+              title: "Đặt hàng thành công!",
               content: (
                 <div style={{}}>
                   <Lottie
@@ -425,44 +458,55 @@ const CheckoutPage: React.FC = () => {
                     loop
                     // speed={0.5} // Giảm tốc độ animation nếu cần (0.5 = chậm hơn 50%)
                     style={{
-                      width: '40%',
-                      maxWidth: '200px',
-                      height: 'auto',
-                      margin: 'auto',
+                      width: "40%",
+                      maxWidth: "200px",
+                      height: "auto",
+                      margin: "auto",
                     }}
                   />
                   <Text strong style={{ fontSize: 16 }} id="countdown-text">
-                    Bạn có thể theo dõi đơn hàng của mình trong trang lịch sử mua hàng.
+                    Bạn có thể theo dõi đơn hàng của mình trong trang lịch sử
+                    mua hàng.
                     {`Đang chuyển về trang chủ sau ${seconds} giây.`}
                   </Text>
                 </div>
               ),
-              okText: 'Về trang chủ ngay',
+              okText: "Về trang chủ ngay",
               onOk: () => {
                 if (!minimumDisplayTimeRef.current) {
-                  message.info('Vui lòng đợi ít nhất 4 giây!');
+                  message.info("Vui lòng đợi ít nhất 4 giây!");
                   return;
                 }
                 clearInterval(countdown);
                 modal.destroy();
-                navigate('/');
+                navigate("/");
+                if (currUser?._id) {
+                  const userID = currUser._id;
+                  const storedCart = localStorage.getItem("cart");
+                  if (storedCart) {
+                    const cartObject = JSON.parse(storedCart);
+                    delete cartObject[userID]; // Xóa giỏ hàng của user hiện tại
+                    localStorage.setItem("cart", JSON.stringify(cartObject));
+                  }
+                }
                 setCart([]);
-                localStorage.removeItem('cart');
               },
               okButtonProps: {
                 disabled: !minimumDisplayTimeRef.current, // Vô hiệu hóa nút trong 4 giây đầu
                 style: {
-                  backgroundColor: minimumDisplayTimeRef.current ? '#FF5733' : '#d9d9d9',
-                  color: minimumDisplayTimeRef.current ? '#fff' : '#000',
-                  border: 'none',
-                  fontWeight: 'bold',
-                  padding: '0 20px',
-                  borderRadius: '5px',
-                  fontSize: '16px',
+                  backgroundColor: minimumDisplayTimeRef.current
+                    ? "#FF5733"
+                    : "#d9d9d9",
+                  color: minimumDisplayTimeRef.current ? "#fff" : "#000",
+                  border: "none",
+                  fontWeight: "bold",
+                  padding: "0 20px",
+                  borderRadius: "5px",
+                  fontSize: "16px",
                 },
               },
               cancelButtonProps: {
-                style: { display: 'none' }, // Ẩn nút "Ở lại"
+                style: { display: "none" }, // Ẩn nút "Ở lại"
               },
               centered: true,
             });
@@ -473,13 +517,13 @@ const CheckoutPage: React.FC = () => {
                 okButtonProps: {
                   disabled: false,
                   style: {
-                    backgroundColor: '#FF5733',
-                    color: '#fff',
-                    border: 'none',
-                    fontWeight: 'bold',
-                    padding: '0 20px',
-                    borderRadius: '5px',
-                    fontSize: '16px',
+                    backgroundColor: "#FF5733",
+                    color: "#fff",
+                    border: "none",
+                    fontWeight: "bold",
+                    padding: "0 20px",
+                    borderRadius: "5px",
+                    fontSize: "16px",
                   },
                 },
               });
@@ -490,12 +534,20 @@ const CheckoutPage: React.FC = () => {
               if (seconds <= 0) {
                 clearInterval(countdown);
                 modal.destroy();
-                navigate('/');
+                navigate("/");
+                if (currUser?._id) {
+                  const userID = currUser._id;
+                  const storedCart = localStorage.getItem("cart");
+                  if (storedCart) {
+                    const cartObject = JSON.parse(storedCart);
+                    delete cartObject[userID]; // Xóa giỏ hàng của user hiện tại
+                    localStorage.setItem("cart", JSON.stringify(cartObject));
+                  }
+                }
                 setCart([]);
-                localStorage.removeItem('cart');
               } else {
                 // Chỉ cập nhật text đếm ngược
-                const countdownText = document.getElementById('countdown-text');
+                const countdownText = document.getElementById("countdown-text");
                 if (countdownText) {
                   countdownText.textContent = `Đang chuyển về trang chủ sau ${seconds} giây...`;
                 }
@@ -508,7 +560,7 @@ const CheckoutPage: React.FC = () => {
               modal.destroy();
             };
           } else {
-            message.error('Đặt hàng không thành công: ' + response.message);
+            message.error("Đặt hàng không thành công: " + response.message);
           }
         } catch (error) {
           message.error(
@@ -716,8 +768,9 @@ const CheckoutPage: React.FC = () => {
                     wards.find((w) => String(w.code) === String(ward))?.name ||
                     "Chưa chọn";
 
-                  return `${address || "Chưa nhập"
-                    }, ${wardName}, ${districtName}, ${provinceName}`;
+                  return `${
+                    address || "Chưa nhập"
+                  }, ${wardName}, ${districtName}, ${provinceName}`;
                 })()}
               </Descriptions.Item>
             </Descriptions>
@@ -746,7 +799,6 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <div style={{ marginTop: "172px" }}>
-
       <Container>
         <AppBreadcrumb />
         <Steps current={currentStep}>
@@ -759,21 +811,19 @@ const CheckoutPage: React.FC = () => {
             screens.lg
               ? { marginTop: 24, textAlign: "right" }
               : {
-                position: "fixed",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                padding: "32px",
-                zIndex: 1000,
+                  position: "fixed",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                  padding: "32px",
+                  zIndex: 1000,
 
-                boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
-
-              }
-
+                  boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
+                }
           }
         >
           {currentStep > 0 && (
