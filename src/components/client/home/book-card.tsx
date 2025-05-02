@@ -98,6 +98,7 @@ const BookCard: FC<BookCardProps> = ({
         description: "Số lượng sản phẩm không đủ trong kho.",
         placement: "topRight",
       });
+
       return;
     }
     if (existingItemIndex !== -1) {
@@ -259,6 +260,7 @@ const BookCard: FC<BookCardProps> = ({
                   min={1}
                   defaultValue={1}
                   size="small"
+                  max={book.stock}
                   style={{ padding: "6px", width: "100%" }}
                   onChange={(value) => {
                     if (value) setQuantity(value);

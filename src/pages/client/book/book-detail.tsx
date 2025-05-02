@@ -510,6 +510,7 @@ const BookDetailPage = () => {
         description: "Số lượng sản phẩm không đủ trong kho.",
         placement: "topRight",
       });
+      setQuantity(stock);
       return;
     }
     if (existingItemIndex !== -1) {
