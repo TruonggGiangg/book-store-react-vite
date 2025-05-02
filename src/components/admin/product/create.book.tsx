@@ -218,7 +218,7 @@ const AddBook = (props: IProps) => {
     return (
         <>
             {contextHolder}
-            <Drawer title="Create user"
+            <Drawer title="Create product"
                 open={isOpenCreateModal}
                 onClose={() => {
                     setIsOpenCreateModal(false);

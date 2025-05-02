@@ -97,7 +97,7 @@ const LayoutHeader = () => {
         {/* Toggle Dark Mode & Avatar */}
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           {/* Toggle Dark Mode */}
-          <ThemeToggle />
+
 
           <Switch
             onChange={change}

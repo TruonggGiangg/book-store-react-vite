@@ -127,7 +127,7 @@ const AppLayoutClient: React.FC = () => {
 
                         }}
                     >
-                        <Row gutter={[32, 24]} justify="center">
+                        <Row gutter={[16, 16]} justify="center">
                             {/* Column 1: About Us */}
                             <Col xs={24} sm={12} md={8} lg={6}>
                                 <Title level={4} style={{ color: isDarkTheme ? '#ffffff' : '#000000', marginBottom: '20px' }}>

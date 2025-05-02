@@ -334,7 +334,7 @@ const UpdateProduct = (props: IProps) => {
     return (
         <>
             {contextHolder}
-            <Drawer title="Create user"
+            <Drawer title="Update product"
                 open={isOpenUpdateModal}
                 onClose={() => {
                     setIsOpenUpdateModal(false);

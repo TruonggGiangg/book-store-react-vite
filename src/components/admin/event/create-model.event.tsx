@@ -26,6 +26,7 @@ import TinyMCEEditor from "@/components/editor/input";
 import { useAppProvider } from "@/components/context/app.context";
 import { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
 import UploadButton from "@/components/helper/uploadButton";
+import { get } from "lodash";
 interface IProps {
   isOpenCreateModal: boolean;
   setIsOpenCreateModal: (v: boolean) => void;
@@ -62,6 +63,18 @@ const EventCreate = (props: IProps) => {
   }, []);
 
   const onFinish = async (values: ICreateEvent) => {
+    const length = await getAllEventApi('');
+    if (length.data?.result) {
+      if (length.data.result.length > 3) {
+        api.error({
+          message: "Lỗi",
+          description: "Chỉ được tạo 4 sự kiện",
+          placement: "topRight",
+        });
+        return;
+      }
+    }
+
     const event: ICreateEvent = {
       name: values.name,
       description: values.description,
