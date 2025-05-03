@@ -319,7 +319,7 @@ const HomePageAdmin = () => {
                     </Col>
 
                     <Col xs={24} sm={12} lg={6}>
-                        <Card hoverable>
+                        <Card >
                             <Statistic
                                 title="Doanh thu hôm nay"
                                 value={revenueStats.day}
@@ -329,7 +329,7 @@ const HomePageAdmin = () => {
                         </Card>
                     </Col>
                     <Col xs={24} sm={12} lg={6}>
-                        <Card hoverable>
+                        <Card >
                             <Statistic
                                 title="Doanh thu tháng này"
                                 value={revenueStats.month}
