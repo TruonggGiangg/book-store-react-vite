@@ -99,11 +99,11 @@ const LayoutHeader = () => {
           {/* Toggle Dark Mode */}
 
 
-          <Switch
+          {/* <Switch
             onChange={change}
             checkedChildren={"VI"}
             unCheckedChildren={"EN"}
-          />
+          /> */}
           {/* Avatar với Dropdown */}
           <Dropdown
             menu={{ items: menuAvatar }}
