@@ -340,7 +340,7 @@ const HomePageAdmin = () => {
                     </Col>
                 </Row>
 
-                <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                {/* <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
                     <Col xs={24} lg={24}>
                         <Card
                             title="Biểu đồ doanh thu (Ngày / Tháng / Năm)"
@@ -363,7 +363,7 @@ const HomePageAdmin = () => {
                             )}
                         </Card>
                     </Col>
-                </Row>
+                </Row> */}
             </div>
         </ConfigProvider>
     );
