@@ -15,11 +15,19 @@ const Cart = () => {
   const [totalCart, setTotalCart] = useState(0);
   const [cartItems, setCartItems] = useState<any[]>([]); // Sử dụng `any` để không ép kiểu
   const nav = useNavigate(); // Lấy hàm điều hướng từ context
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const screens = useBreakpoint();
   // Xử lý lỗi tải ảnh
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.onerror = null; // Ngăn lỗi lặp vô hạn
     e.currentTarget.src = img404; // Thay bằng ảnh mặc định
+  };
+
+
+
+  const handleCheckout = () => {
+    setPopoverOpen(false); // Đóng popover
+    nav("/payment"); // Điều hướng đến trang thanh toán
   };
 
   // Đồng bộ giỏ hàng khi cart thay đổi
@@ -108,9 +116,8 @@ const Cart = () => {
           >
             <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
               <img
-                src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
-                  item.book.logo
-                }`}
+                src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${item.book.logo
+                  }`}
                 alt={item.book.title}
                 style={{
                   width: "75px",
@@ -167,7 +174,7 @@ const Cart = () => {
         <Button
           type="primary"
           style={{ width: "100%" }}
-          onClick={() => nav("/payment")}
+          onClick={handleCheckout}
         >
           Thanh toán
         </Button>
@@ -187,8 +194,10 @@ const Cart = () => {
       <Popover
         placement="bottom"
         content={renderCartHTML()}
-        trigger="click"
         title={title}
+        trigger="click"
+        open={popoverOpen}
+        onOpenChange={(newOpen) => setPopoverOpen(newOpen)}
       >
         <Badge
           count={totalCart}

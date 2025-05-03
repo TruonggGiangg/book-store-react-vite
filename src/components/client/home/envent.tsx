@@ -1,6 +1,6 @@
 import Container from "@/components/layout/client/container.layout"
 import { Button, Card, Col, Row, Skeleton } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 type IProps = {
@@ -10,6 +10,7 @@ type IProps = {
 
 
 const EventHome = (props: IProps) => {
+    const nav = useNavigate();
 
     const { dataEvent, loading } = props;
 
@@ -18,7 +19,7 @@ const EventHome = (props: IProps) => {
         <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <h2 style={{ fontSize: 24, fontWeight: 600 }}>Sự kiện</h2>
-                <Button type="link" style={{ fontSize: "14px", color: "#FF5733" }}>Xem tất cả</Button>
+                {/* <Button type="link" style={{ fontSize: "14px", color: "#FF5733" }}>Xem tất cả</Button> */}
             </div>
 
             <Card>
@@ -33,8 +34,9 @@ const EventHome = (props: IProps) => {
 
                         dataEvent.map((event, index) => (
                             <Col key={index} xs={24} sm={12} md={8} lg={6}>
-                                <Card
 
+                                <Card
+                                    onClick={() => nav(`/event/${event._id}`)}
                                     hoverable
                                     cover={
                                         <img

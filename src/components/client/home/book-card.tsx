@@ -274,7 +274,7 @@ const BookCard: FC<BookCardProps> = ({
                   }}
                   onClick={() => addCart(book._id, quantity)}
                 >
-                  Add to cart
+                  Thêm vào giỏ
                 </Button>
               </Space>
             </div>

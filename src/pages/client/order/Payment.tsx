@@ -79,9 +79,8 @@ const CheckoutPage: React.FC = () => {
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Image
-            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${
-              record.logo
-            }`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${record.logo
+              }`}
             alt={record.title}
             width={100}
             height={100}
@@ -360,13 +359,17 @@ const CheckoutPage: React.FC = () => {
       if (currentStep === 0) {
         if (cartItems.length === 0) {
           message.error("Giỏ hàng trống, vui lòng thêm sách");
+          // lướt lên đầu trang
+          window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         }
         setCurrentStep(1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } else if (currentStep === 1) {
         if (!validateStep2()) {
           return;
         }
+        window.scrollTo({ top: 0, behavior: "smooth" });
         setCurrentStep(2);
       } else if (currentStep === 2) {
         try {
@@ -725,29 +728,32 @@ const CheckoutPage: React.FC = () => {
       title: "Thanh toán",
       icon: <CreditCardOutlined />,
       content: (
-        <Card title="Hình thức thanh toán">
-          <Form form={form} layout="vertical" onFinish={onFinish}>
-            <Form.Item
-              name="paymentMethod"
-              label="Chọn phương thức thanh toán"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn phương thức thanh toán",
-                },
-              ]}
-            >
-              <Radio.Group
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                value={paymentMethod}
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          <Card title="Hình thức thanh toán">
+            <Form form={form} layout="vertical" onFinish={onFinish}>
+              <Form.Item
+                name="paymentMethod"
+                label="Chọn phương thức thanh toán"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn phương thức thanh toán",
+                  },
+                ]}
               >
-                <Radio value="cod">Thanh toán khi nhận hàng (COD)</Radio>
-              </Radio.Group>
-            </Form.Item>
-          </Form>
+                <Radio.Group
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  value={paymentMethod}
+                >
+                  <Radio value="cod">Thanh toán khi nhận hàng (COD)</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Form>
+          </Card>
+
           <Card
             title={<Title level={4}>📍 Địa chỉ giao hàng</Title>}
-            style={{ marginTop: 24, borderRadius: 12 }}
+            style={{ borderRadius: 12 }}
           >
             <Descriptions bordered column={1}>
               <Descriptions.Item label="Họ và tên">
@@ -768,16 +774,15 @@ const CheckoutPage: React.FC = () => {
                     wards.find((w) => String(w.code) === String(ward))?.name ||
                     "Chưa chọn";
 
-                  return `${
-                    address || "Chưa nhập"
-                  }, ${wardName}, ${districtName}, ${provinceName}`;
+                  return `${address || "Chưa nhập"}, ${wardName}, ${districtName}, ${provinceName}`;
                 })()}
               </Descriptions.Item>
             </Descriptions>
           </Card>
+
           <Card
             title={<Title level={4}>🧾 Hóa đơn thanh toán</Title>}
-            style={{ marginTop: 24, borderRadius: 12 }}
+            style={{ borderRadius: 12 }}
           >
             <Table
               dataSource={cartItems.map((item) => item.book)}
@@ -785,6 +790,7 @@ const CheckoutPage: React.FC = () => {
               pagination={false}
               rowKey="_id"
               bordered
+              scroll={{ x: 768 }}
             />
             <div style={{ marginTop: 24, textAlign: "right" }}>
               <Title level={4} style={{ color: "#ff4d4f" }}>
@@ -792,9 +798,9 @@ const CheckoutPage: React.FC = () => {
               </Title>
             </div>
           </Card>
-        </Card>
-      ),
-    },
+        </div>
+      )
+    }
   ];
 
   return (
@@ -811,19 +817,19 @@ const CheckoutPage: React.FC = () => {
             screens.lg
               ? { marginTop: 24, textAlign: "right" }
               : {
-                  position: "fixed",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "100%",
-                  padding: "32px",
-                  zIndex: 1000,
+                position: "fixed",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                padding: "32px",
+                zIndex: 1000,
 
-                  boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
-                }
+
+              }
           }
         >
           {currentStep > 0 && (

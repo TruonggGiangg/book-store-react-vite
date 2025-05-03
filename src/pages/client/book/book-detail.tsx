@@ -165,10 +165,7 @@ const BookDetailPage = () => {
     fetchBooks();
   }, [book, id]);
 
-  useEffect(() => {
-    setBook(undefined);
-    window.scrollTo(0, 0);
-  }, [id]);
+
 
   // Format date
   const formatDate = (date?: Date | number | string) => {
@@ -595,9 +592,8 @@ const BookDetailPage = () => {
                                 }}
                               >
                                 <Image
-                                  src={`${
-                                    import.meta.env.VITE_BACKEND_URL
-                                  }/images/product/${img}`}
+                                  src={`${import.meta.env.VITE_BACKEND_URL
+                                    }/images/product/${img}`}
                                   alt={`Image ${index + 1}`}
                                   preview
                                   style={{
@@ -608,12 +604,12 @@ const BookDetailPage = () => {
                                   }}
                                   className="custom-image"
                                   onMouseEnter={(e) =>
-                                    (e.currentTarget.style.transform =
-                                      "scale(1.025)")
+                                  (e.currentTarget.style.transform =
+                                    "scale(1.025)")
                                   }
                                   onMouseLeave={(e) =>
-                                    (e.currentTarget.style.transform =
-                                      "scale(1)")
+                                  (e.currentTarget.style.transform =
+                                    "scale(1)")
                                   }
                                   onError={(e) => {
                                     e.currentTarget.src = img404;
@@ -630,9 +626,8 @@ const BookDetailPage = () => {
                         {allImages.map((img, index) => (
                           <Col key={index}>
                             <Image
-                              src={`${
-                                import.meta.env.VITE_BACKEND_URL
-                              }/images/product/${img}`}
+                              src={`${import.meta.env.VITE_BACKEND_URL
+                                }/images/product/${img}`}
                               alt={`${book?.title} thumbnail ${index + 1}`}
                               style={{
                                 width: "60px",
@@ -1100,20 +1095,20 @@ const BookDetailPage = () => {
                   style={
                     screens.lg
                       ? {
-                          position: "sticky",
-                          top: "100px",
-                          marginBottom: "24px",
-                        }
+                        position: "sticky",
+                        top: "100px",
+                        marginBottom: "24px",
+                      }
                       : {
-                          position: "fixed",
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          zIndex: 1000,
+                        position: "fixed",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1000,
 
-                          // boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
-                          padding: "16px",
-                        }
+                        // boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
+                        padding: "16px",
+                      }
                   }
                 >
                   <Card
@@ -1178,8 +1173,9 @@ const BookDetailPage = () => {
                       type="primary"
                       style={{
                         width: "100%",
-                        padding: "12px",
+
                         fontSize: "18px",
+                        padding: screens.lg ? "20px" : "12px",
                       }}
                       onClick={() => addCart(book._id, quantity)}
                     >

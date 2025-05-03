@@ -7,9 +7,9 @@ const { Text } = Typography;
 import Lottie from 'lottie-react';
 import React, { useEffect, useState, useCallback } from 'react';
 import loadingAnimation from "@/assets/animation/loadingAnimation.json";
-import { CaretRightOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, HomeOutlined } from '@ant-design/icons';
 import { useAppProvider } from '@/components/context/app.context';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import AppBreadcrumb from '@/components/nav/AppBreadcrumb';
 
 interface Filters {
@@ -63,12 +63,12 @@ const BookPage: React.FC = () => {
         }
         fetchCategory();
     }, [id]);
+
+
+
     const pageSize = 12;
 
-    useEffect(() => {
-        // Cuộn lên đầu trang mỗi khi route thay đổi
-        window.scrollTo(0, 0);
-    }, []);
+
 
     const buildQueryString = (currentFilters: Filters, page: number): string => {
         const params = new URLSearchParams({
@@ -278,7 +278,19 @@ const BookPage: React.FC = () => {
     return (
         <div style={{ marginTop: "172px" }}>
             <Container>
-                <AppBreadcrumb />
+                <Breadcrumb style={{ marginBottom: "16px" }}>
+                    <Breadcrumb.Item>
+                        <Link to="/">
+                            <HomeOutlined />
+                        </Link>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <a href="/books">Sách</a>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        {category?.name || "Thể loại sách"}
+                    </Breadcrumb.Item>
+                </Breadcrumb>
                 {
                     !id && (
                         <Collapse

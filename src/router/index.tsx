@@ -23,6 +23,7 @@ import HomePage from "@/pages/client/home";
 import OrderAdminMain from "@/components/admin/order/main";
 import Account from "@/pages/client/account/Account";
 import RoleAdmin from "@/components/admin/role/main";
+import EventPage from "@/pages/client/event/event.detail";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
       {
         path: "books/:id",
         element: <BookPage />,
+      },
+      {
+        path: "event/:id",
+        element: <EventPage />,
       },
       {
         path: "book/:id",

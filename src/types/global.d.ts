@@ -234,7 +234,7 @@ declare global {
         createdBy?: UserReference;
         updatedBy?: UserReference;
         deletedBy?: UserReference;
-        reviews?: Review[];
+
         __v?: number;
     }
     interface ICreateEvent {

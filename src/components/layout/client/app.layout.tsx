@@ -7,6 +7,7 @@ import LayoutHeader from '@/components/layout/client/layout.header'
 import { useAppProvider } from '@/components/context/app.context';
 import Container from './container.layout';
 import SubNav from './sub-nav.layout';
+import ScrollToTop from '@/components/helper/cuon';
 const { Content, Footer, Sider } = Layout;
 
 
@@ -106,6 +107,8 @@ const AppLayoutClient: React.FC = () => {
 
             }}
         >
+
+            <ScrollToTop />
             <Layout style={{ minHeight: "100vh" }}>
 
                 <LayoutHeader />

@@ -31,18 +31,18 @@ export const AppProvider = (props: TProps) => {
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
   const [cart, setCart] = useState<object[]>([]);
 
-  // Đọc giá trị theme từ localStorage khi component được load
   useEffect(() => {
     const savedTheme = localStorage.getItem("isDarkTheme");
-    if (savedTheme) {
+
+    if (savedTheme !== null) {
       setIsDarkTheme(JSON.parse(savedTheme));
+    } else {
+      // Lấy từ system nếu chưa có trong localStorage
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setIsDarkTheme(prefersDark);
     }
   }, []);
 
-  // Lưu giá trị theme vào localStorage khi theme thay đổi
-  useEffect(() => {
-    localStorage.setItem("isDarkTheme", JSON.stringify(isDarkTheme));
-  }, [isDarkTheme]);
 
   // Đồng bộ giỏ hàng từ localStorage
   useEffect(() => {

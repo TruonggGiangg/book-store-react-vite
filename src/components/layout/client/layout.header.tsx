@@ -363,11 +363,10 @@ const LayoutHeader = () => {
                 marginRight: screens.xxl ? "16px" : "8px",
               }}
             >
-              <Switch
-                onChange={changeLang}
-                checkedChildren="VI"
-                unCheckedChildren="EN"
-              />
+              {/* <Switch onChange={changeLang} */}
+              {/* checkedChildren="VI" */}
+              {/* unCheckedChildren="EN" */}
+              {/* /> */}
               <ThemeToggle />
               <div style={{ marginRight: "8px" }}>
                 <Cart />

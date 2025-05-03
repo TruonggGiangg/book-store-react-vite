@@ -173,6 +173,8 @@ export const getAllEventApi = (query: string) => {
     const url = `${baseURL}/api/v1/events?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IGetEvent>>>(url);
 };
+
+
 export const createEventApi = (eventData: ICreateEvent) => {
     const url = `${baseURL}/api/v1/events`;
     return axios.post<IBackendRes<any>>(url, eventData);
