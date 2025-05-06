@@ -48,7 +48,7 @@ const CheckoutPage: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { setCart, cart, currUser } = useAppProvider();
+  const { setCart, cart, currUser, isDarkTheme } = useAppProvider();
   const navigate = useNavigate();
 
   const screens = Grid.useBreakpoint();
@@ -449,17 +449,20 @@ const CheckoutPage: React.FC = () => {
             setTimeout(() => {
               minimumDisplayTimeRef.current = true; // Đánh dấu đã đủ 4 giây
             }, 4000);
-
-            // Hiển thị modal thông báo với đếm ngược
             let seconds = 10;
+
             const modal = Modal.success({
               title: "Đặt hàng thành công!",
               content: (
-                <div style={{}}>
+                <div
+                  style={{
+                    color: isDarkTheme ? "#fff" : "#000",
+                    textAlign: "center",
+                  }}
+                >
                   <Lottie
                     animationData={successAnimation}
                     loop
-                    // speed={0.5} // Giảm tốc độ animation nếu cần (0.5 = chậm hơn 50%)
                     style={{
                       width: "40%",
                       maxWidth: "200px",
@@ -467,10 +470,16 @@ const CheckoutPage: React.FC = () => {
                       margin: "auto",
                     }}
                   />
-                  <Text strong style={{ fontSize: 16 }} id="countdown-text">
-                    Bạn có thể theo dõi đơn hàng của mình trong trang lịch sử
-                    mua hàng.
-                    {`Đang chuyển về trang chủ sau ${seconds} giây.`}
+                  <Text
+                    strong
+                    style={{
+                      fontSize: 16,
+                      color: isDarkTheme ? "#ccc" : "#333",
+                    }}
+                    id="countdown-text"
+                  >
+                    Bạn có thể theo dõi đơn hàng của mình trong trang lịch sử mua hàng.
+                    {` Đang chuyển về trang chủ sau ${seconds} giây.`}
                   </Text>
                 </div>
               ),
@@ -488,19 +497,21 @@ const CheckoutPage: React.FC = () => {
                   const storedCart = localStorage.getItem("cart");
                   if (storedCart) {
                     const cartObject = JSON.parse(storedCart);
-                    delete cartObject[userID]; // Xóa giỏ hàng của user hiện tại
+                    delete cartObject[userID];
                     localStorage.setItem("cart", JSON.stringify(cartObject));
                   }
                 }
                 setCart([]);
               },
               okButtonProps: {
-                disabled: !minimumDisplayTimeRef.current, // Vô hiệu hóa nút trong 4 giây đầu
+                disabled: !minimumDisplayTimeRef.current,
                 style: {
                   backgroundColor: minimumDisplayTimeRef.current
                     ? "#FF5733"
-                    : "#d9d9d9",
-                  color: minimumDisplayTimeRef.current ? "#fff" : "#000",
+                    : isDarkTheme
+                      ? "#444"
+                      : "#d9d9d9",
+                  color: minimumDisplayTimeRef.current ? "#fff" : isDarkTheme ? "#aaa" : "#000",
                   border: "none",
                   fontWeight: "bold",
                   padding: "0 20px",
@@ -509,9 +520,11 @@ const CheckoutPage: React.FC = () => {
                 },
               },
               cancelButtonProps: {
-                style: { display: "none" }, // Ẩn nút "Ở lại"
+                style: { display: "none" },
               },
               centered: true,
+              // Tuỳ chọn theme nâng cao nếu cần
+              className: isDarkTheme ? "custom-modal-dark" : "custom-modal-light",
             });
 
             // Cập nhật trạng thái nút sau 4 giây
