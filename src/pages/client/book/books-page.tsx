@@ -287,9 +287,12 @@ const BookPage: React.FC = () => {
                     <Breadcrumb.Item>
                         <a href="/books">Sách</a>
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        {category?.name || "Thể loại sách"}
-                    </Breadcrumb.Item>
+                    {category && (
+                        <Breadcrumb.Item>
+                            {category.name || "Thể loại sách"}
+                        </Breadcrumb.Item>
+                    )}
+
                 </Breadcrumb>
                 {
                     !id && (

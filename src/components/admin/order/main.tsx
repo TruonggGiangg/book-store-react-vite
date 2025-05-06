@@ -4,7 +4,7 @@ import { dateRangeValidate } from '@/services/helper';
 import { EditOutlined, ExportOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, notification } from 'antd';
+import { Button, notification, Select } from 'antd';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 import '@/style/table.scss';
@@ -18,6 +18,7 @@ type TSearch = {
     pageSize: number;
     current: number;
     createdAtRange?: string[];
+    numberPhone?: string;
     status?: string;
     shippingAddress?: string;
 };
@@ -69,24 +70,48 @@ const OrderAdminMain = () => {
             ),
         },
         {
+
+
             title: 'Trạng thái',
             dataIndex: 'status',
             valueType: 'select',
+            // Dùng valueEnum chỉ trong phần search
             valueEnum: {
+
                 pending: { text: 'Chờ xử lý', status: 'Warning' },
                 processing: { text: 'Đang xử lý', status: 'Processing' },
                 completed: { text: 'Hoàn thành', status: 'Success' },
                 cancelled: { text: 'Đã hủy', status: 'Error' },
+                default: { text: 'Tất cả', status: 'Default' },
+            },
+            // Custom form field để bỏ "Tất cả" trong form
+            renderFormItem: (_, { type, defaultRender, ...rest }, form) => {
+                if (type === 'form') {
+                    return (
+                        <Select {...rest}>
+                            <Select.Option value="pending">Chờ xử lý</Select.Option>
+                            <Select.Option value="processing">Đang xử lý</Select.Option>
+                            <Select.Option value="completed">Hoàn thành</Select.Option>
+                            <Select.Option value="cancelled">Đã hủy</Select.Option>
+                        </Select>
+                    );
+                }
+                return defaultRender(_);
             },
             formItemProps: {
                 rules: [{ required: true, message: 'Vui lòng chọn trạng thái' }],
             },
+
+
+
+
         },
         {
             title: 'Số điện thoại',
             dataIndex: 'numberPhone',
             key: 'numberPhone',
             copyable: true,
+            valueType: 'text', // 👈 thêm dòng này để ProTable hiển thị ô tìm kiếm
             ellipsis: true,
             tooltip: 'Số điện thoại người nhận',
             render: (_, record) => (
@@ -107,6 +132,7 @@ const OrderAdminMain = () => {
             copyable: true,
             ellipsis: true,
             valueType: 'text',
+            hideInSearch: true
         },
         {
             title: 'Ngày tạo',
@@ -191,17 +217,30 @@ const OrderAdminMain = () => {
                     initialValues: { status: 'pending' },
                 }}
                 request={async (params, sort) => {
+                    console.log('params:', params); // 👈 debug ở đây
                     let query = `current=${params.current}&pageSize=${params.pageSize}`;
 
+
                     if (params.status) {
-                        query += `&status=${params.status}`;
+                        if (params.status === 'default') {
+                            // Không thêm gì vào query nếu chọn "Tất cả"
+                        } else {
+                            query += `&status=${params.status}`;
+                        }
                     } else {
-                        query += `&status=pending`;
+                        query += `&status=pending`; // giá trị mặc định nếu không có gì được chọn
                     }
 
+
                     if (params.shippingAddress) {
-                        query += `&shippingAddress=/${params.shippingAddress}/i`;
+                        query += `&shippingAddress=${encodeURIComponent(params.shippingAddress)}`;
                     }
+
+
+                    if (params.numberPhone) {
+                        query += `&numberPhone=${encodeURIComponent(params.numberPhone)}`;
+                    }
+
 
                     const createDateRange = dateRangeValidate(params.createdAtRange);
                     if (createDateRange && createDateRange.length === 2) {

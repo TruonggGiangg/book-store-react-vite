@@ -263,11 +263,15 @@ const ToolPage: React.FC = () => {
                         </Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        <a href="/books">Sách</a>
+                        <a href="/books">Dụng cụ</a>
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        {category?.name || "Loại dụng cụ"}
-                    </Breadcrumb.Item>
+
+                    {category && (
+                        <Breadcrumb.Item>
+                            {category.name || "Loại dụng cụ"}
+                        </Breadcrumb.Item>
+                    )}
+
                 </Breadcrumb>
                 {
                     !id && (
