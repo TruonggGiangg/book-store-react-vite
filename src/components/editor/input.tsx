@@ -13,7 +13,7 @@ const TinyMCEEditor: React.FC<TinyMCEEditorProps> = ({ value, onChange, isDarkMo
     return (
         <Editor
 
-            apiKey="nh3mviwfmk63xgtxrbmarmw8ua15scl8zo9o89jyssh181ao" // Thay bằng API key nếu cần
+            apiKey="qx9j8lb7wjnm7dpn57gba4g1sa6euul75lu5ew4wb4l9h967" // Thay bằng API key nếu cần
             init={{
 
 
