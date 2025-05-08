@@ -43,6 +43,7 @@ declare global {
         gender: string;
         address: string;
         email: string;
+        confirmPassword: string;
     }
 
 
@@ -56,8 +57,11 @@ declare global {
     }
 
     interface IPermission {
+        _id: string;
         apiPath: string;
         method: string;
+        module: number;
+        name: string
     }
 
     interface IGetAccountAPI {
@@ -74,6 +78,7 @@ declare global {
 
     //user
     interface IGetUser {
+        username: sting
         _id: string
         name: string;
         email: string;
@@ -106,7 +111,7 @@ declare global {
 
 
 
-
+    //Book
     export interface ProductAttributes {
         publisher?: string;
         publishedDate?: Date | number; // Hỗ trợ cả timestamp và Date
@@ -118,6 +123,7 @@ declare global {
 
     interface Review {
         userId: Types.ObjectId | string;
+        userName: string;
         comment: string;
         rating: number;
         createdAt: Date;
@@ -147,7 +153,10 @@ declare global {
         __v?: number;
     }
 
-
+    interface ISearchBooksResponse {
+        meta: IPaginationMeta;
+        result: IGetBook[];
+    }
     interface ICreateBook {
         title: string;
         author: string[];
@@ -178,8 +187,14 @@ declare global {
         deletedBy?: UserReference;
         password?: string;
     }
+    interface ICreateRole {
+        _id?: string;
+        name: string;
+        description: string;
+        permissions: string[];
+    }
 
-
+    //Category
     interface IGetCategories {
         _id: string;
         name: string;
@@ -206,7 +221,7 @@ declare global {
 
 
 
-
+    //Event
     interface IGetEvent {
         _id: Types.ObjectId | string;
         name: string;
@@ -219,8 +234,69 @@ declare global {
         createdBy?: UserReference;
         updatedBy?: UserReference;
         deletedBy?: UserReference;
-        reviews?: Review[];
+
         __v?: number;
+    }
+    interface ICreateEvent {
+        name: string;
+        description: string;
+        image?: string;
+
+    }
+
+
+    //Order
+    export interface IOrderItem {
+        productId: Types.ObjectId | string;
+        name: string;
+        author: string;
+        price: number;
+        quantity: number;
+    }
+
+
+
+    export interface IGetOrder {
+        _id: Types.ObjectId | string;
+        items: IOrderItem[];
+        status: 'pending' | 'processing' | 'completed' | 'cancelled';
+        totalAmount: number;
+        numberPhone: string;
+        shippingAddress: string;
+        createdAt?: Date;
+        updatedAt?: Date;
+        isDeleted?: Date;
+        createdBy?: UserReference;
+        updatedBy?: UserReference;
+        deletedBy?: UserReference;
+    }
+
+    export interface ICreateOrder {
+        _id?: Types.ObjectId | string | null;
+        items: IOrderItem[];
+        status: 'pending' | 'processing' | 'completed' | 'cancelled';
+        totalAmount: number;
+        shippingAddress: string;
+        numberPhone: string;
+    }
+
+    interface IGetPermission {
+        _id: string;
+        apiPath: string;
+        method: string;
+        module: number;
+        name: string
+
+    }
+    interface ICreatePermission {
+        _id?: string;
+        apiPath: string;
+        method: string;
+        module: number;
+    }
+    interface IUpdatePermission {
+        apiPath: string;
+        method: string;
     }
 }
 

@@ -82,104 +82,68 @@ const UpdateProduct = (props: IProps) => {
     useEffect(() => {
         const fetchCategories = async () => {
             setIsLoading(true);
-
-
-            // Lấy danh sách danh mục
-            const res = await getAllCategoryApi('');
-            if (res?.data) {
-                setArrCategory(res.data.result);
-            }
-
-            // Kiểm tra nếu dataDetail không có classification
-            if (!Array.isArray(dataDetail?.attributes?.classification)) {
-                setIsLoading(false);
-                return;
-            }
-
-            // Gọi API lấy chi tiết từng danh mục
-            const responses = await Promise.all(
-                dataDetail.attributes.classification.map(async (item) => {
-                    if (!item) return null;
-
-                    const res = await getCategoryApi(item);
-                    return res?.data || null;
-
-                })
-            );
-
-            // Cập nhật state
-            setCurrentCategory(responses.filter((item): item is IGetCategories => item !== null));
-
-            form.setFieldsValue({
-                title: dataDetail?.title,
-                author: dataDetail?.author,
-                isBook: dataDetail?.isBook,
-                price: dataDetail?.price,
-                stock: dataDetail?.stock,
-                sold: dataDetail?.sold,
-                description: dataDetail?.description,
-                coverImage: dataDetail?.coverImage,
-                logo: dataDetail?.logo,
-                attributes: {
-                    publisher: dataDetail?.attributes?.publisher,
-                    publishedDate: dataDetail?.attributes?.publishedDate
-                        ? dayjs(dataDetail.attributes.publishedDate)
-                        : null,  // Chuyển đổi thành `dayjs`
-                    isbn: dataDetail?.attributes?.isbn,
-                    language: dataDetail?.attributes?.language,
-                    pages: dataDetail?.attributes?.pages,
-                    classification: dataDetail?.attributes?.classification
+            try {
+                // Lấy danh sách danh mục
+                const res = await getAllCategoryApi('current=1&pageSize=100');
+                if (res?.data) {
+                    setArrCategory(res.data.result);
                 }
-            });
 
+                // Kiểm tra nếu dataDetail không có classification
+                if (!Array.isArray(dataDetail?.attributes?.classification)) {
+                    return;
+                }
 
-            setIsLoading(false)
-        };
+                // Gọi API lấy chi tiết từng danh mục
+                const responses = await Promise.all(
+                    dataDetail.attributes.classification.map(async (item) => {
+                        if (!item) return null;
+                        const res = await getCategoryApi(item);
+                        return res?.data || null;
+                    })
+                );
 
-        fetchCategories();
-    }, [dataDetail]);
+                // Cập nhật state và lọc bỏ null
+                setCurrentCategory(responses.filter((item): item is IGetCategories => item !== null));
 
-
-
-    useEffect(() => {
-
-        const fetchCategories = async () => {
-            setIsLoading(true);
-
-
-            // Lấy danh sách danh mục
-            const res = await getAllCategoryApi('');
-            if (res?.data) {
-                setArrCategory(res.data.result);
-            }
-
-            // Kiểm tra nếu dataDetail không có classification
-            if (!Array.isArray(dataDetail?.attributes?.classification)) {
+                // Cập nhật giá trị form
+                form.setFieldsValue({
+                    title: dataDetail?.title,
+                    author: dataDetail?.author,
+                    isBook: dataDetail?.isBook,
+                    price: dataDetail?.price,
+                    stock: dataDetail?.stock,
+                    sold: dataDetail?.sold,
+                    description: dataDetail?.description,
+                    coverImage: dataDetail?.coverImage,
+                    logo: dataDetail?.logo,
+                    attributes: {
+                        publisher: dataDetail?.attributes?.publisher,
+                        publishedDate: dataDetail?.attributes?.publishedDate
+                            ? dayjs(dataDetail.attributes.publishedDate)
+                            : null,
+                        isbn: dataDetail?.attributes?.isbn,
+                        language: dataDetail?.attributes?.language,
+                        pages: dataDetail?.attributes?.pages,
+                        classification: dataDetail?.attributes?.classification,
+                    },
+                });
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+                api.error({
+                    message: "Lỗi",
+                    description: "Không thể lấy danh sách danh mục",
+                    placement: "topRight",
+                });
+            } finally {
                 setIsLoading(false);
-                return;
             }
-
-            // Gọi API lấy chi tiết từng danh mục
-            const responses = await Promise.all(
-                dataDetail.attributes.classification.map(async (item) => {
-                    if (!item) return null;
-
-                    const res = await getCategoryApi(item);
-                    return res?.data || null;
-
-                })
-            );
-
-            // Cập nhật state và lọc bỏ `null`
-            setCurrentCategory(responses.filter((item): item is IGetCategories => item !== null));
-
-
-            setIsLoading(false);
-
         };
 
-        fetchCategories();
-    }, [dataDetail]);
+        if (dataDetail) {
+            fetchCategories();
+        }
+    }, [dataDetail, form, api]);
 
 
     const onFinish = async (values: ICreateBook) => {
@@ -370,7 +334,7 @@ const UpdateProduct = (props: IProps) => {
     return (
         <>
             {contextHolder}
-            <Drawer title="Create user"
+            <Drawer title="Update product"
                 open={isOpenUpdateModal}
                 onClose={() => {
                     setIsOpenUpdateModal(false);

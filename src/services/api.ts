@@ -1,3 +1,4 @@
+
 import axios from "@/services/axios.custumize"
 
 const baseURL = import.meta.env.VITE_BACKEND_URL
@@ -56,6 +57,11 @@ export const deleteUserApi = (id: string) => {
     return axios.delete<IBackendRes<any>>(url);
 };
 
+export const getUserApi = (id: string) => {
+    const url = `${baseURL}/api/v1/users/${id}`;
+    return axios.get<IBackendRes<IGetUser>>(url)
+}
+
 //BOOK
 export const getAllBookApi = (query: string) => {
     //
@@ -85,6 +91,20 @@ export const deleteBookApi = (id: string) => {
 };
 
 
+export const searchBooksApi = (keyword: string, page: number = 1, pageSize: number = 10) => {
+    const url = `${baseURL}/api/v1/books/search`;
+
+    // Add query parameters
+    const params = new URLSearchParams({
+        keyword,
+        page: page.toString(),
+        pageSize: pageSize.toString()
+    });
+
+    return axios.get<IBackendRes<ISearchBooksResponse>>(`${url}?${params.toString()}`);
+};
+
+
 
 //ROLE
 export const getRoleApi = (id: string) => {
@@ -96,6 +116,20 @@ export const getAllRoleApi = () => {
     const url = `${baseURL}/api/v1/roles`;
     return axios.get<IBackendRes<IModelPaginate<IGetRole>>>(url);
 };
+export const updateRoleApi = (id: string, roleData: ICreateRole) => {
+    const url = `${baseURL}/api/v1/roles/${id}`;
+    return axios.put<IBackendRes<any>>(url, roleData);
+
+};
+export const createRoleApi = (roleData: ICreateRole) => {
+    const url = `${baseURL}/api/v1/roles`;
+    return axios.post<IBackendRes<any>>(url, roleData);
+}
+
+export const deleteRoleApi = (id: string) => {
+    const url = `${baseURL}/api/v1/roles/${id}`;
+    return axios.delete<IBackendRes<any>>(url);
+}
 
 
 
@@ -126,6 +160,12 @@ export const updateCategoryApi = (categoryData: ICreateCategory, id: string) => 
     return axios.put<IBackendRes<any>>(url, categoryData);
 };
 
+export const deleteCategoryApi = (id: string) => {
+    const url = `${baseURL}/api/v1/categories/${id}`;
+    return axios.delete<IBackendRes<any>>(url);
+};
+
+
 
 
 //EVENT
@@ -135,6 +175,70 @@ export const getAllEventApi = (query: string) => {
 };
 
 
+export const createEventApi = (eventData: ICreateEvent) => {
+    const url = `${baseURL}/api/v1/events`;
+    return axios.post<IBackendRes<any>>(url, eventData);
+}
+export const getEventApi = (id: string) => {
+    const url = `${baseURL}/api/v1/events/${id}`;
+    return axios.get<IBackendRes<IGetEvent>>(url);
+}
+export const updateEventApi = (eventData: ICreateEvent, id: string) => {
+    const url = `${baseURL}/api/v1/events/${id}`;
+    return axios.put<IBackendRes<any>>(url, eventData);
+}
+export const deleteEventApi = (id: string) => {
+    const url = `${baseURL}/api/v1/events/${id}`;
+    return axios.delete<IBackendRes<any>>(url);
+}
+
+
+//ORDER
+
+
+export const createOrderApi = (order: ICreateOrder) => {
+    const url = `${baseURL}/api/v1/orders`;
+    return axios.post<IBackendRes<any>>(url, order);
+}
+
+export const getAllOrderApi = (query: string) => {
+    const url = `${baseURL}/api/v1/orders?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IGetOrder>>>(url);
+};
+
+export const updateOrderApi = (orderData: ICreateOrder, id: string) => {
+    const url = `${baseURL}/api/v1/orders/${id}`;
+    return axios.put<IBackendRes<any>>(url, orderData);
+};
+
+export const getOrderApi = (id: string) => {
+    const url = `${baseURL}/api/v1/orders/${id}`;
+    return axios.get<IBackendRes<IGetEvent>>(url);
+}
+
+export const getAllPermissionApi = (query: string) => {
+    const url = `${baseURL}/api/v1/permissions?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IPermission>>>(url);
+}
+export const updatePermissionApi = (permissionData: ICreatePermission, id: string) => {
+    const url = `${baseURL}/api/v1/permissions/${id}`;
+    return axios.put<IBackendRes<any>>(url, permissionData);
+}
+
+//permission
+
+export const getPermissionApiByPath = (path: string) => {
+    const url = `${baseURL}/api/v1/permissions?path=${path}`;
+    return axios.get<IBackendRes<IPermission>>(url);
+}
+export const getPermissionApiById = (id: string) => {
+    const url = `${baseURL}/api/v1/permissions/${id}`;
+    return axios.get<IBackendRes<IPermission>>(url);
+}
+export const deletePermissionApi = (id: string) => {
+    const url = `${baseURL}/api/v1/permissions/${id}`;
+    return axios.delete<IBackendRes<any>>(url);
+}
 
 //UPLOAD FILE
 export const uploadFile = (fileImg: any, folder: string) => {

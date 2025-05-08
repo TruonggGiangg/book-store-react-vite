@@ -1,164 +1,270 @@
-import { useEffect, useState } from 'react';
-import { Button, Carousel } from 'antd';
-
+import { useEffect, useRef, useState } from 'react';
+import { Button, Carousel, Col, Grid, Row } from 'antd';
 import Lottie from 'lottie-react';
-import loadingAnimation from "@/assets/animation/loadingAnimation.json"
+import loadingAnimation from '@/assets/animation/loadingAnimation.json';
 import Container from '@/components/layout/client/container.layout';
+import { EyeOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 type IProps = {
-    data: IGetCategories[],
-    setData: (v: IGetCategories[] | []) => void,
-    loading: boolean,
-    dataBook: Record<string, IGetBook[]>
-}
+    data: IGetCategories[];
+    setData: (v: IGetCategories[] | []) => void;
+    loading: boolean;
+    dataBook: Record<string, IGetBook[]>;
+};
 
-const HomeSlider = (props: IProps) => {
-    const { data, loading, dataBook } = props;
+const HomeSlider = ({ data, loading, dataBook }: IProps) => {
     const [scrollY, setScrollY] = useState(0);
-
+    const [isLoading, setIsLoading] = useState(true); // State mới để kiểm soát loading
+    const carouselRef = useRef<any>(null);
+    const navigate = useNavigate();
+    const screens = Grid.useBreakpoint();
     useEffect(() => {
         const handleScroll = () => setScrollY(window.scrollY);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (!loading) {
+            // Đợi ít nhất 4 giây trước khi tắt loading
+            timer = setTimeout(() => {
+                setIsLoading(false);
+            }, 4000);
+        } else {
+            setIsLoading(true);
+        }
+        return () => clearTimeout(timer); // Cleanup timer
+    }, [loading]);
 
-
-    if (loading) {
+    if (isLoading) {
         return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: "100%", height: "500px" }}>
-                <Lottie animationData={loadingAnimation} loop={true} style={{ width: "20%" }} />
-            </div>
+            <Container>
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '544px',
+                        borderRadius: 8,
+
+                        border: '1px solid #ddd',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    }}
+                >
+                    <Lottie
+                        animationData={loadingAnimation}
+                        loop
+                        style={{
+                            width: '15%',
+                            maxWidth: '200px',
+                            height: 'auto',
+                            margin: 'auto',
+                        }}
+                    />
+                </div>
+            </Container>
         );
     }
 
+    const prevArrow = (
+        <div
+            style={{
+                position: 'absolute',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                background: 'rgba(0,0,0,0.4)',
+                color: '#fff',
+                fontSize: 20,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+                zIndex: 1,
+                left: 12,
+            }}
+            onClick={() => carouselRef.current?.prev()}
+        >
+            <LeftOutlined />
+        </div>
+    );
+
+    const nextArrow = (
+        <div
+            style={{
+                position: 'absolute',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                background: 'rgba(0,0,0,0.4)',
+                color: '#fff',
+                fontSize: 20,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+                zIndex: 1,
+                right: 12,
+            }}
+            onClick={() => carouselRef.current?.next()}
+        >
+            <RightOutlined />
+        </div>
+    );
+
     return (
-        <Container>
-            <Carousel arrows effect="scrollx" style={{ borderRadius: 8, overflow: "hidden" }}>
+        <div style={{ position: 'relative' }}>
+            {prevArrow}
+            {nextArrow}
+            <Carousel
+                ref={carouselRef}
+                autoplay
+                dots
+                arrows={false}
+                effect="scrollx"
+                style={{
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                    height: '600px',
+                    width: '100%',
+                }}
+            >
                 {data.map((category, i) => (
-                    <div key={i} style={{ textAlign: "center" }}>
+                    <div key={i} style={{ height: '600px' }}>
                         <div
                             style={{
-                                position: "relative",
-                                width: "100%",
-                                height: "600px",
+                                position: 'relative',
+                                width: '100%',
+                                height: '600px',
                                 backgroundImage: `url(${import.meta.env.VITE_BACKEND_URL}/images/category/${category.image})`,
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                                backgroundRepeat: "no-repeat",
-                                filter: "brightness(70%)", // Làm tối ảnh để chữ nổi bật hơn
-                                transition: "transform 0.5s ease-in-out, opacity 0.3s ease-in-out",
-
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat',
+                                filter: 'brightness(70%)',
+                                transition: 'transform 0.5s ease-in-out',
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.025)")}
-                            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.025)')}
+                            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                         >
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: screens.xs ? '12%' : '40%',
+                                    transform: 'translateY(-50%)',
+                                    left: '5%',
+                                    color: 'white',
+                                    width: screens.xs ? '90%' : '60%',
+                                    padding: '24px',
+                                    background: screens.xs ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.5)',
+                                    borderRadius: '10px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    flexWrap: 'wrap',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        display: 'flex',
 
-                            {/* Tên thể loại */}
-                            <div style={{
-                                position: "absolute",
-                                left: "5%",
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                color: "white",
-                                fontSize: "32px",
-                                fontWeight: "bold",
-                                textShadow: "3px 3px 12px rgba(0, 0, 0, 0.8)",
-                                background: "linear-gradient(90deg, rgba(0,0,0,0.8), rgba(0,0,0,0.5))",
-                                padding: "32px 50px",
-                                borderRadius: "10px",
-                                width: "45%",
-                                display: "flex",
-                                alignItems: "flex-start",
-                                justifyContent: "center",
-                                textAlign: "left",
-                                flexDirection: "column",
-                            }}>
-                                <h2 style={{ fontSize: "3.2rem", marginBottom: "10px", fontWeight: 500 }}>{category.name}</h2>
-                                <p style={{
-                                    fontSize: "1rem",
-                                    lineHeight: "1.6",
-                                    fontWeight: 400,
-                                    display: "-webkit-box",
-                                    WebkitBoxOrient: "vertical",
-                                    WebkitLineClamp: 6,
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                }} dangerouslySetInnerHTML={{ __html: category.description as string }} >{ }</p>
-                                <div style={{ marginTop: "40px", display: "flex", gap: "1.5rem" }}>
+                                        justifyContent: 'left',
+                                        alignItems: 'center',
+                                        width: screens.xs ? '40%' : '100%',
+                                    }}
+                                >
+                                    <h2 style={{ fontSize: screens.xs ? '1.5rem' : '2.5rem' }}>{category.name}</h2>
+                                </div>
+
+
+                                {!screens.xs && (
+                                    <p
+                                        style={{
+                                            marginTop: 12,
+                                            fontSize: '1rem',
+                                            lineHeight: 1.6,
+                                            maxHeight: 120,
+                                            overflow: 'hidden',
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 4,
+                                            WebkitBoxOrient: 'vertical',
+                                            width: '100%',
+                                        }}
+                                        dangerouslySetInnerHTML={{ __html: category.description }}
+                                    />
+                                )}
+
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'right',
+                                        alignItems: 'center',
+
+                                        width: screens.xs ? '40%' : '100%',
+                                    }}
+                                >
                                     <Button
                                         type="primary"
-                                        size="large"
+                                        size={screens.xs ? 'middle' : 'large'}
+                                        icon={screens.xs ? <EyeOutlined /> : undefined}
                                         style={{
-                                            backgroundColor: "#FF5733",
-                                            borderColor: "#FF5733",
-                                            fontWeight: "bold",
-                                            transition: "all 0.3s ease-in-out",
-                                        }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e04c2f")}
-                                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#FF5733")}
-                                    >
-                                        Xem thêm sản phẩm
-                                    </Button>
 
+                                            backgroundColor: '#FF5733',
+                                            borderColor: '#FF5733',
+                                            fontWeight: 'bold',
+                                        }}
+                                        onClick={() => navigate(`books/${category._id}`)}
+                                    >
+                                        Xem thêm
+                                    </Button>
                                 </div>
+
                             </div>
 
-                            {/* Danh sách sách theo danh mục */}
-                            <div style={{
-                                textAlign: "left",
-                                display: "flex",
-                                gap: "15px",
-                                position: "absolute",
-                                bottom: "32px",
-                                right: "48px",
-                                height: "150px",
-                            }}>
-                                {dataBook[category._id]?.length > 0 ? (
-                                    dataBook[category._id].slice(0, 5).map((book) => ( // Giới hạn tối đa 5 sách
-                                        <div key={book._id} style={{
-                                            width: "100px",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            alignItems: "center",
-                                            gap: "8px",
-                                            color: "white",
-                                            borderRadius: "8px",
-                                            overflow: "hidden",
-                                            transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
-                                            cursor: "pointer",
-
-                                        }}
-                                            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-                                            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                                        >
+                            {dataBook[category._id]?.length > 0 && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: 32,
+                                        right: 32,
+                                        display: 'flex',
+                                        gap: 16,
+                                    }}
+                                >
+                                    {dataBook[category._id]
+                                        .slice(0, screens.xs ? 2 : 4)
+                                        .map((book) => (
                                             <img
+                                                key={book._id}
                                                 src={`${import.meta.env.VITE_BACKEND_URL}/images/product/${book.logo}`}
                                                 alt={book.title}
+                                                onClick={() => navigate(`/book/${book._id}`)}
                                                 style={{
-                                                    width: "100px",
-                                                    height: "150px",
-                                                    objectFit: "cover",
-                                                    borderRadius: "8px",
-                                                    backgroundColor: "rgba(255, 255, 255, 0.7)",
-                                                    padding: "4px",
-                                                    overflow: "hidden",
+                                                    width: 100,
+                                                    aspectRatio: '2 / 3',
+                                                    objectFit: 'cover',
+                                                    borderRadius: 8,
+                                                    cursor: 'pointer',
+                                                    transition: 'transform 0.3s ease',
                                                 }}
+                                                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                                                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                             />
-
-                                        </div>
-                                    ))
-                                ) : (
-                                    <></>
-                                )}
-                            </div>
+                                        ))}
+                                </div>
+                            )}
                         </div>
                     </div>
-                ))}
-            </Carousel>
-        </Container>
-
-
+                ))
+                }
+            </Carousel >
+        </div >
     );
 };
 

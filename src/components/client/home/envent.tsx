@@ -1,6 +1,6 @@
 import Container from "@/components/layout/client/container.layout"
 import { Button, Card, Col, Row, Skeleton } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 type IProps = {
@@ -10,27 +10,33 @@ type IProps = {
 
 
 const EventHome = (props: IProps) => {
+    const nav = useNavigate();
 
     const { dataEvent, loading } = props;
 
 
     return (
         <>
-            <Container>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                    <h2 style={{ fontSize: 24, fontWeight: 600, color: "#333" }}>Sự kiện</h2>
-                    <Button type="link" style={{ fontSize: "14px", color: "#FF5733" }}>Xem tất cả</Button>
-                </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <h2 style={{ fontSize: 24, fontWeight: 600 }}>Sự kiện</h2>
+                {/* <Button type="link" style={{ fontSize: "14px", color: "#FF5733" }}>Xem tất cả</Button> */}
+            </div>
 
-                <Row gutter={[16, 16]}>
+            <Card>
+                <Row gutter={[16, 16]} style={{ minHeight: "300px" }}>
                     {loading ? (
-                        <Col span={24} style={{ textAlign: "center" }}>
+                        <Col span={24} style={{ textAlign: "center", minHeight: "300px" }}>
+                            <Skeleton active />
                             <Skeleton active />
                         </Col>
                     ) : (
+
+
                         dataEvent.map((event, index) => (
                             <Col key={index} xs={24} sm={12} md={8} lg={6}>
+
                                 <Card
+                                    onClick={() => nav(`/event/${event._id}`)}
                                     hoverable
                                     cover={
                                         <img
@@ -42,7 +48,7 @@ const EventHome = (props: IProps) => {
                                     style={{ borderRadius: 8 }}
                                 >
                                     <Card.Meta
-                                        title={<span style={{ fontSize: 18, fontWeight: 600 }}>{event.name}</span>}
+
                                         description={
                                             <span
                                                 style={{
@@ -54,17 +60,23 @@ const EventHome = (props: IProps) => {
                                                     textOverflow: "ellipsis",
 
                                                 }}
+                                                dangerouslySetInnerHTML={{ __html: event.description as string }}
                                             >
-                                                {event.description}
+                                                { }
                                             </span>
                                         }
                                     />
                                 </Card>
                             </Col>
                         ))
+
+
+
                     )}
                 </Row>
-            </Container>
+            </Card>
+
+
         </>
     )
 
