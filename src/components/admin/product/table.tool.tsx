@@ -390,17 +390,17 @@ const TableTool = () => {
             Import sản phẩm
           </Button>,
 
-          <Button
-            icon={<ExportOutlined />}
-            onClick={() => {
-              // handleExport()
-            }}
-            type="primary"
-          >
-            <CSVLink title="data_user_export" data={dataBookTable}>
-              Export sản phẩm
-            </CSVLink>
-          </Button>,
+          // <Button
+          //   icon={<ExportOutlined />}
+          //   onClick={() => {
+          //     // handleExport()
+          //   }}
+          //   type="primary"
+          // >
+          //   <CSVLink title="data_user_export" data={dataBookTable}>
+          //     Export sản phẩm
+          //   </CSVLink>
+          // </Button>,
         ]}
       />
     </div>
