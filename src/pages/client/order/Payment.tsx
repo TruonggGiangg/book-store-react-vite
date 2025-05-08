@@ -545,6 +545,7 @@ const CheckoutPage: React.FC = () => {
               });
             }, 4000);
 
+            // Đếm ngược thời gian
             const countdown = setInterval(() => {
               seconds--;
               if (seconds <= 0) {
