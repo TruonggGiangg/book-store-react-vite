@@ -248,7 +248,7 @@ const AppLayoutClient: React.FC = () => {
                                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                                     transition: 'transform 0.3s ease',
                                 }}
-                                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+
                             />
                         )}
 
